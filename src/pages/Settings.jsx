@@ -1,0 +1,246 @@
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useRewards } from '../context/RewardsContext';
+import { useMembership } from '../context/MembershipContext';
+import { User, CreditCard, History, HelpCircle, Shield, ChevronRight, LogOut, Moon, Sun, Star, Camera, ImageIcon } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export default function Settings() {
+    const { user, logout, updateAvatar, isGuest, isStaff } = useAuth();
+    const { theme, toggleTheme } = useTheme();
+    const { stars, balance } = useRewards();
+    const { getTierForStars } = useMembership();
+    const navigate = useNavigate();
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const fileInputRef = useRef(null);
+
+    const isDark = theme === 'dark';
+    const tier = getTierForStars(stars);
+
+    const tierStyles = {
+        orange: { color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+        zinc: { color: 'text-zinc-300', bg: 'bg-zinc-400/10', border: 'border-zinc-400/30' },
+        yellow: { color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' },
+    };
+    const membership = tierStyles[tier.color] || tierStyles.orange;
+
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                updateAvatar(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const roleLabel = user?.role === 'admin' ? 'Yönetici' : user?.role === 'barista' ? 'Barista' : 'Müşteri';
+
+    return (
+        <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
+
+            {/* Top gradient area */}
+            <div className="relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-b from-shaco-red/8 to-transparent h-48 pointer-events-none" />
+                <div className="p-6 pt-10 relative z-10">
+                    <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-display font-bold mb-0.5">Profil</motion.h1>
+                    <p className={`text-xs tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Hesap & Ayarlar</p>
+                </div>
+            </div>
+
+            <div className="px-6">
+                {/* User Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                    className={`relative p-5 rounded-3xl mb-8 overflow-hidden ${isDark ? 'bg-gradient-to-br from-zinc-900 to-zinc-900/50 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-lg'}`}
+                >
+                    <div className="absolute top-0 right-0 w-28 h-28 bg-shaco-red/5 rounded-full blur-2xl -translate-y-8 translate-x-8" />
+
+                    <div className="flex items-center gap-4 relative z-10">
+                        {/* Avatar with upload */}
+                        <div className="relative">
+                            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoUpload} className="hidden" />
+                            {user?.avatar ? (
+                                <img
+                                    src={user.avatar}
+                                    alt="avatar"
+                                    className="w-16 h-16 rounded-2xl object-cover shadow-lg shadow-red-500/20 cursor-pointer"
+                                    onClick={() => fileInputRef.current?.click()}
+                                />
+                            ) : (
+                                <div
+                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black uppercase ${isDark ? 'bg-gradient-to-br from-shaco-red to-red-700' : 'bg-gradient-to-br from-shaco-red to-red-600'} text-white shadow-lg shadow-red-500/20 cursor-pointer`}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {user?.name ? user.name.charAt(0) : 'S'}
+                                </div>
+                            )}
+                            <div
+                                className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-lg flex items-center justify-center cursor-pointer ${isDark ? 'bg-zinc-800 border border-zinc-700' : 'bg-white border border-zinc-300 shadow-sm'}`}
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <Camera size={10} className={isDark ? 'text-zinc-400' : 'text-zinc-500'} />
+                            </div>
+                        </div>
+
+                        <div className="flex-1">
+                            <h2 className={`text-lg font-bold leading-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{user?.name || 'Misafir'}</h2>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md border ${membership.bg} ${membership.color} ${membership.border}`}>
+                                    {tier.emoji} {tier.label}
+                                </span>
+                                {tier.discount > 0 && (
+                                    <span className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                                        %{tier.discount} İndirim
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className={`text-[11px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                    <Star size={10} className="inline text-yellow-500 fill-yellow-500 -mt-0.5" /> {stars} yıldız
+                                </span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
+                                    {roleLabel}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Mini stats */}
+                    <div className={`flex gap-4 mt-4 pt-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
+                        <div className="flex-1 text-center">
+                            <p className={`text-[10px] tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>BAKİYE</p>
+                            <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{balance.toFixed(0)}</p>
+                        </div>
+                        <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+                        <div className="flex-1 text-center">
+                            <p className={`text-[10px] tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SİPARİŞ</p>
+                            <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>12</p>
+                        </div>
+                        <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+                        <div className="flex-1 text-center">
+                            <p className={`text-[10px] tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>KUPON</p>
+                            <p className={`text-lg font-bold text-shaco-red`}>3</p>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* HESAP */}
+                <SectionLabel label="HESAP" isDark={isDark} delay={0.15} />
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-1.5 mb-7">
+                    <ProfileRow icon={<User size={17} />} iconBg="bg-red-500/10 text-red-400" label="Kişisel Bilgiler" isDark={isDark} />
+                    {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
+                    <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label={isStaff ? 'Şuanki Siparişler' : 'Sipariş Geçmişi'} isDark={isDark} />
+                </motion.div>
+
+                {/* GENEL */}
+                <SectionLabel label="GENEL" isDark={isDark} delay={0.25} />
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-1.5 mb-7">
+                    <div className={`p-3.5 rounded-2xl flex items-center justify-between ${isDark ? 'bg-zinc-900 border border-zinc-800/80' : 'bg-white border border-zinc-200 shadow-sm'}`}>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-indigo-500/10 text-indigo-500'}`}>
+                                {isDark ? <Sun size={17} /> : <Moon size={17} />}
+                            </div>
+                            <span className={`text-[13px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Tema</span>
+                        </div>
+                        <button onClick={toggleTheme} className={`w-11 h-6 rounded-full transition-all duration-300 relative ${isDark ? 'bg-shaco-red' : 'bg-zinc-300'}`}>
+                            <div className={`bg-white rounded-full absolute top-[3px] transition-all duration-300 shadow-sm ${isDark ? 'left-[22px]' : 'left-[3px]'}`} style={{ width: 18, height: 18 }} />
+                        </button>
+                    </div>
+                    {/* Profile Photo */}
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`w-full p-3.5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-zinc-200 shadow-sm hover:shadow-md'}`}
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-pink-500/10 text-pink-400">
+                                <ImageIcon size={17} />
+                            </div>
+                            <div className="text-left">
+                                <span className={`text-[13px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Profil Fotoğrafı</span>
+                                <p className={`text-[10px] -mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Galeriden veya kameradan yükle</p>
+                            </div>
+                        </div>
+                        <ChevronRight size={15} className={isDark ? 'text-zinc-700' : 'text-zinc-300'} />
+                    </button>
+                    <ProfileRow icon={<HelpCircle size={17} />} iconBg="bg-violet-500/10 text-violet-400" label="Yardım & Destek" isDark={isDark} />
+                </motion.div>
+
+                {/* Logout / Login for Guests */}
+                {isGuest ? (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="space-y-2">
+                        <button
+                            onClick={() => navigate('/login')}
+                            className={`w-full p-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2.5 transition active:scale-[0.98] bg-shaco-red text-white shadow-lg shadow-red-500/15`}
+                        >
+                            <LogOut size={16} /> Giriş Yap
+                        </button>
+                        <button
+                            onClick={() => navigate('/register')}
+                            className={`w-full p-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2.5 transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800 text-zinc-300' : 'bg-white border border-zinc-200 text-zinc-700 shadow-sm'}`}
+                        >
+                            Kayıt Ol
+                        </button>
+                    </motion.div>
+                ) : (
+                    <motion.button
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                        onClick={() => setShowLogoutConfirm(true)}
+                        className={`w-full p-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2.5 transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800 text-red-400 hover:bg-red-500/5' : 'bg-white border border-zinc-200 text-red-500 hover:bg-red-50 shadow-sm'}`}
+                    >
+                        <LogOut size={16} /> Çıkış Yap
+                    </motion.button>
+                )}
+            </div>
+
+            {/* Logout Confirm */}
+            <AnimatePresence>
+                {showLogoutConfirm && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-6" onClick={() => setShowLogoutConfirm(false)}>
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                            className={`w-full max-w-xs rounded-3xl p-6 text-center ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'}`}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500"><LogOut size={24} /></div>
+                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Çıkış Yap</h3>
+                            <p className={`text-sm mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Hesabından çıkmak istediğine emin misin?</p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setShowLogoutConfirm(false)} className={`flex-1 py-3 rounded-xl font-bold text-sm ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>Vazgeç</button>
+                                <button onClick={() => { setShowLogoutConfirm(false); logout(); }} className="flex-1 py-3 rounded-xl font-bold text-sm bg-red-500 text-white">Çıkış</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
+function SectionLabel({ label, isDark, delay }) {
+    return (
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay }}
+            className={`text-[10px] font-bold tracking-[0.2em] mb-2.5 ml-1 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}
+        >{label}</motion.p>
+    );
+}
+
+function ProfileRow({ icon, iconBg, label, subtitle, isDark, onClick }) {
+    return (
+        <button onClick={onClick}
+            className={`w-full p-3.5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-zinc-200 shadow-sm hover:shadow-md'}`}
+        >
+            <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
+                <div className="text-left">
+                    <span className={`text-[13px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{label}</span>
+                    {subtitle && <p className={`text-[10px] -mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{subtitle}</p>}
+                </div>
+            </div>
+            <ChevronRight size={15} className={isDark ? 'text-zinc-700' : 'text-zinc-300'} />
+        </button>
+    );
+}
