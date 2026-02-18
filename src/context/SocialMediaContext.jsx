@@ -12,8 +12,8 @@ const PLATFORM_OPTIONS = [
 
 const defaultAccounts = [
     { id: 1, platform: 'instagram', username: '@shacocoffee', url: 'https://instagram.com/shacocoffee' },
-    { id: 2, platform: 'tiktok', username: '@shacocoffee', url: 'https://tiktok.com/@shacocoffee' },
-    { id: 3, platform: 'facebook', username: 'Shaco Coffee Co.', url: 'https://facebook.com/shacocoffee' },
+    { id: 2, platform: 'tiktok', username: '@shaco.coffee', url: 'https://www.tiktok.com/@shaco.coffee?_t=8mkrJtZn6rG&_r=1' },
+    { id: 3, platform: 'facebook', username: 'Shaco Coffee Co.', url: 'https://www.facebook.com/profile.php?id=100085217119512' },
 ];
 
 export function SocialMediaProvider({ children }) {

@@ -359,18 +359,18 @@ function SocialMediaSection({ isDark }) {
                             href={account.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border transition-all duration-200 hover:scale-[1.02] active:scale-95 shrink-0 ${isDark
-                                    ? 'bg-zinc-900/80 border-zinc-800 hover:border-zinc-700'
-                                    : 'bg-white border-zinc-200 shadow-sm hover:shadow-md'
+                            className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border transition-all duration-200 hover:scale-[1.02] active:scale-95 shrink-0 ${isDark
+                                ? 'bg-zinc-900/80 border-zinc-800 hover:border-zinc-700'
+                                : 'bg-white border-zinc-200 shadow-sm hover:shadow-md'
                                 }`}
                         >
                             <div
-                                className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                                className="w-6 h-6 rounded-md flex items-center justify-center text-white"
                                 style={{ backgroundColor: color }}
                             >
-                                {IconFn ? IconFn(16) : null}
+                                {IconFn ? IconFn(12) : null}
                             </div>
-                            <span className={`text-[12px] font-bold whitespace-nowrap ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                            <span className={`text-[10px] font-bold whitespace-nowrap ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
                                 {account.username}
                             </span>
                         </a>
