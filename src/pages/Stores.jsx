@@ -39,7 +39,7 @@ export default function Stores() {
                             <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
                             <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-zinc-900 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                                 <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                                4.4 <span className="text-zinc-500 font-normal">(138)</span>
+                                {store.rating} <span className="text-zinc-500 font-normal">(138)</span>
                             </div>
                         </div>
 

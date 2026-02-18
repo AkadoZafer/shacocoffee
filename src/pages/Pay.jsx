@@ -72,7 +72,7 @@ export default function Pay() {
                     </div>
                     <div className={`flex items-center gap-1.5 mt-2 ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>
                         <span className="text-[10px]">•••• •••••</span>
-                        <span className="text-[10px] font-mono">{Math.floor(Math.random() * 9000 + 1000)}</span>
+                        <span className="text-[10px] font-mono">1095</span>
                     </div>
                 </div>
             </div>

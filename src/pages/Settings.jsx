@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Settings() {
     const { user, logout, updateAvatar, isGuest, isStaff } = useAuth();
     const { theme, toggleTheme } = useTheme();
-    const { stars, balance } = useRewards();
+    const { stars, balance, orders } = useRewards();
     const { getTierForStars } = useMembership();
     const navigate = useNavigate();
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -118,12 +118,12 @@ export default function Settings() {
                         <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
                         <div className="flex-1 text-center">
                             <p className={`text-[10px] tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SİPARİŞ</p>
-                            <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>12</p>
+                            <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{orders.length}</p>
                         </div>
                         <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
                         <div className="flex-1 text-center">
                             <p className={`text-[10px] tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>KUPON</p>
-                            <p className={`text-lg font-bold text-shaco-red`}>3</p>
+                            <p className={`text-lg font-bold text-shaco-red`}>0</p>
                         </div>
                     </div>
                 </motion.div>
