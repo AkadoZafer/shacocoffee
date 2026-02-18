@@ -5,8 +5,9 @@ import { useExtras } from '../context/ExtrasContext';
 import { useMembership } from '../context/MembershipContext';
 import { useAuth } from '../context/AuthContext';
 import { useRewards } from '../context/RewardsContext';
+import { useSocialMedia } from '../context/SocialMediaContext';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Search } from 'lucide-react';
+import { ArrowLeft, X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Search, Share2 } from 'lucide-react';
 import { products as initialProducts } from '../data/products';
 
 const categories = [
@@ -22,6 +23,7 @@ export default function AdminPanel() {
     const { tiers, updateTier } = useMembership();
     const { user } = useAuth();
     const { orders, confirmOrder } = useRewards();
+    const { accounts: socialAccounts, addAccount: addSocialAccount, removeAccount: removeSocialAccount, updateAccount: updateSocialAccount, PLATFORM_OPTIONS } = useSocialMedia();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
     const videoRef = useRef(null);
@@ -49,6 +51,11 @@ export default function AdminPanel() {
     const [showManualInput, setShowManualInput] = useState(false);
     const [scannedOrder, setScannedOrder] = useState(null);
     const [scanError, setScanError] = useState('');
+
+    // Social Media State
+    const [newSocialPlatform, setNewSocialPlatform] = useState('instagram');
+    const [newSocialUsername, setNewSocialUsername] = useState('');
+    const [newSocialUrl, setNewSocialUrl] = useState('');
 
     const isDark = theme === 'dark';
     const cardClass = isDark ? 'bg-zinc-900/80 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm';
@@ -142,6 +149,7 @@ export default function AdminPanel() {
         { key: 'extras', label: 'Ekstralar', icon: <Plus size={12} /> },
         { key: 'membership', label: 'Üyelik', icon: <Crown size={12} /> },
         { key: 'orders', label: 'Siparişler', icon: <QrCode size={12} /> },
+        { key: 'social', label: 'Sosyal Medya', icon: <Share2 size={12} /> },
     ];
 
     const baristaSections = [
@@ -529,6 +537,107 @@ export default function AdminPanel() {
                             <button onClick={() => { alert(editingProduct ? 'Ürün güncellendi!' : 'Ürün eklendi!'); setShowForm(false); }}
                                 className="flex-1 py-3.5 rounded-xl font-bold text-[12px] bg-shaco-red text-white shadow-lg shadow-red-500/15 active:scale-[0.97] transition">
                                 {editingProduct ? 'Güncelle' : 'Ürünü Ekle'}
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* ============ SOCIAL MEDIA ============ */}
+                {activeSection === 'social' && isAdmin && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                        <SectionLabel label="MEVCUT HESAPLAR" isDark={isDark} />
+                        {socialAccounts.length === 0 ? (
+                            <p className={`text-center text-sm py-6 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                                Henüz sosyal medya hesabı eklenmemiş.
+                            </p>
+                        ) : (
+                            <div className="space-y-2">
+                                {socialAccounts.map(account => {
+                                    const platformInfo = PLATFORM_OPTIONS.find(p => p.key === account.platform);
+                                    return (
+                                        <div key={account.id} className={`p-3.5 rounded-xl flex items-center gap-3 ${cardClass}`}>
+                                            <div
+                                                className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[11px] font-bold shrink-0"
+                                                style={{ backgroundColor: platformInfo?.color || '#666' }}
+                                            >
+                                                {platformInfo?.label?.slice(0, 2).toUpperCase() || '??'}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className={`text-[12px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                                                    {platformInfo?.label || account.platform}
+                                                </p>
+                                                <p className={`text-[10px] truncate ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{account.username}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => removeSocialAccount(account.id)}
+                                                className="text-red-500/60 hover:text-red-500 transition p-1.5"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        <SectionLabel label="YENİ HESAP EKLE" isDark={isDark} />
+                        <div className={`p-4 rounded-xl space-y-3 ${cardClass}`}>
+                            <FormField label="PLATFORM" isDark={isDark}>
+                                <select
+                                    value={newSocialPlatform}
+                                    onChange={(e) => {
+                                        setNewSocialPlatform(e.target.value);
+                                        const plat = PLATFORM_OPTIONS.find(p => p.key === e.target.value);
+                                        if (plat && newSocialUsername) {
+                                            setNewSocialUrl(plat.urlPrefix + newSocialUsername.replace('@', ''));
+                                        }
+                                    }}
+                                    className={`w-full px-3 py-2.5 rounded-xl border text-[12px] font-semibold ${inputClass}`}
+                                >
+                                    {PLATFORM_OPTIONS.map(p => (
+                                        <option key={p.key} value={p.key}>{p.label}</option>
+                                    ))}
+                                </select>
+                            </FormField>
+
+                            <FormField label="KULLANICI ADI" isDark={isDark}>
+                                <input
+                                    type="text"
+                                    value={newSocialUsername}
+                                    onChange={(e) => {
+                                        setNewSocialUsername(e.target.value);
+                                        const plat = PLATFORM_OPTIONS.find(p => p.key === newSocialPlatform);
+                                        if (plat) {
+                                            setNewSocialUrl(plat.urlPrefix + e.target.value.replace('@', ''));
+                                        }
+                                    }}
+                                    placeholder="@shacocoffee"
+                                    className={`w-full px-3 py-2.5 rounded-xl border text-[12px] font-semibold ${inputClass}`}
+                                />
+                            </FormField>
+
+                            <FormField label="URL" isDark={isDark}>
+                                <input
+                                    type="text"
+                                    value={newSocialUrl}
+                                    onChange={(e) => setNewSocialUrl(e.target.value)}
+                                    placeholder="https://instagram.com/shacocoffee"
+                                    className={`w-full px-3 py-2.5 rounded-xl border text-[12px] font-semibold ${inputClass}`}
+                                />
+                            </FormField>
+
+                            <button
+                                onClick={() => {
+                                    if (newSocialUsername.trim() && newSocialUrl.trim()) {
+                                        addSocialAccount(newSocialPlatform, newSocialUsername.trim(), newSocialUrl.trim());
+                                        setNewSocialUsername('');
+                                        setNewSocialUrl('');
+                                    }
+                                }}
+                                disabled={!newSocialUsername.trim() || !newSocialUrl.trim()}
+                                className="w-full py-3 rounded-xl font-bold text-[12px] bg-shaco-red text-white shadow-lg shadow-red-500/15 active:scale-[0.97] transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                <Plus size={14} /> Hesap Ekle
                             </button>
                         </div>
                     </motion.div>

@@ -19,6 +19,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ExtrasProvider } from './context/ExtrasContext';
 import { MembershipProvider } from './context/MembershipContext';
+import { SocialMediaProvider } from './context/SocialMediaContext';
 
 function AppRoutes() {
   const { user, loading, isGuest, isStaff, isBarista, isAdmin } = useAuth();
@@ -64,15 +65,17 @@ export default function App() {
           <RewardsProvider>
             <ExtrasProvider>
               <MembershipProvider>
-                <AnimatePresence mode="wait">
-                  {showIntro ? (
-                    <Intro key="intro" onComplete={() => setShowIntro(false)} />
-                  ) : (
-                    <BrowserRouter>
-                      <AppRoutes />
-                    </BrowserRouter>
-                  )}
-                </AnimatePresence>
+                <SocialMediaProvider>
+                  <AnimatePresence mode="wait">
+                    {showIntro ? (
+                      <Intro key="intro" onComplete={() => setShowIntro(false)} />
+                    ) : (
+                      <BrowserRouter>
+                        <AppRoutes />
+                      </BrowserRouter>
+                    )}
+                  </AnimatePresence>
+                </SocialMediaProvider>
               </MembershipProvider>
             </ExtrasProvider>
           </RewardsProvider>
