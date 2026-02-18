@@ -11,7 +11,7 @@ import { useSocialMedia } from '../context/SocialMediaContext';
 
 export default function Home() {
     const { stars, balance } = useRewards();
-    const { user, isGuest } = useAuth();
+    const { user, isGuest, isStaff } = useAuth();
     const { theme } = useTheme();
     const navigate = useNavigate();
     const [showHistory, setShowHistory] = useState(false);
@@ -81,7 +81,7 @@ export default function Home() {
                             {greeting}, {user?.name?.split(' ')[0] || 'Misafir'} 👋
                         </h2>
                         <p className={`text-xs mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                            Bugün ne içmek istersiniz?
+                            {isStaff ? 'Güzel bir gün, iyi çalışmalar!' : 'Bugün ne içmek istersiniz?'}
                         </p>
                     </motion.div>
                 </div>
