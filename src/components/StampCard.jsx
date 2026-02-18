@@ -26,7 +26,7 @@ export default function StampCard() {
                         </div>
                         <div className="flex-1">
                             <p className="text-emerald-400 text-[12px] font-bold">Tebrikler! 🎉</p>
-                            <p className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>1 içecek hediyeniz var!</p>
+                            <p className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Küçük boy 1 içecek hediyeniz var!</p>
                         </div>
                         <button
                             onClick={() => setFreeRewardAvailable(false)}
@@ -43,7 +43,9 @@ export default function StampCard() {
                 {/* Card Header */}
                 <div className="px-5 pt-5 pb-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img src="/images.png" alt="Shaco" className="w-8 h-8 object-contain invert" />
+                        <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center p-1 shadow-sm">
+                            <img src="/images.png" alt="Shaco" className="w-7 h-7 object-contain" />
+                        </div>
                         <div>
                             <p className="text-white text-[13px] font-bold tracking-wide">SHACO COFFEE CO.</p>
                             <p className="text-zinc-500 text-[9px] tracking-widest">SADAKAT KARTI</p>
@@ -57,8 +59,8 @@ export default function StampCard() {
                 {/* Promo Text */}
                 <div className="px-5 pb-3">
                     <p className="text-zinc-400 text-[10px] leading-relaxed">
-                        <span className="text-white font-bold">8 İçecek</span> Alana Dilediği{' '}
-                        <span className="text-shaco-red font-bold">1 İçecek Bizden Hediye!</span>
+                        <span className="text-white font-bold">8 İçecek</span> Alana{' '}
+                        <span className="text-shaco-red font-bold">Küçük Boy 1 İçecek Bizden Hediye!</span>
                     </p>
                 </div>
 
@@ -74,10 +76,10 @@ export default function StampCard() {
                                 <div
                                     key={i}
                                     className={`relative aspect-square rounded-xl flex items-center justify-center border-2 transition-all duration-300 ${isFilled
-                                            ? 'border-shaco-red/50 bg-shaco-red/10'
-                                            : isLast
-                                                ? 'border-dashed border-amber-500/30 bg-amber-500/5'
-                                                : 'border-zinc-700/50 bg-zinc-800/30'
+                                        ? 'border-shaco-red/50 bg-shaco-red/10'
+                                        : isLast
+                                            ? 'border-dashed border-amber-500/30 bg-amber-500/5'
+                                            : 'border-zinc-700/50 bg-zinc-800/30'
                                         }`}
                                 >
                                     {isFilled ? (
@@ -87,11 +89,13 @@ export default function StampCard() {
                                             transition={{ type: 'spring', stiffness: 260, damping: 15 }}
                                             className="w-full h-full flex items-center justify-center"
                                         >
-                                            <img
-                                                src="/images.png"
-                                                alt="stamp"
-                                                className="w-8 h-8 object-contain invert opacity-90"
-                                            />
+                                            <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center p-0.5">
+                                                <img
+                                                    src="/images.png"
+                                                    alt="stamp"
+                                                    className="w-7 h-7 object-contain"
+                                                />
+                                            </div>
                                         </motion.div>
                                     ) : isLast ? (
                                         <div className="flex flex-col items-center gap-0.5">
