@@ -126,6 +126,16 @@ export function RewardsProvider({ children }) {
 
             clearCart();
 
+            // Auto-dismiss order after 15 seconds
+            setTimeout(() => {
+                setOrders(prev => prev.filter(o => o.id !== newOrder.id));
+            }, 15000);
+
+            // Auto-dismiss active order QR after 20 seconds
+            setTimeout(() => {
+                setActiveOrder(prev => prev?.id === newOrder.id ? null : prev);
+            }, 20000);
+
             return newOrder;
         }
         return null;
@@ -140,6 +150,11 @@ export function RewardsProvider({ children }) {
         if (activeOrder?.code === orderCode) {
             setActiveOrder(prev => prev ? { ...prev, status: 'Onaylandı' } : null);
         }
+        // Auto-remove confirmed order after 5 seconds
+        setTimeout(() => {
+            setOrders(prev => prev.filter(o => o.code !== orderCode));
+            setActiveOrder(prev => prev?.code === orderCode ? null : prev);
+        }, 5000);
     };
 
     const cancelOrder = (orderId) => {
