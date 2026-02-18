@@ -20,7 +20,7 @@ export default function ActiveOrders() {
                             className="glass-dark p-4 rounded-2xl border border-white/5 shadow-2xl backdrop-blur-xl relative overflow-hidden"
                         >
                             {/* Status Bar */}
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${order.status === 'Ready' ? 'bg-green-500' : 'bg-shaco-red animate-pulse'}`} />
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${order.status === 'Onaylandı' ? 'bg-green-500' : 'bg-shaco-red animate-pulse'}`} />
 
                             <div className="flex justify-between items-center pl-3">
                                 <div>

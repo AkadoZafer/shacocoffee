@@ -6,6 +6,7 @@ import { Star, History, Coffee, X, QrCode, Gift, Store, Wallet, ChevronRight, Ar
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { products } from '../data/products';
+import StampCard from '../components/StampCard';
 
 export default function Home() {
     const { stars, balance } = useRewards();
@@ -150,8 +151,15 @@ export default function Home() {
                     </motion.div>
                 )}
 
+                {/* Stamp Card - Only for registered users */}
+                {!isGuest && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-6">
+                        <StampCard />
+                    </motion.div>
+                )}
+
                 {/* Quick Actions */}
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex gap-2 mb-7 overflow-x-auto no-scrollbar">
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2 mb-7 overflow-x-auto no-scrollbar">
                     <QuickPill icon={<QrCode size={15} />} label="QR Öde" onClick={() => navigate('/pay')} isDark={isDark} />
                     <QuickPill icon={<Wallet size={15} />} label="Bakiye Yükle" onClick={() => navigate('/wallet')} isDark={isDark} />
                     <QuickPill icon={<Store size={15} />} label="Mağazalar" onClick={() => navigate('/stores')} isDark={isDark} />

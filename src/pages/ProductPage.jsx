@@ -124,10 +124,26 @@ export default function ProductPage() {
                         </div>
                     </div>
                     <div className="text-right flex-shrink-0 ml-4">
-                        <span className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{totalPrice}</span>
-                        {(extrasPrice + sizePrice) > 0 && (
-                            <p className="text-[10px] text-shaco-red font-bold mt-0.5">+₺{(extrasPrice + sizePrice) * quantity} ekstra</p>
-                        )}
+                        <motion.span
+                            key={totalPrice}
+                            initial={{ y: -8, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            className={`text-2xl font-bold inline-block ${isDark ? 'text-white' : 'text-zinc-900'}`}
+                        >
+                            ₺{totalPrice}
+                        </motion.span>
+                        <AnimatePresence>
+                            {(extrasPrice + sizePrice) > 0 && (
+                                <motion.p
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="text-[10px] text-shaco-red font-bold mt-0.5"
+                                >
+                                    +₺{(extrasPrice + sizePrice) * quantity} ekstra
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
@@ -142,21 +158,29 @@ export default function ProductPage() {
                         <SectionLabel label="BOY" isDark={isDark} />
                         <div className="flex gap-2 mb-6">
                             {sizes.map((s) => (
-                                <button
+                                <motion.button
                                     key={s.key}
                                     onClick={() => setSelectedSize(s.key)}
-                                    className={`flex-1 py-3 rounded-xl text-center transition active:scale-95 ${selectedSize === s.key
-                                        ? 'bg-shaco-red text-white'
+                                    whileTap={{ scale: 0.93 }}
+                                    animate={selectedSize === s.key ? { scale: [1, 1.05, 1] } : {}}
+                                    transition={{ duration: 0.25 }}
+                                    className={`flex-1 py-3 rounded-xl text-center transition-colors duration-200 ${selectedSize === s.key
+                                        ? 'bg-shaco-red text-white shadow-lg shadow-red-500/15'
                                         : isDark
                                             ? 'bg-zinc-900 border border-zinc-800 text-zinc-400'
                                             : 'bg-white border border-zinc-200 text-zinc-600'
                                         }`}
                                 >
                                     <p className="text-[12px] font-bold">{s.label}</p>
-                                    <p className={`text-[10px] mt-0.5 ${selectedSize === s.key ? 'text-white/70' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                                    <motion.p
+                                        key={`${s.key}-${selectedSize}`}
+                                        initial={selectedSize === s.key ? { y: 3, opacity: 0 } : false}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        className={`text-[10px] mt-0.5 ${selectedSize === s.key ? 'text-white/70' : isDark ? 'text-zinc-600' : 'text-zinc-400'}`}
+                                    >
                                         {s.ml}{s.priceMod > 0 ? ` +₺${s.priceMod}` : ''}
-                                    </p>
-                                </button>
+                                    </motion.p>
+                                </motion.button>
                             ))}
                         </div>
                     </>
@@ -167,13 +191,17 @@ export default function ProductPage() {
                     <>
                         <SectionLabel label={`EKSTRALAR${selectedCount > 0 ? ` (${selectedCount})` : ''}`} isDark={isDark} />
                         <div className="space-y-1.5 mb-6">
-                            {extras.map((extra) => {
+                            {extras.map((extra, i) => {
                                 const isSelected = selectedExtras[String(extra.id)];
                                 return (
-                                    <button
+                                    <motion.button
                                         key={extra.id}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.04 }}
+                                        whileTap={{ scale: 0.97 }}
                                         onClick={() => toggleExtra(extra.id)}
-                                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition active:scale-[0.98] ${isSelected
+                                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors duration-200 ${isSelected
                                             ? isDark
                                                 ? 'bg-shaco-red/10 border border-shaco-red/30'
                                                 : 'bg-red-50 border border-red-200'
@@ -182,12 +210,15 @@ export default function ProductPage() {
                                                 : 'bg-white border border-zinc-200 hover:border-zinc-300'
                                             }`}
                                     >
-                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected
-                                            ? 'bg-shaco-red text-white'
-                                            : isDark ? 'bg-zinc-800 text-zinc-600' : 'bg-zinc-100 text-zinc-400'
-                                            }`}>
+                                        <motion.div
+                                            animate={{ rotate: isSelected ? 360 : 0, scale: isSelected ? 1.1 : 1 }}
+                                            transition={{ duration: 0.3 }}
+                                            className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected
+                                                ? 'bg-shaco-red text-white'
+                                                : isDark ? 'bg-zinc-800 text-zinc-600' : 'bg-zinc-100 text-zinc-400'
+                                                }`}>
                                             {isSelected ? <Check size={13} /> : <Plus size={13} />}
-                                        </div>
+                                        </motion.div>
                                         <span className={`flex-1 text-[12px] font-semibold text-left ${isSelected ? 'text-shaco-red' : isDark ? 'text-zinc-300' : 'text-zinc-700'
                                             }`}>
                                             {extra.label}
@@ -196,7 +227,7 @@ export default function ProductPage() {
                                             }`}>
                                             +₺{extra.price}
                                         </span>
-                                    </button>
+                                    </motion.button>
                                 );
                             })}
                         </div>

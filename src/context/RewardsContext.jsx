@@ -14,7 +14,17 @@ export function RewardsProvider({ children }) {
     const [balance, setBalance] = useState(150);
     const [transactions, setTransactions] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [activeOrder, setActiveOrder] = useState(null); // Current order waiting for barista
+    const [activeOrder, setActiveOrder] = useState(null);
+
+    // Stamp card: 0-8, at 8 = free drink
+    const [stampCount, setStampCount] = useState(() => {
+        const saved = localStorage.getItem('shaco_stamps');
+        return saved ? parseInt(saved) : 0;
+    });
+    const [stampJustEarned, setStampJustEarned] = useState(false);
+    const [freeRewardAvailable, setFreeRewardAvailable] = useState(() => {
+        return localStorage.getItem('shaco_free_reward') === 'true';
+    });
 
     const [cart, setCart] = useState(() => {
         const saved = localStorage.getItem('shaco_cart');
@@ -24,6 +34,14 @@ export function RewardsProvider({ children }) {
     useEffect(() => {
         localStorage.setItem('shaco_cart', JSON.stringify(cart));
     }, [cart]);
+
+    useEffect(() => {
+        localStorage.setItem('shaco_stamps', String(stampCount));
+    }, [stampCount]);
+
+    useEffect(() => {
+        localStorage.setItem('shaco_free_reward', String(freeRewardAvailable));
+    }, [freeRewardAvailable]);
 
     const addStar = (amount) => {
         setStars(prev => prev + amount);
@@ -93,6 +111,19 @@ export function RewardsProvider({ children }) {
             setOrders(prev => [newOrder, ...prev]);
             setActiveOrder(newOrder);
             addStar(cart.length * 5);
+
+            // Stamp card: add 1 stamp per checkout
+            setStampCount(prev => {
+                const next = prev + 1;
+                if (next >= 8) {
+                    setFreeRewardAvailable(true);
+                    return 0; // Reset card
+                }
+                setStampJustEarned(true);
+                setTimeout(() => setStampJustEarned(false), 2000);
+                return next;
+            });
+
             clearCart();
 
             return newOrder;
@@ -141,6 +172,10 @@ export function RewardsProvider({ children }) {
             confirmOrder,
             cancelOrder,
             cart,
+            stampCount,
+            stampJustEarned,
+            freeRewardAvailable,
+            setFreeRewardAvailable,
         }}>
             {children}
         </RewardsContext.Provider>
