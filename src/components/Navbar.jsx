@@ -9,7 +9,7 @@ export default function Navbar() {
     const { user, isStaff, isBarista, isAdmin } = useAuth();
     const isActive = (path) => location.pathname === path;
 
-    // Staff navbar: Panel (home), QR Oku, Profil
+    // Staff navbar: Ana Sayfa, Yönetici Panel, Profil
     if (isStaff) {
         return (
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-6">
@@ -17,15 +17,15 @@ export default function Navbar() {
                     ? 'bg-zinc-900/95 border-zinc-800'
                     : 'bg-white/95 border-zinc-200'
                     }`}>
-                    <NavLink to="/" icon={<ClipboardList size={20} />} label="Panel" active={isActive('/')} theme={theme} />
+                    <NavLink to="/" icon={<Home size={20} />} label="Ana Sayfa" active={isActive('/')} theme={theme} />
 
-                    {/* Center Highlight Button - QR */}
-                    <Link to="/pay" className="relative -mt-6">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${isActive('/pay')
+                    {/* Center Highlight Button - Admin Panel */}
+                    <Link to="/admin" className="relative -mt-6">
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${isActive('/admin')
                             ? 'bg-shaco-red text-white shadow-red-500/30'
                             : 'bg-shaco-red text-white hover:shadow-red-500/40 hover:scale-105'
                             }`}>
-                            <QrCode size={22} />
+                            <Shield size={22} />
                         </div>
                     </Link>
 

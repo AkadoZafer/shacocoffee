@@ -36,8 +36,8 @@ function AppRoutes() {
 
         {/* Main app - always accessible (guest or logged in) */}
         <Route path="/" element={<Layout />}>
-          {/* Home route - shows AdminPanel for staff, Home for others */}
-          <Route path="/" element={isStaff ? <AdminPanel /> : <Home />} />
+          {/* Home route - always Home for everyone, admin panel at /admin */}
+          <Route path="/" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/pay" element={<Pay />} />
           <Route path="wallet" element={<Wallet />} />
