@@ -1,4 +1,12 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { auth, db } from '../firebase';
+import {
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
@@ -13,97 +21,125 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('shaco_user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            // Default: guest user
-            setUser({ name: 'Misafir', role: 'guest', avatar: null });
-        }
-        setLoading(false);
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+            if (firebaseUser) {
+                // Fetch user data from Firestore
+                try {
+                    const docRef = doc(db, 'users', firebaseUser.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        setUser({ uid: firebaseUser.uid, ...docSnap.data() });
+                    } else {
+                        // Check if it's a staff account
+                        const staff = STAFF_ACCOUNTS.find(a => a.email.toLowerCase() === firebaseUser.email.toLowerCase());
+                        if (staff) {
+                            const staffData = { name: staff.name, role: staff.role, email: staff.email, avatar: null, joined: new Date().toISOString() };
+                            await setDoc(docRef, staffData);
+                            setUser({ uid: firebaseUser.uid, ...staffData });
+                        } else {
+                            // Fallback
+                            setUser({ uid: firebaseUser.uid, email: firebaseUser.email, role: 'customer', name: 'Müşteri' });
+                        }
+                    }
+                } catch (error) {
+                    console.error("Kullanıcı verisi çekilemedi:", error);
+                    setUser({ name: 'Misafir', role: 'guest', avatar: null });
+                }
+            } else {
+                setUser({ name: 'Misafir', role: 'guest', avatar: null });
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
 
-    // Login with email + password (staff) or name + password (customer)
-    const login = (emailOrName, password) => {
-        // Check staff accounts first
-        const staff = STAFF_ACCOUNTS.find(
-            a => a.email.toLowerCase() === emailOrName.toLowerCase() && a.password === password
-        );
-        if (staff) {
-            const newUser = { name: staff.name, role: staff.role, email: staff.email, avatar: null, joined: new Date().toISOString() };
-            setUser(newUser);
-            localStorage.setItem('shaco_user', JSON.stringify(newUser));
-            return { success: true, role: staff.role };
-        }
+    // Login with email + password
+    const login = async (emailOrName, password) => {
+        try {
+            // First check if the user is trying to login as staff with short emails
+            let loginEmail = emailOrName;
 
-        // Check registered customers from localStorage
-        const customers = JSON.parse(localStorage.getItem('shaco_customers') || '[]');
-        const customer = customers.find(
-            c => (c.email.toLowerCase() === emailOrName.toLowerCase() || c.phone === emailOrName) && c.password === password
-        );
-        if (customer) {
-            const newUser = {
-                name: `${customer.firstName} ${customer.lastName}`,
-                role: 'customer',
-                email: customer.email,
-                phone: customer.phone,
-                avatar: customer.avatar || null,
-                joined: customer.joined,
-            };
-            setUser(newUser);
-            localStorage.setItem('shaco_user', JSON.stringify(newUser));
-            return { success: true, role: 'customer' };
-        }
+            // Allow phone number or short name logins if needed by finding email? 
+            // Firebase Auth requires email. For now, assume email is provided.
 
-        return { success: false, error: 'E-posta veya şifre hatalı' };
+            await signInWithEmailAndPassword(auth, loginEmail, password);
+            return { success: true };
+        } catch (error) {
+            let errorMsg = 'E-posta veya şifre hatalı';
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                errorMsg = 'E-posta veya şifre hatalı';
+            } else if (error.code === 'auth/invalid-email') {
+                errorMsg = 'Geçersiz e-posta adresi';
+            }
+            return { success: false, error: errorMsg };
+        }
     };
 
     // Register new customer
-    const register = ({ firstName, lastName, phone, email, password }) => {
-        const customers = JSON.parse(localStorage.getItem('shaco_customers') || '[]');
+    const register = async ({ firstName, lastName, phone, email, password }) => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const newUser = userCredential.user;
 
-        // Check if email already exists
-        if (customers.find(c => c.email.toLowerCase() === email.toLowerCase())) {
-            return { success: false, error: 'Bu e-posta adresi zaten kayıtlı' };
+            const userData = {
+                firstName,
+                lastName,
+                name: `${firstName} ${lastName}`,
+                phone,
+                email,
+                role: 'customer',
+                avatar: null,
+                joined: new Date().toISOString()
+            };
+
+            // Save extra data to Firestore
+            await setDoc(doc(db, 'users', newUser.uid), userData);
+
+            return { success: true };
+        } catch (error) {
+            console.error('Firebase Auth Error:', error);
+            let errorMsg = 'Kayıt olurken bir hata oluştu';
+            if (error.code === 'auth/email-already-in-use') {
+                errorMsg = 'Bu e-posta adresi zaten kullanımda';
+            } else if (error.code === 'auth/weak-password') {
+                errorMsg = 'Şifre çok zayıf, en az 6 karakter olmalı';
+            } else if (error.code === 'auth/operation-not-allowed') {
+                errorMsg = 'E-posta/Şifre girişi Firebase panosunda yetkisiz.';
+            } else {
+                errorMsg = `Hata: ${error.message}`;
+            }
+            return { success: false, error: errorMsg };
         }
-
-        const newCustomer = {
-            id: Date.now(),
-            firstName,
-            lastName,
-            phone,
-            email,
-            password,
-            avatar: null,
-            joined: new Date().toISOString(),
-        };
-        customers.push(newCustomer);
-        localStorage.setItem('shaco_customers', JSON.stringify(customers));
-
-        // Auto-login after registration
-        const newUser = {
-            name: `${firstName} ${lastName}`,
-            role: 'customer',
-            email,
-            phone,
-            avatar: null,
-            joined: newCustomer.joined,
-        };
-        setUser(newUser);
-        localStorage.setItem('shaco_user', JSON.stringify(newUser));
-        return { success: true };
     };
 
-    const logout = () => {
-        localStorage.removeItem('shaco_user');
-        // Back to guest
-        setUser({ name: 'Misafir', role: 'guest', avatar: null });
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            setUser({ name: 'Misafir', role: 'guest', avatar: null });
+        } catch (error) {
+            console.error("Çıkış yapılırken hata:", error);
+        }
     };
 
-    const updateProfile = (updates) => {
-        const updatedUser = { ...user, ...updates };
-        setUser(updatedUser);
-        localStorage.setItem('shaco_user', JSON.stringify(updatedUser));
+    const updateProfile = async (updates) => {
+        if (!user || user.role === 'guest' || !user.uid) return;
+
+        try {
+            const userRef = doc(db, 'users', user.uid);
+
+            let finalUpdates = { ...updates };
+            if (updates.name) {
+                const parts = updates.name.split(' ');
+                finalUpdates.firstName = parts[0];
+                finalUpdates.lastName = parts.slice(1).join(' ');
+            }
+
+            await updateDoc(userRef, finalUpdates);
+            setUser(prev => ({ ...prev, ...finalUpdates }));
+        } catch (error) {
+            console.error("Profil güncellenemedi:", error);
+        }
     };
 
     const updateAvatar = (avatarDataUrl) => {

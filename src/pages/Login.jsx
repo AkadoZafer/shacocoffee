@@ -13,14 +13,14 @@ export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         if (!email.trim()) { setError('E-posta veya telefon gerekli'); return; }
         if (!password.trim()) { setError('Şifre gerekli'); return; }
         if (password.length < 4) { setError('Şifre en az 4 karakter olmalı'); return; }
 
-        const result = login(email, password);
+        const result = await login(email, password);
         if (result.success) {
             navigate('/');
         } else {
@@ -56,7 +56,7 @@ export default function Login() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="E-posta veya telefon"
-                            className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-sm"
+                            className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-base"
                         />
 
                         <div className="relative">
@@ -65,7 +65,7 @@ export default function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Şifre"
-                                className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-sm"
+                                className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-base"
                             />
                             <button type="button" onClick={() => setShowPass(!showPass)}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition">
@@ -74,14 +74,14 @@ export default function Login() {
                         </div>
 
                         {error && (
-                            <p className="text-red-400 text-[11px] font-bold animate-pulse">{error}</p>
+                            <p className="text-red-400 text-[15px] font-bold animate-pulse">{error}</p>
                         )}
 
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
-                            className="w-full bg-shaco-red text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-500 transition text-sm"
+                            className="w-full bg-shaco-red text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-500 transition text-base"
                         >
                             Giriş Yap
                         </motion.button>
@@ -89,7 +89,7 @@ export default function Login() {
                         <button
                             type="button"
                             onClick={() => navigate('/register')}
-                            className="w-full text-zinc-500 text-[12px] font-bold hover:text-shaco-red transition py-2"
+                            className="w-full text-zinc-500 text-base font-bold hover:text-shaco-red transition py-2"
                         >
                             Hesabın yok mu? <span className="text-shaco-red underline">Kayıt Ol</span>
                         </button>
@@ -97,11 +97,11 @@ export default function Login() {
 
                     {/* Staff hint */}
                     <div className="mt-4 pt-4 border-t border-zinc-800/50">
-                        <p className="text-zinc-700 text-[9px] font-mono">Personel: admin@shaco.com / barista@shaco.com</p>
+                        <p className="text-zinc-700 text-[15px] font-mono">Personel: admin@shaco.com / barista@shaco.com</p>
                     </div>
                 </div>
 
-                <p className="text-zinc-600 text-xs text-center mt-6 font-mono">EST. 2024</p>
+                <p className="text-zinc-600 text-base text-center mt-6 font-mono">EST. 2024</p>
             </motion.div>
         </div>
     );

@@ -149,7 +149,7 @@ export default function Pay() {
                                 <button onClick={(e) => { e.stopPropagation(); stopCamera(); }} className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white">
                                     <X size={20} />
                                 </button>
-                                <p className="absolute bottom-8 left-0 right-0 text-center text-white text-xs font-bold animate-pulse">QR KOD ARANIYOR...</p>
+                                <p className="absolute bottom-8 left-0 right-0 text-center text-white text-base font-bold animate-pulse">QR KOD ARANIYOR...</p>
                             </div>
                         ) : (
                             <>
@@ -169,7 +169,7 @@ export default function Pay() {
                                     />
                                 </div>
 
-                                <p className="mt-4 text-zinc-500 dark:text-zinc-500 font-mono text-[10px] tracking-widest transform translate-z-[10px] flex items-center gap-2">
+                                <p className="mt-4 text-zinc-500 dark:text-zinc-500 font-mono text-base tracking-widest transform translate-z-[10px] flex items-center gap-2">
                                     <Camera size={14} /> TARATMAK İÇİN DOKUN
                                 </p>
                             </>
@@ -182,7 +182,7 @@ export default function Pay() {
             <div className="mt-12 flex flex-col items-center">
                 <div className={`border px-4 py-2 rounded-full flex items-center gap-3 shadow-md ${theme === 'dark' ? 'glass-panel border-transparent text-white' : 'bg-white border-zinc-200 text-zinc-900'}`}>
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className={`font-mono text-xs tracking-widest ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                    <span className={`font-mono text-base tracking-widest ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}`}>
                         YENİLENME: 00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
                     </span>
                 </div>
@@ -191,7 +191,7 @@ export default function Pay() {
             {/* Balance Display */}
             <div className="mt-8 text-center w-full">
                 <div className={`border-t pt-6 ${theme === 'dark' ? 'border-zinc-800' : 'border-zinc-200'}`}>
-                    <p className="text-zinc-500 font-display uppercase tracking-[0.3em] text-xs mb-2">Kullanılabilir Bakiye</p>
+                    <p className="text-zinc-500 font-display uppercase tracking-[0.3em] text-base mb-2">Kullanılabilir Bakiye</p>
                     <h3 className={`text-6xl font-display font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>
                         <span className="text-3xl align-top text-shaco-red mr-1">₺</span>
                         {balance.toFixed(2)}

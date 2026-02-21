@@ -1,13 +1,15 @@
 import { useTheme } from '../context/ThemeContext';
-import { MapPin, Navigation, Phone, Clock, Star } from 'lucide-react';
+import { MapPin, Navigation, Phone, Clock, Star, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const stores = [
     {
         id: 1,
         name: "Shaco Coffee - Meram",
         address: "Melikşah, Melikşah Cd. NO:121/A, 42090 Meram/Konya",
-        distance: "Merkez",
+        lat: 37.8560,
+        lng: 32.4380,
         rating: 5.0,
         image: "/store-meram.jpg",
         status: "Açık",
@@ -16,14 +18,66 @@ const stores = [
     }
 ];
 
+// Haversine formula to calculate distance between two points
+function getDistanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
 export default function Stores() {
     const { theme } = useTheme();
+    const [userLocation, setUserLocation] = useState(null);
+    const [locationError, setLocationError] = useState(null);
+    const [loadingLocation, setLoadingLocation] = useState(true);
+
+    useEffect(() => {
+        if (!navigator.geolocation) {
+            setLocationError('Konum desteklenmiyor');
+            setLoadingLocation(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+                setLoadingLocation(false);
+            },
+            (error) => {
+                if (error.code === error.PERMISSION_DENIED) {
+                    setLocationError('Konum izni kapalı');
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    setLocationError('Konum alınamadı');
+                } else {
+                    setLocationError('Konum zaman aşımı');
+                }
+                setLoadingLocation(false);
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        );
+    }, []);
+
+    const getDistance = (store) => {
+        if (loadingLocation) return null;
+        if (!userLocation) return locationError || 'Konum kapalı';
+        const dist = getDistanceKm(userLocation.lat, userLocation.lng, store.lat, store.lng);
+        if (dist < 1) return `${Math.round(dist * 1000)} m`;
+        return `${dist.toFixed(1)} km`;
+    };
 
     return (
         <div className={`min-h-screen p-6 pb-32 transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
             <header className="mb-8">
                 <h1 className="text-3xl font-display font-bold uppercase mb-2">Mağazalar</h1>
-                <p className={`text-sm ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>En yakın kahve noktalarımız</p>
+                <p className={`text-base ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>En yakın kahve noktalarımız</p>
             </header>
 
             <div className="space-y-6">
@@ -37,7 +91,7 @@ export default function Stores() {
                     >
                         <div className="h-40 relative">
                             <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
-                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-zinc-900 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-zinc-900 text-base font-bold px-3 py-1 rounded-full flex items-center gap-1">
                                 <Star size={12} className="text-yellow-500 fill-yellow-500" />
                                 {store.rating} <span className="text-zinc-500 font-normal">(138)</span>
                             </div>
@@ -46,12 +100,18 @@ export default function Stores() {
                         <div className="p-5">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-bold font-display text-lg">{store.name}</h3>
-                                <span className="text-shaco-red font-bold text-sm bg-shaco-red/10 px-2 py-1 rounded-lg">{store.distance}</span>
+                                <span className="text-shaco-red font-bold text-base bg-shaco-red/10 px-2 py-1 rounded-lg flex items-center gap-1">
+                                    {loadingLocation ? (
+                                        <><Loader size={12} className="animate-spin" /> Hesaplanıyor</>
+                                    ) : (
+                                        <><MapPin size={12} /> {getDistance(store)}</>
+                                    )}
+                                </span>
                             </div>
 
                             <div className="flex items-start gap-2 mb-6">
                                 <MapPin size={16} className="text-zinc-400 mt-1 shrink-0" />
-                                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                                <p className={`text-base leading-relaxed ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>
                                     {store.address}
                                 </p>
                             </div>
@@ -61,7 +121,7 @@ export default function Stores() {
                                     href={store.mapUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
+                                    className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
                                 >
                                     <Navigation size={16} />
                                     Yol Tarifi

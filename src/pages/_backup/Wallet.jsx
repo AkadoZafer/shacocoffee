@@ -20,7 +20,7 @@ export default function Wallet() {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-shaco-red/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-shaco-red/15 transition duration-700" />
 
                 <div className="relative z-10">
-                    <p className="text-zinc-400 font-display uppercase tracking-widest text-xs mb-2">TOPLAM BAKİYE</p>
+                    <p className="text-zinc-400 font-display uppercase tracking-widest text-base mb-2">TOPLAM BAKİYE</p>
                     <div className="flex items-baseline gap-1">
                         <span className="text-3xl text-shaco-red font-bold">₺</span>
                         <h2 className="text-6xl font-display font-bold text-white tracking-tighter">{balance.toFixed(2)}</h2>
@@ -37,7 +37,7 @@ export default function Wallet() {
 
             {/* Payment Methods */}
             <div className="flex justify-between items-center mb-6">
-                <h3 className="text-zinc-500 font-display uppercase tracking-widest text-sm">Kartlarım</h3>
+                <h3 className="text-zinc-500 font-display uppercase tracking-widest text-base">Kartlarım</h3>
                 <button className="text-shaco-red hover:text-red-400 transition" aria-label="Add Card">
                     <Plus size={24} />
                 </button>
@@ -51,14 +51,14 @@ export default function Wallet() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
 
                     {/* Chip / Brand */}
-                    <div className="w-12 h-8 bg-gradient-to-br from-yellow-200 to-yellow-500 rounded flex items-center justify-center text-black font-bold italic text-[10px] border border-yellow-600 shadow-sm relative overflow-hidden">
+                    <div className="w-12 h-8 bg-gradient-to-br from-yellow-200 to-yellow-500 rounded flex items-center justify-center text-black font-bold italic text-base border border-yellow-600 shadow-sm relative overflow-hidden">
                         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/circuit-board.png')] opacity-20" />
                         CHIP
                     </div>
 
                     <div className="flex-1 relative z-10">
                         <p className="font-display font-bold text-white tracking-widest text-lg drop-shadow-md">•••• 4242</p>
-                        <p className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase mt-1">Expiry 12/28</p>
+                        <p className="text-base text-zinc-400 font-mono tracking-widest uppercase mt-1">Expiry 12/28</p>
                     </div>
 
                     {/* Status Light */}
@@ -67,12 +67,12 @@ export default function Wallet() {
 
                 {/* Mastercard (Dark + Red Accent) */}
                 <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/5 p-6 rounded-2xl flex items-center gap-5 hover:border-red-500/30 transition-all duration-300 cursor-pointer group opacity-70 hover:opacity-100 shadow-md hover:shadow-xl">
-                    <div className="w-12 h-8 bg-zinc-800 rounded flex items-center justify-center text-white font-bold italic text-xs border border-zinc-700">
+                    <div className="w-12 h-8 bg-zinc-800 rounded flex items-center justify-center text-white font-bold italic text-base border border-zinc-700">
                         MC
                     </div>
                     <div className="flex-1">
                         <p className="font-display font-bold text-zinc-300 group-hover:text-white transition tracking-widest text-lg">•••• 8831</p>
-                        <p className="text-[10px] text-zinc-600 font-mono tracking-widest uppercase mt-1">Expiry 09/25</p>
+                        <p className="text-base text-zinc-600 font-mono tracking-widest uppercase mt-1">Expiry 09/25</p>
                     </div>
                     <div className="w-3 h-3 rounded-full border border-zinc-600 group-hover:border-shaco-red group-hover:bg-shaco-red transition" />
                 </div>

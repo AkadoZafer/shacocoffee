@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import ActiveOrders from './ActiveOrders';
 import { useTheme } from '../context/ThemeContext';
+import { Coffee } from 'lucide-react';
 
 export default function Layout() {
     const { theme } = useTheme();
@@ -14,14 +15,11 @@ export default function Layout() {
                 {/* Ambient Background Glow */}
                 <div className={`absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-shaco-red/10 to-transparent pointer-events-none transition-opacity duration-300 ${theme === 'dark' ? 'opacity-100' : 'opacity-50'}`} />
 
-
-
-
-                <main className="flex-1 overflow-y-auto pb-32 scrollbar-hide">
+                <main className="flex-1 overflow-y-auto pb-32 scrollbar-hide relative z-10">
                     <Outlet />
                 </main>
 
-                <ActiveOrders />
+
                 <Navbar />
             </div>
         </div>

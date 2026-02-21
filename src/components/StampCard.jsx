@@ -25,12 +25,12 @@ export default function StampCard() {
                             <Gift size={18} />
                         </div>
                         <div className="flex-1">
-                            <p className="text-emerald-500 text-[12px] font-bold">Tebrikler! 🎉</p>
-                            <p className={`text-[10px] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Küçük boy 1 içecek hediyeniz var!</p>
+                            <p className="text-emerald-500 text-base font-bold">Tebrikler! 🎉</p>
+                            <p className={`text-base ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Küçük boy 1 içecek hediyeniz var!</p>
                         </div>
                         <button
                             onClick={() => setFreeRewardAvailable(false)}
-                            className="text-[10px] font-bold text-emerald-500 bg-emerald-500/15 px-3 py-1.5 rounded-lg"
+                            className="text-base font-bold text-emerald-500 bg-emerald-500/15 px-3 py-1.5 rounded-lg"
                         >
                             Kullan
                         </button>
@@ -47,18 +47,18 @@ export default function StampCard() {
                             <img src="/images.png" alt="Shaco" className="w-7 h-7 object-contain" />
                         </div>
                         <div>
-                            <p className={`text-[13px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO COFFEE CO.</p>
-                            <p className={`text-[9px] tracking-widest ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>SADAKAT KARTI</p>
+                            <p className={`text-[15px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO COFFEE CO.</p>
+                            <p className={`text-[15px] tracking-widest ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>SADAKAT KARTI</p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <span className="text-shaco-red text-[11px] font-bold">{stampCount}/8</span>
+                        <span className="text-shaco-red text-[15px] font-bold">{stampCount}/8</span>
                     </div>
                 </div>
 
                 {/* Promo Text */}
                 <div className="px-5 pb-3">
-                    <p className={`text-[10px] leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                    <p className={`text-base leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                         <span className={`font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>8 İçecek</span> Alana{' '}
                         <span className="text-shaco-red font-bold">Küçük Boy 1 İçecek Bizden Hediye!</span>
                     </p>

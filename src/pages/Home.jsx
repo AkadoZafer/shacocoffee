@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { products } from '../data/products';
 import StampCard from '../components/StampCard';
+import LazyImage from '../components/LazyImage';
 import { useSocialMedia } from '../context/SocialMediaContext';
 
 export default function Home() {
@@ -49,15 +50,20 @@ export default function Home() {
                 <div className="p-6 pt-10 relative z-10">
                     {/* Header row: Brand + Avatar */}
                     <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-start mb-8">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-shaco-red" />
-                                <span className={`text-[10px] font-bold tracking-[0.25em] uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                    Premium Coffee
-                                </span>
+                        <div className="flex items-center gap-4">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-shaco-red" />
+                                    <span className={`text-base font-bold tracking-[0.25em] uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                        Premium Coffee
+                                    </span>
+                                </div>
+                                <h1 className={`text-3xl font-display font-black uppercase tracking-tight leading-none ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO</h1>
+                                <p className="text-shaco-red font-display text-base tracking-[0.3em] font-bold uppercase -mt-0.5">COFFEE CO.</p>
                             </div>
-                            <h1 className={`text-3xl font-display font-black uppercase tracking-tight leading-none ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO</h1>
-                            <p className="text-shaco-red font-display text-sm tracking-[0.3em] font-bold uppercase -mt-0.5">COFFEE CO.</p>
+                            <div className={`p-2 rounded-2xl shadow-sm flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50' : 'bg-gradient-to-br from-white to-red-50 border border-red-100'}`}>
+                                <img src="/images.png" alt="Shaco Logo" className="w-8 h-8 object-contain drop-shadow-md" />
+                            </div>
                         </div>
                         <button
                             onClick={() => navigate('/settings')}
@@ -80,7 +86,7 @@ export default function Home() {
                         <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
                             {greeting}, {user?.name?.split(' ')[0] || 'Misafir'} 👋
                         </h2>
-                        <p className={`text-xs mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                        <p className={`text-base mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
                             {isStaff ? 'Güzel bir gün, iyi çalışmalar!' : 'Bugün ne içmek istersiniz?'}
                         </p>
                     </motion.div>
@@ -98,19 +104,19 @@ export default function Home() {
                         <div className="absolute top-0 right-0 w-24 h-24 bg-shaco-red/10 rounded-full blur-2xl -translate-y-6 translate-x-6" />
                         <div className="relative z-10">
                             <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-[10px] font-bold tracking-[0.15em] px-2 py-0.5 rounded-md ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>MİSAFİR KULLANICI</span>
+                                <span className={`text-base font-bold tracking-[0.15em] px-2 py-0.5 rounded-md ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>MİSAFİR KULLANICI</span>
                             </div>
                             <h3 className={`text-[15px] font-bold mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Shaco Ailesine Katılın!</h3>
-                            <p className={`text-[12px] mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                            <p className={`text-base mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
                                 Kayıt olun, yıldız kazanın ve özel fırsatlardan yararlanın.
                             </p>
                             <div className="flex gap-2">
                                 <button onClick={() => navigate('/register')}
-                                    className="flex-1 py-3 rounded-xl bg-shaco-red text-white font-bold text-[12px] flex items-center justify-center gap-2 shadow-lg shadow-red-500/15 active:scale-[0.97] transition">
+                                    className="flex-1 py-3 rounded-xl bg-shaco-red text-white font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-red-500/15 active:scale-[0.97] transition">
                                     <UserPlus size={14} /> Kayıt Ol
                                 </button>
                                 <button onClick={() => navigate('/login')}
-                                    className={`flex-1 py-3 rounded-xl font-bold text-[12px] flex items-center justify-center gap-2 transition active:scale-[0.97] ${isDark ? 'bg-zinc-800 border border-zinc-700 text-zinc-300' : 'bg-white border border-zinc-200 text-zinc-600 shadow-sm'}`}>
+                                    className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition active:scale-[0.97] ${isDark ? 'bg-zinc-800 border border-zinc-700 text-zinc-300' : 'bg-white border border-zinc-200 text-zinc-600 shadow-sm'}`}>
                                     <LogIn size={14} /> Giriş Yap
                                 </button>
                             </div>
@@ -128,8 +134,8 @@ export default function Home() {
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star size={13} className="text-yellow-500 fill-yellow-500" />
-                                    <span className={`text-[10px] font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>YILDIZ</span>
-                                    <span className={`text-[10px] font-bold ml-auto ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{stars}/15</span>
+                                    <span className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>YILDIZ</span>
+                                    <span className={`text-base font-bold ml-auto ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{stars}/15</span>
                                 </div>
                                 <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
                                     <motion.div
@@ -139,13 +145,13 @@ export default function Home() {
                                         transition={{ delay: 0.5, duration: 0.8 }}
                                     />
                                 </div>
-                                <p className={`text-[9px] mt-1.5 ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                                <p className={`text-[15px] mt-1.5 ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>
                                     {stars >= 15 ? 'Ödül kazandın! 🎉' : `Ödüle ${15 - stars} yıldız kaldı`}
                                 </p>
                             </div>
                             <div className={`w-px h-10 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
                             <div className="text-center px-2">
-                                <p className={`text-[10px] font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>BAKİYE</p>
+                                <p className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>BAKİYE</p>
                                 <p className={`text-xl font-bold mt-0.5 ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{balance.toFixed(0)}</p>
                             </div>
                         </div>
@@ -180,8 +186,8 @@ export default function Home() {
                             >
                                 <div>
                                     <h4 className="text-base font-bold text-white mb-0.5">{campaigns[activeCampaign].title}</h4>
-                                    <p className="text-xs text-white/60 mb-3">{campaigns[activeCampaign].subtitle}</p>
-                                    <button className="bg-white/15 backdrop-blur text-white text-[11px] font-bold px-3.5 py-1.5 rounded-lg">Kullan →</button>
+                                    <p className="text-base text-white/60 mb-3">{campaigns[activeCampaign].subtitle}</p>
+                                    <button className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-3.5 py-1.5 rounded-lg">Kullan →</button>
                                 </div>
                                 <span className="text-4xl">{campaigns[activeCampaign].emoji}</span>
                             </motion.div>
@@ -209,14 +215,14 @@ export default function Home() {
                                 className={`flex-shrink-0 w-36 rounded-2xl overflow-hidden cursor-pointer group ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}
                             >
                                 <div className="relative h-28 overflow-hidden">
-                                    <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                                    <LazyImage src={product.image} alt={product.name} className="w-full h-full" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                                 </div>
                                 <div className="p-2.5">
-                                    <h4 className={`font-bold text-[12px] leading-tight truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{product.name}</h4>
+                                    <h4 className={`font-bold text-base leading-tight truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{product.name}</h4>
                                     <div className="flex items-center justify-between mt-1">
-                                        <span className="text-shaco-red text-[11px] font-bold">₺{product.price}</span>
-                                        <span className={`text-[9px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>⭐ {product.rating}</span>
+                                        <span className="text-shaco-red text-[15px] font-bold">₺{product.price}</span>
+                                        <span className={`text-[15px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>⭐ {product.rating}</span>
                                     </div>
                                 </div>
                             </motion.div>
@@ -235,8 +241,8 @@ export default function Home() {
                             <History size={17} />
                         </div>
                         <div className="text-left">
-                            <p className={`text-[13px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
-                            <p className={`text-[10px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Son siparişleri gör</p>
+                            <p className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
+                            <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Son siparişleri gör</p>
                         </div>
                     </div>
                     <ChevronRight size={15} className={isDark ? 'text-zinc-700' : 'text-zinc-300'} />
@@ -266,13 +272,13 @@ export default function Home() {
                                         <div className="flex items-center gap-3">
                                             <div className="bg-shaco-red/10 p-2 rounded-lg text-shaco-red"><Coffee size={14} /></div>
                                             <div>
-                                                <p className={`text-[13px] font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{order.name}</p>
-                                                <p className={`text-[10px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{order.time}</p>
+                                                <p className={`text-[15px] font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{order.name}</p>
+                                                <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{order.time}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className={`text-[12px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>-₺{order.price}</p>
-                                            <p className="text-[10px] text-yellow-500 font-bold">+{order.stars} ⭐</p>
+                                            <p className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>-₺{order.price}</p>
+                                            <p className="text-base text-yellow-500 font-bold">+{order.stars} ⭐</p>
                                         </div>
                                     </div>
                                 ))}
@@ -288,7 +294,7 @@ export default function Home() {
 function QuickPill({ icon, label, onClick, isDark, accent }) {
     return (
         <button onClick={onClick}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition active:scale-95 ${accent
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[15px] font-bold whitespace-nowrap transition active:scale-95 ${accent
                 ? 'bg-shaco-red/10 text-shaco-red border border-shaco-red/20'
                 : isDark ? 'bg-zinc-900 text-zinc-300 border border-zinc-800 hover:border-zinc-700' : 'bg-white text-zinc-700 border border-zinc-200 shadow-sm hover:shadow-md'
                 }`}
@@ -299,8 +305,8 @@ function QuickPill({ icon, label, onClick, isDark, accent }) {
 function SectionHeader({ title, action, onAction, isDark }) {
     return (
         <div className="flex justify-between items-center mb-3">
-            <h3 className={`text-[13px] font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-800'}`}>{title}</h3>
-            <button onClick={onAction} className="text-shaco-red text-[11px] font-bold flex items-center gap-1">{action} <ArrowRight size={11} /></button>
+            <h3 className={`text-[15px] font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-800'}`}>{title}</h3>
+            <button onClick={onAction} className="text-shaco-red text-[15px] font-bold flex items-center gap-1">{action} <ArrowRight size={11} /></button>
         </div>
     );
 }
@@ -370,7 +376,7 @@ function SocialMediaSection({ isDark }) {
                             >
                                 {IconFn ? IconFn(12) : null}
                             </div>
-                            <span className={`text-[10px] font-bold whitespace-nowrap ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
+                            <span className={`text-base font-bold whitespace-nowrap ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
                                 {account.username}
                             </span>
                         </a>

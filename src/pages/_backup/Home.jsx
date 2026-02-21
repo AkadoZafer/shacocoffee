@@ -51,7 +51,7 @@ export default function Home() {
             {/* Header / Identity */}
             <header className="flex justify-between items-center mb-8 mt-2">
                 <div>
-                    <h2 className={`font-display uppercase tracking-[0.2em] text-xs mb-1 ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`}>{greeting},</h2>
+                    <h2 className={`font-display uppercase tracking-[0.2em] text-base mb-1 ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`}>{greeting},</h2>
                     {/* Removed neon-text, kept bold font */}
                     <h1 className={`text-3xl font-display font-bold uppercase leading-none ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>{user?.name || 'TRAVELLER'}</h1>
                 </div>
@@ -67,7 +67,7 @@ export default function Home() {
                 {/* ... (Badge code same as before) */}
                 <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${membership.border} border border-opacity-30 bg-white/10 dark:bg-zinc-900`}>
                     <Star size={12} className={membership.color} fill="currentColor" />
-                    <span className={`text-[10px] font-bold tracking-widest uppercase ${membership.color}`}>{membership.label}</span>
+                    <span className={`text-base font-bold tracking-widest uppercase ${membership.color}`}>{membership.label}</span>
                 </div>
             </div>
 
@@ -77,7 +77,7 @@ export default function Home() {
             {/* Quick Order (Favorites) Row */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className={`font-bold tracking-widest text-xs uppercase ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-600'}`}>Hızlı Sipariş</h3>
+                    <h3 className={`font-bold tracking-widest text-base uppercase ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-600'}`}>Hızlı Sipariş</h3>
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                     {[1, 2, 3].map((i) => (
@@ -86,8 +86,8 @@ export default function Home() {
                                 <Zap size={20} fill="currentColor" />
                             </div>
                             <div>
-                                <p className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>White Mocha</p>
-                                <p className="text-[10px] text-zinc-500">Standart • 85₺</p>
+                                <p className={`text-base font-bold ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>White Mocha</p>
+                                <p className="text-base text-zinc-500">Standart • 85₺</p>
                             </div>
                         </div>
                     ))}
@@ -105,10 +105,10 @@ export default function Home() {
 
                 <div className="relative z-10 flex justify-between items-end mb-4">
                     <div>
-                        <p className={`font-bold text-[10px] tracking-widest mb-1 ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`}>YILDIZ BAKİYESİ</p>
+                        <p className={`font-bold text-base tracking-widest mb-1 ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`}>YILDIZ BAKİYESİ</p>
                         <div className="flex items-baseline gap-1">
                             <span className="text-4xl font-black text-white">{stars}</span>
-                            <span className="text-zinc-500 font-bold text-sm">/ 15</span>
+                            <span className="text-zinc-500 font-bold text-base">/ 15</span>
                         </div>
                     </div>
                     <div>
@@ -129,7 +129,7 @@ export default function Home() {
 
                 {/* Wallet Balance Row */}
                 <div className="relative z-10 flex justify-between items-center pt-4 border-t border-zinc-200 dark:border-white/5">
-                    <span className="text-[10px] font-bold tracking-widest text-zinc-400">CÜZDAN BAKİYESİ</span>
+                    <span className="text-base font-bold tracking-widest text-zinc-400">CÜZDAN BAKİYESİ</span>
                     <span className="text-2xl font-bold text-white">₺{balance.toFixed(2)}</span>
                 </div>
             </motion.div>
@@ -190,13 +190,13 @@ export default function Home() {
                                     <div className="flex items-center gap-3">
                                         <div className="bg-shaco-red/20 p-2 rounded-full text-shaco-red"><Coffee size={16} /></div>
                                         <div>
-                                            <p className="text-sm font-bold text-zinc-900 dark:text-white">Latte Siparişi</p>
-                                            <p className="text-xs text-zinc-500">Bugün, 14:30</p>
+                                            <p className="text-base font-bold text-zinc-900 dark:text-white">Latte Siparişi</p>
+                                            <p className="text-base text-zinc-500">Bugün, 14:30</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-bold text-zinc-900 dark:text-white">-₺85.00</p>
-                                        <p className="text-xs text-yellow-500 font-bold">+5 Yıldız</p>
+                                        <p className="text-base font-bold text-zinc-900 dark:text-white">-₺85.00</p>
+                                        <p className="text-base text-yellow-500 font-bold">+5 Yıldız</p>
                                     </div>
                                 </div>
                             </div>
@@ -233,7 +233,7 @@ export default function Home() {
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-xs text-zinc-500 font-bold uppercase tracking-wider mb-2 block">Kullanıcı Adı</label>
+                                    <label className="text-base text-zinc-500 font-bold uppercase tracking-wider mb-2 block">Kullanıcı Adı</label>
                                     <input
                                         type="text"
                                         value={newName}
@@ -270,7 +270,7 @@ function DashboardCard({ title, icon, color, onClick, delay }) {
             <div className={`p-4 rounded-full ${color} transition-transform duration-300 group-hover:scale-110 group-hover:bg-white/10 group-hover:text-white`}>
                 {icon}
             </div>
-            <span className="text-sm font-bold text-zinc-400 font-display uppercase tracking-wider group-hover:text-white transition-colors duration-300">{title}</span>
+            <span className="text-base font-bold text-zinc-400 font-display uppercase tracking-wider group-hover:text-white transition-colors duration-300">{title}</span>
         </motion.div>
     );
 }

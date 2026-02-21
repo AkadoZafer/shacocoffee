@@ -126,16 +126,16 @@ export default function ProductPage() {
 
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <span className="text-shaco-red font-bold uppercase tracking-widest text-xs">{product.category === 'Signature' ? 'İmza' : product.category}</span>
+                        <span className="text-shaco-red font-bold uppercase tracking-widest text-base">{product.category === 'Signature' ? 'İmza' : product.category}</span>
                         <h1 className={`text-4xl font-display font-bold leading-none mt-2 mb-2 ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>{product.name}</h1>
                         <div className="flex items-center gap-1 text-yellow-500">
                             <Star size={14} fill="currentColor" />
-                            <span className="text-sm font-bold ml-1">{product.rating}</span>
+                            <span className="text-base font-bold ml-1">{product.rating}</span>
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
                         <span className={`text-3xl font-bold tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>₺{totalPrice}</span>
-                        {modifiers > 0 && <span className="text-xs text-zinc-500">+₺{modifiers} ekstra</span>}
+                        {modifiers > 0 && <span className="text-base text-zinc-500">+₺{modifiers} ekstra</span>}
                     </div>
                 </div>
 
@@ -150,7 +150,7 @@ export default function ProductPage() {
                             }`}
                     >
                         <Zap size={20} />
-                        <span className="text-[10px] font-bold uppercase text-center">Ekstra Shot<br />+15₺</span>
+                        <span className="text-base font-bold uppercase text-center">Ekstra Shot<br />+15₺</span>
                     </button>
                     <button
                         onClick={() => toggleExtra('syrup')}
@@ -160,7 +160,7 @@ export default function ProductPage() {
                             }`}
                     >
                         <Droplet size={20} />
-                        <span className="text-[10px] font-bold uppercase text-center">Şeker/Şurup<br />+10₺</span>
+                        <span className="text-base font-bold uppercase text-center">Şeker/Şurup<br />+10₺</span>
                     </button>
                     <button
                         onClick={() => toggleExtra('soft')}
@@ -170,11 +170,11 @@ export default function ProductPage() {
                             }`}
                     >
                         <div className="w-5 h-5 rounded-full border-2 border-current opacity-60" />
-                        <span className="text-[10px] font-bold uppercase text-center">Yumuşak İçim<br />Ücretsiz</span>
+                        <span className="text-base font-bold uppercase text-center">Yumuşak İçim<br />Ücretsiz</span>
                     </button>
                 </div>
 
-                <p className={`text-sm leading-relaxed mb-8 ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                <p className={`text-base leading-relaxed mb-8 ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'}`}>
                     {product.description}
                 </p>
 
@@ -186,7 +186,7 @@ export default function ProductPage() {
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                         {[1, 2, 3, 4].map(i => (
                             <div key={i} className={`w-24 h-24 rounded-xl border flex-shrink-0 flex items-center justify-center transition cursor-pointer ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800 text-zinc-700 hover:border-shaco-red' : 'bg-zinc-100 border-zinc-200 text-zinc-400 hover:border-shaco-red'}`}>
-                                <span className="text-xs">IMG_0{i}</span>
+                                <span className="text-base">IMG_0{i}</span>
                             </div>
                         ))}
                     </div>

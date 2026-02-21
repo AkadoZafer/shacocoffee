@@ -58,7 +58,7 @@ export default function Cart() {
 
                         <div className="flex-1">
                             <h3 className="font-bold font-display">{item.product.name}</h3>
-                            <p className="text-xs text-zinc-500 mb-1">
+                            <p className="text-base text-zinc-500 mb-1">
                                 {item.customizations.length > 0 ? item.customizations.join(', ') : 'Standart'}
                             </p>
                             <span className="font-bold text-shaco-red">₺{item.totalPrice}</span>
@@ -77,13 +77,13 @@ export default function Cart() {
             {/* Summary Panel */}
             <div className={`fixed bottom-0 left-0 w-full p-6 pb-8 border-t rounded-t-3xl z-20 ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]'}`}>
                 <div className="flex justify-between items-center mb-6">
-                    <span className="text-zinc-500 font-bold uppercase tracking-widest text-xs">Toplam Tutar</span>
+                    <span className="text-zinc-500 font-bold uppercase tracking-widest text-base">Toplam Tutar</span>
                     <span className="text-3xl font-display font-bold">₺{total.toFixed(2)}</span>
                 </div>
 
                 <div className="flex gap-4 mb-6">
                     <div className={`flex-1 p-3 rounded-xl border flex flex-col justify-center ${theme === 'dark' ? 'bg-black border-zinc-800' : 'bg-zinc-50 border-zinc-200'}`}>
-                        <span className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Cüzdan</span>
+                        <span className="text-base text-zinc-500 uppercase tracking-wider mb-1">Cüzdan</span>
                         <span className={`font-bold ${balance < total ? 'text-red-500' : 'text-green-500'}`}>₺{balance.toFixed(2)}</span>
                     </div>
                 </div>

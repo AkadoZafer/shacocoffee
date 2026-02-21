@@ -55,7 +55,7 @@ export default function Login() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="ADINIZ NEDİR?"
-                                className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition text-center font-display tracking-wider uppercase placeholder:text-zinc-600 text-sm"
+                                className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.5)] transition text-center font-display tracking-wider uppercase placeholder:text-zinc-600 text-base"
                             />
                         </div>
 
@@ -63,14 +63,14 @@ export default function Login() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
-                            className="w-full bg-shaco-red text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-500 transition text-sm"
+                            className="w-full bg-shaco-red text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-500 transition text-base"
                         >
                             Giriş Yap
                         </motion.button>
                     </form>
                 </div>
 
-                <p className="text-zinc-600 text-xs text-center mt-8 font-mono">EST. 2024</p>
+                <p className="text-zinc-600 text-base text-center mt-8 font-mono">EST. 2024</p>
             </motion.div>
         </div>
     );

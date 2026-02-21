@@ -101,7 +101,7 @@ export default function Settings() {
                         </div>
                         <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>Görünüm</span>
                     </div>
-                    <button onClick={toggleTheme} className={`px-4 py-2 rounded-full text-xs font-bold border ${theme === 'dark' ? 'border-white/20 text-white hover:bg-white/10' : 'border-zinc-200 text-zinc-600 hover:bg-zinc-50'}`}>
+                    <button onClick={toggleTheme} className={`px-4 py-2 rounded-full text-base font-bold border ${theme === 'dark' ? 'border-white/20 text-white hover:bg-white/10' : 'border-zinc-200 text-zinc-600 hover:bg-zinc-50'}`}>
                         {theme === 'dark' ? 'Koyu Mod' : 'Açık Mod'}
                     </button>
                 </div>
@@ -120,14 +120,14 @@ export default function Settings() {
                             <div className="space-y-4">
                                 <div className={`p-4 rounded-xl border ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-50 border-zinc-200'}`}>
                                     <h3 className={`font-bold text-lg mb-1 ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>Shaco Konya (Merkez)</h3>
-                                    <p className="text-zinc-500 text-sm mb-4">Melikşah, Melikşah Cd. NO:121/A, 42090 Meram/Konya</p>
+                                    <p className="text-zinc-500 text-base mb-4">Melikşah, Melikşah Cd. NO:121/A, 42090 Meram/Konya</p>
                                     <div className="flex gap-2">
-                                        <button className="flex-1 bg-shaco-red text-white py-2 rounded-lg font-bold text-sm hover:bg-red-600 transition"
+                                        <button className="flex-1 bg-shaco-red text-white py-2 rounded-lg font-bold text-base hover:bg-red-600 transition"
                                             onClick={() => window.open('https://www.google.com/maps/search/?api=1&query=Melikşah,+Melikşah+Cd.+NO:121/A,+42090+Meram/Konya')}
                                         >
                                             Yol Tarifi
                                         </button>
-                                        <button className={`flex-1 py-2 rounded-lg font-bold text-sm border ${theme === 'dark' ? 'border-zinc-600 text-zinc-300 hover:bg-zinc-700' : 'border-zinc-300 text-zinc-600 hover:bg-zinc-100'}`}
+                                        <button className={`flex-1 py-2 rounded-lg font-bold text-base border ${theme === 'dark' ? 'border-zinc-600 text-zinc-300 hover:bg-zinc-700' : 'border-zinc-300 text-zinc-600 hover:bg-zinc-100'}`}
                                             onClick={() => window.open('tel:+905555555555')}
                                         >
                                             Ara

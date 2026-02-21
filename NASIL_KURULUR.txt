@@ -1,0 +1,17 @@
+SHACO COFFEE APP - LAPTOP KURULUM REHBERİ
+
+Hacı, bu dosyayı laptopa taşıdıktan sonra şu adımları izle:
+
+1. ZIP dosyasını laptopta bir klasöre çıkart.
+2. Antigravity IDE'yi aç ve bu klasörü seç.
+3. Antigravity terminalini (veya CMD/PowerShell) aç ve şu komutu yaz:
+   npm install
+
+   (Bu komut internet üzerinden gerekli kütüphaneleri indirecek, biraz sürebilir.)
+
+4. Kütüphaneler yüklendikten sonra uygulamayı çalıştırmak için:
+   npm run dev
+
+5. Eğer telefona tekrar kurmak istersen, klasörün içindeki "ShacoCoffee_Update.apk" dosyasını kullanabilirsin.
+
+Hayırlı olsun!

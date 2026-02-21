@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, ArrowLeft, ShoppingBag, CreditCard, Check, Wallet, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import ActiveOrders from '../components/ActiveOrders';
 
 export default function Cart() {
     const { cart, removeFromCart, clearCart, checkoutCart, balance } = useRewards();
@@ -42,7 +43,7 @@ export default function Cart() {
                     Siparişiniz Alındı!
                 </motion.p>
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                    className={`text-sm mt-2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                    className={`text-base mt-2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
                     QR kodunuzu baristaya gösterin...
                 </motion.p>
             </div>
@@ -66,12 +67,13 @@ export default function Cart() {
 
     return (
         <div className={`min-h-screen p-6 pb-72 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
+            <ActiveOrders className="sticky top-0 z-50 -mx-6 px-6 py-2 mb-4 backdrop-blur-md border-b border-white/5" />
             <header className="flex items-center gap-4 mb-6">
                 <button onClick={() => navigate(-1)} className={`p-2 rounded-xl transition active:scale-90 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
                     <ArrowLeft size={18} />
                 </button>
                 <h1 className="text-xl font-display font-bold">Sepet</h1>
-                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-lg ml-auto ${isDark ? 'bg-zinc-900 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>{cart.length} ürün</span>
+                <span className={`text-[15px] font-bold px-2 py-0.5 rounded-lg ml-auto ${isDark ? 'bg-zinc-900 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>{cart.length} ürün</span>
             </header>
 
             <div className="space-y-3">
@@ -86,10 +88,10 @@ export default function Cart() {
                         <img src={item.product.image} alt={item.product.name} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                             <h3 className="font-bold font-display text-[14px] truncate">{item.product.name}</h3>
-                            <p className={`text-[11px] truncate ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                            <p className={`text-[15px] truncate ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
                                 {item.customizations.length > 0 ? item.customizations.join(', ') : 'Standart'}
                             </p>
-                            <span className="font-bold text-shaco-red text-[13px]">₺{item.totalPrice}</span>
+                            <span className="font-bold text-shaco-red text-[15px]">₺{item.totalPrice}</span>
                         </div>
                         <button onClick={() => removeFromCart(item.id)} className={`p-2 rounded-lg transition active:scale-90 ${isDark ? 'hover:bg-zinc-800 text-zinc-600' : 'hover:bg-zinc-100 text-zinc-400'}`}>
                             <Trash2 size={16} />
@@ -104,11 +106,11 @@ export default function Cart() {
                     {/* Total + Balance Row */}
                     <div className="flex items-center justify-between mb-3">
                         <div>
-                            <p className={`text-[10px] font-bold tracking-wider ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>TOPLAM</p>
+                            <p className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>TOPLAM</p>
                             <p className="text-2xl font-display font-bold">₺{total.toFixed(0)}</p>
                         </div>
                         <div className="text-right">
-                            <p className={`text-[10px] font-bold tracking-wider ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>BAKİYE</p>
+                            <p className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>BAKİYE</p>
                             <div className="flex items-center gap-1.5">
                                 <Wallet size={13} className={balance >= total ? 'text-emerald-500' : 'text-red-500'} />
                                 <p className={`text-lg font-bold ${balance >= total ? 'text-emerald-500' : 'text-red-500'}`}>₺{balance.toFixed(0)}</p>
@@ -120,8 +122,8 @@ export default function Cart() {
                     {balance < total && (
                         <div className={`flex items-center gap-2 p-2.5 rounded-xl mb-3 ${isDark ? 'bg-red-500/10 border border-red-500/20' : 'bg-red-50 border border-red-100'}`}>
                             <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-                            <p className="text-red-500 text-[11px] font-semibold">Yetersiz bakiye.</p>
-                            <button onClick={() => navigate('/wallet')} className="ml-auto text-[10px] font-bold text-red-500 underline flex-shrink-0">Yükle</button>
+                            <p className="text-red-500 text-[15px] font-semibold">Yetersiz bakiye.</p>
+                            <button onClick={() => navigate('/wallet')} className="ml-auto text-base font-bold text-red-500 underline flex-shrink-0">Yükle</button>
                         </div>
                     )}
 
@@ -132,9 +134,9 @@ export default function Cart() {
                             <Trash2 size={18} className="text-zinc-500" />
                         </button>
                         <button onClick={handleCheckout} disabled={balance < total && !isGuest}
-                            className={`flex-1 py-3.5 rounded-xl font-bold text-[13px] flex items-center justify-center gap-2 transition active:scale-[0.97] ${balance < total && !isGuest
-                                    ? 'bg-zinc-800 cursor-not-allowed opacity-50 text-zinc-500'
-                                    : 'bg-shaco-red hover:bg-red-600 shadow-lg shadow-red-500/20 text-white'
+                            className={`flex-1 py-3.5 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 transition active:scale-[0.97] ${balance < total && !isGuest
+                                ? 'bg-zinc-800 cursor-not-allowed opacity-50 text-zinc-500'
+                                : 'bg-shaco-red hover:bg-red-600 shadow-lg shadow-red-500/20 text-white'
                                 }`}
                         >
                             <CreditCard size={16} />
@@ -157,14 +159,14 @@ export default function Cart() {
                                 <CreditCard size={24} />
                             </div>
                             <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Giriş Gerekli</h3>
-                            <p className={`text-sm mb-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Sipariş vermek için giriş yapmanız veya kayıt olmanız gerekiyor.</p>
+                            <p className={`text-base mb-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Sipariş vermek için giriş yapmanız veya kayıt olmanız gerekiyor.</p>
                             <div className="flex gap-2.5">
                                 <button onClick={() => navigate('/login')}
-                                    className={`flex-1 py-3 rounded-xl font-bold text-sm transition ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>
+                                    className={`flex-1 py-3 rounded-xl font-bold text-base transition ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>
                                     Giriş Yap
                                 </button>
                                 <button onClick={() => navigate('/register')}
-                                    className="flex-1 py-3 rounded-xl font-bold text-sm bg-shaco-red text-white">
+                                    className="flex-1 py-3 rounded-xl font-bold text-base bg-shaco-red text-white">
                                     Kayıt Ol
                                 </button>
                             </div>

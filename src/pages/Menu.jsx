@@ -80,7 +80,7 @@ export default function Menu() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Ürün ara..."
-                                className={`w-full p-3 rounded-xl border text-sm outline-none focus:border-shaco-red/50 transition ${isDark ? 'bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600' : 'bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400'}`}
+                                className={`w-full p-3 rounded-xl border text-base outline-none focus:border-shaco-red/50 transition ${isDark ? 'bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600' : 'bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400'}`}
                             />
                         </motion.div>
                     )}
@@ -111,7 +111,7 @@ export default function Menu() {
                             <button
                                 key={cat.value}
                                 onClick={() => setActiveCategory(cat.value)}
-                                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap transition ${activeCategory === cat.value
+                                className={`px-3 py-1.5 rounded-lg text-[15px] font-bold whitespace-nowrap transition ${activeCategory === cat.value
                                     ? 'bg-shaco-red text-white'
                                     : isDark
                                         ? 'bg-zinc-900 text-zinc-500 border border-zinc-800'
@@ -142,12 +142,12 @@ export default function Menu() {
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
                                 <div className="absolute bottom-0 left-0 p-5 z-10">
-                                    <span className="text-shaco-red text-[9px] font-bold tracking-[0.2em] uppercase block mb-1">İMZA TARİF</span>
+                                    <span className="text-shaco-red text-[15px] font-bold tracking-[0.2em] uppercase block mb-1">İMZA TARİF</span>
                                     <h3 className="text-white font-bold text-xl leading-tight">{featuredProduct.name}</h3>
-                                    <p className="text-white/50 text-xs mt-0.5">{featuredProduct.shortDesc}</p>
+                                    <p className="text-white/50 text-base mt-0.5">{featuredProduct.shortDesc}</p>
                                 </div>
                                 <div className="absolute bottom-4 right-4 z-10">
-                                    <span className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg text-sm font-bold text-white">
+                                    <span className="bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-lg text-base font-bold text-white">
                                         ₺{featuredProduct.price}
                                     </span>
                                 </div>
@@ -178,26 +178,19 @@ export default function Menu() {
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <h4 className={`font-semibold text-[13px] leading-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{product.name}</h4>
-                                        <p className={`text-[11px] mt-0.5 truncate ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{product.shortDesc}</p>
+                                        <h4 className={`font-semibold text-[15px] leading-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{product.name}</h4>
+                                        <p className={`text-[15px] mt-0.5 truncate ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{product.shortDesc}</p>
                                         <div className="flex items-center gap-2 mt-1.5">
-                                            <span className="text-shaco-red text-[12px] font-bold">₺{product.price}</span>
-                                            <span className={`text-[10px] flex items-center gap-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                                            <span className="text-shaco-red text-base font-bold">₺{product.price}</span>
+                                            <span className={`text-base flex items-center gap-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
                                                 <Star size={9} className="text-yellow-500 fill-yellow-500" /> {product.rating}
                                             </span>
-                                            <span className={`text-[9px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
+                                            <span className={`text-[15px] px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
                                                 {product.calories} kcal
                                             </span>
                                         </div>
                                     </div>
 
-                                    {/* Add button */}
-                                    <button
-                                        className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition active:scale-90 ${isDark ? 'bg-zinc-800 text-zinc-400 hover:bg-shaco-red hover:text-white' : 'bg-zinc-100 text-zinc-500 hover:bg-shaco-red hover:text-white'}`}
-                                        onClick={(e) => { e.preventDefault(); navigate(`/product/${product.id}`); }}
-                                    >
-                                        <Plus size={14} />
-                                    </button>
                                 </div>
                             </Link>
                         </motion.div>
@@ -214,10 +207,10 @@ export default function Menu() {
                         <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center ${isDark ? 'bg-zinc-900' : 'bg-zinc-100'}`}>
                             <Coffee size={24} className="text-zinc-500" />
                         </div>
-                        <p className={`text-sm font-semibold ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                        <p className={`text-base font-semibold ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
                             {searchQuery ? 'Sonuç bulunamadı' : 'Bu kategoride ürün yok'}
                         </p>
-                        <p className={`text-xs mt-1 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                        <p className={`text-base mt-1 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
                             {searchQuery ? 'Farklı bir arama deneyin' : 'Yakında eklenecek'}
                         </p>
                     </motion.div>
@@ -225,7 +218,7 @@ export default function Menu() {
 
                 {/* Results count */}
                 {filteredProducts.length > 0 && (
-                    <p className={`text-center text-[10px] font-bold tracking-wider mt-6 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                    <p className={`text-center text-base font-bold tracking-wider mt-6 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
                         {filteredProducts.length} ÜRÜN
                     </p>
                 )}
@@ -238,7 +231,7 @@ function TabButton({ active, onClick, icon, label, isDark }) {
     return (
         <button
             onClick={onClick}
-            className={`flex-1 py-2.5 rounded-lg text-[12px] font-bold tracking-wide flex items-center justify-center gap-1.5 transition-all ${active
+            className={`flex-1 py-2.5 rounded-lg text-base font-bold tracking-wide flex items-center justify-center gap-1.5 transition-all ${active
                 ? isDark ? 'bg-zinc-800 text-white shadow-md' : 'bg-white text-zinc-900 shadow-md'
                 : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-600'
                 }`}

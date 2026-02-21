@@ -4,15 +4,16 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
 export default function Pay() {
-    const { balance, addBalance, activeOrder, dismissActiveOrder, orders } = useRewards();
+    const { balance, addBalance, orders, addToCart, checkoutCart } = useRewards();
     const [activeTab, setActiveTab] = useState('qr');
     const [topUpAmount, setTopUpAmount] = useState('');
-    const [showTopUpSuccess, setShowTopUpSuccess] = useState(false);
     const { theme } = useTheme();
+    const { addToast } = useToast();
     const isDark = theme === 'dark';
 
     const [payHistory] = useState([
@@ -25,54 +26,39 @@ export default function Pay() {
         { id: 7, type: 'topup', label: 'Bakiye Yükleme', amount: 500, date: '13 Şubat, 08:00', stars: 0 },
     ]);
 
-    // Auto-switch to QR tab if there's an active order
-    useEffect(() => {
-        if (activeOrder) setActiveTab('qr');
-    }, [activeOrder]);
-
     const handleTopUp = (amount) => {
         const val = amount || Number(topUpAmount);
         if (val > 0 && addBalance) {
             addBalance(val);
             setTopUpAmount('');
-            setShowTopUpSuccess(true);
-            setTimeout(() => setShowTopUpSuccess(false), 1500);
+            addToast('+₺' + val + ' Bakiye Yüklendi!', 'success');
         }
     };
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
-            {/* Success Overlays */}
-            <AnimatePresence>
-                {showTopUpSuccess && (
-                    <motion.div initial={{ opacity: 0, y: -40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-                        className="fixed top-8 left-1/2 -translate-x-1/2 z-[70] bg-emerald-500 text-white px-5 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 font-bold text-sm">
-                        <Check size={16} /> Bakiye Yüklendi!
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {/* Header */}
             <div className="p-6 pt-10 pb-4">
                 <h1 className="text-2xl font-display font-bold mb-0.5">Ödeme</h1>
-                <p className={`text-xs ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Shaco Wallet ile hızlı ödeme</p>
+                <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Shaco Wallet ile hızlı ödeme</p>
             </div>
 
             {/* Balance Card */}
             <div className="px-6 mb-5">
                 <div className={`p-5 rounded-2xl relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-shaco-red/20 to-zinc-900 border border-zinc-800' : 'bg-gradient-to-br from-red-50 to-white border border-zinc-200 shadow-lg'}`}>
                     <div className="absolute top-3 right-4">
-                        <span className={`text-[10px] font-bold tracking-[0.15em] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SHACO</span>
+                        <span className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SHACO</span>
                     </div>
-                    <p className={`text-[10px] font-bold tracking-[0.2em] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>MEVCUT BAKİYE</p>
+                    <p className={`text-base font-bold tracking-[0.2em] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>MEVCUT BAKİYE</p>
                     <div className="flex items-baseline gap-1">
                         <span className="text-shaco-red text-xl font-bold">₺</span>
                         <span className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{balance.toFixed(0)}</span>
                     </div>
                     <div className={`flex items-center gap-1.5 mt-2 ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>
-                        <span className="text-[10px]">•••• •••••</span>
-                        <span className="text-[10px] font-mono">1095</span>
+                        <span className="text-base">•••• •••••</span>
+                        <span className="text-base font-mono">1095</span>
                     </div>
                 </div>
             </div>
@@ -86,15 +72,12 @@ export default function Pay() {
                         { key: 'history', label: '⏱ Geçmiş' },
                     ].map(tab => (
                         <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                            className={`flex-1 py-2.5 rounded-lg text-[11px] font-bold tracking-wide transition relative ${activeTab === tab.key
+                            className={`flex-1 py-2.5 rounded-lg text-[15px] font-bold tracking-wide transition relative ${activeTab === tab.key
                                 ? isDark ? 'bg-zinc-800 text-white shadow-md' : 'bg-white text-zinc-900 shadow-md'
                                 : isDark ? 'text-zinc-500' : 'text-zinc-400'
                                 }`}
                         >
                             {tab.label}
-                            {tab.key === 'qr' && activeOrder && (
-                                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-shaco-red rounded-full animate-pulse" />
-                            )}
                         </button>
                     ))}
                 </div>
@@ -104,113 +87,76 @@ export default function Pay() {
                 {/* ============ QR TAB ============ */}
                 {activeTab === 'qr' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        {activeOrder ? (
-                            /* Active Order - Show QR Code */
-                            <div className="flex flex-col items-center">
-                                {/* Order Header */}
-                                <div className="w-full mb-4">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Aktif Sipariş</h3>
-                                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${activeOrder.status === 'Onaylandı'
-                                            ? 'bg-emerald-500/10 text-emerald-400'
-                                            : 'bg-amber-500/10 text-amber-400'
-                                            }`}>
-                                            <Clock size={10} />
-                                            {activeOrder.status}
-                                        </div>
-                                    </div>
-                                    <p className={`text-[12px] font-mono font-bold tracking-wider ${isDark ? 'text-shaco-red' : 'text-shaco-red'}`}>
-                                        {activeOrder.code}
-                                    </p>
-                                </div>
+                        <div className="flex flex-col items-center">
 
-                                {/* QR Code */}
-                                <div className={`w-full rounded-2xl p-6 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-md'}`}>
-                                    <div className="flex justify-center mb-4">
-                                        <div className="relative p-4">
-                                            {/* Corner Markers */}
-                                            <div className="absolute top-0 left-0 w-6 h-6 border-l-[3px] border-t-[3px] border-shaco-red rounded-tl-lg" />
-                                            <div className="absolute top-0 right-0 w-6 h-6 border-r-[3px] border-t-[3px] border-shaco-red rounded-tr-lg" />
-                                            <div className="absolute bottom-0 left-0 w-6 h-6 border-l-[3px] border-b-[3px] border-shaco-red rounded-bl-lg" />
-                                            <div className="absolute bottom-0 right-0 w-6 h-6 border-r-[3px] border-b-[3px] border-shaco-red rounded-br-lg" />
-                                            {/* QR Code */}
-                                            <div className="bg-white p-3 rounded-xl">
-                                                <QRCode size={180} style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                                                    value={JSON.stringify({ code: activeOrder.code, total: activeOrder.total, items: activeOrder.items.map(i => i.name) })}
-                                                    viewBox="0 0 256 256"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Order Details */}
-                                    <div className={`border-t pt-4 mt-2 ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
-                                        <p className={`text-[10px] font-bold tracking-[0.15em] mb-2 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SİPARİŞ DETAYI</p>
-                                        {activeOrder.items.map((item, i) => (
-                                            <div key={i} className="flex justify-between items-center mb-1.5">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-shaco-red text-[10px] font-bold">1x</span>
-                                                    <span className={`text-[12px] font-semibold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{item.name}</span>
-                                                </div>
-                                                <span className={`text-[12px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{item.price}</span>
-                                            </div>
-                                        ))}
-                                        <div className={`flex justify-between items-center mt-3 pt-3 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
-                                            <span className={`text-[12px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Toplam</span>
-                                            <span className="text-shaco-red text-[14px] font-bold">₺{activeOrder.total}</span>
-                                        </div>
+                            {/* Wallet Info Header */}
+                            <div className="w-full mb-4 mt-2">
+                                <div className="flex items-center justify-between mb-1">
+                                    <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Cüzdan Kodu</h3>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-base font-bold bg-emerald-500/10 text-emerald-400">
+                                        <Check size={10} />
+                                        Aktif
                                     </div>
                                 </div>
-
-                                {/* Instructions */}
-                                <p className={`text-center text-[11px] font-bold mt-4 ${isDark ? 'text-shaco-red/70' : 'text-shaco-red'}`}>
-                                    Bu QR kodu kasadaki baristaya gösterin
+                                <p className={`text-base font-mono font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                    Kullanıma Hazır
                                 </p>
-
-                                {/* Dismiss Button */}
-                                <button onClick={dismissActiveOrder}
-                                    className={`mt-4 w-full py-3 rounded-xl text-[12px] font-bold transition ${isDark ? 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-zinc-700' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'}`}>
-                                    Sipariş QR'ını Kapat
-                                </button>
                             </div>
-                        ) : (
-                            /* No Active Order - Prompt */
-                            <div className="flex flex-col items-center py-8">
-                                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-5 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-zinc-100'}`}>
-                                    <Coffee size={32} className={isDark ? 'text-zinc-700' : 'text-zinc-400'} />
+
+                            {/* Clean QR Code without distractions or animations */}
+                            <div className={`w-full rounded-3xl p-8 mb-6 relative overflow-hidden flex flex-col items-center justify-center ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-xl'}`}>
+                                <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
+                                    <QRCode
+                                        size={220}
+                                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                                        value={JSON.stringify({ userId: "USR-999120", action: "pay", timestamp: Date.now() })}
+                                        viewBox="0 0 256 256"
+                                        level="M"
+                                    />
                                 </div>
-                                <h3 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Aktif Sipariş Yok</h3>
-                                <p className={`text-[12px] text-center mb-6 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                                    Menüden bir ürün seçip sipariş verdiğinizde<br />QR kodunuz burada görünecek.
+                                <p className={`text-center text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                                    Sipariş vermek ve ödemek için<br />
+                                    <span className="text-shaco-red">kasada bu QR kodu gösterin</span>
                                 </p>
-
-                                {/* Recent Orders */}
-                                {orders.length > 0 && (
-                                    <>
-                                        <p className={`text-[10px] font-bold tracking-[0.15em] mb-3 w-full ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SON SİPARİŞLER</p>
-                                        <div className="w-full space-y-1.5">
-                                            {orders.slice(0, 3).map((order) => (
-                                                <div key={order.id} className={`p-3 rounded-xl flex items-center justify-between ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200'}`}>
-                                                    <div>
-                                                        <p className={`text-[12px] font-mono font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{order.code}</p>
-                                                        <p className={`text-[10px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{order.items.map(i => i.name).join(', ')}</p>
-                                                    </div>
-                                                    <div className={`px-2 py-1 rounded-full text-[9px] font-bold ${order.status === 'Onaylandı' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
-                                                        }`}>{order.status}</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
                             </div>
-                        )}
+
+                            {/* Tips */}
+                            <div className={`w-full p-4 rounded-xl flex gap-3 mb-6 ${isDark ? 'bg-zinc-900/50 border border-zinc-800/50' : 'bg-blue-50/50 border border-blue-100'}`}>
+                                <Coffee size={18} className={isDark ? 'text-zinc-500' : 'text-blue-500'} />
+                                <p className={`text-[15px] leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                    Bakiyenizden düşülerek temassız ödeme yapılır. Yetersiz bakiye durumunda kredi kartı veya nakit ile kasadan da ödeyebilirsiniz.
+                                </p>
+                            </div>
+
+                            {/* DEMO ORDER BUTTON FOR FIREBASE TESTING */}
+                            <button
+                                onClick={async () => {
+                                    // React state gecikmesini önlemek için doğrudan directItems gönderiyoruz
+                                    const demoCart = [{
+                                        product: { name: 'Filtre Kahve - Demo', price: 120 },
+                                        customizations: [],
+                                        totalPrice: 120
+                                    }];
+                                    const res = await checkoutCart(demoCart);
+                                    if (res) {
+                                        addToast('Sipariş Firebase\'e başarıyla iletildi!', 'success');
+                                    } else {
+                                        addToast('Bakiye yetersiz veya hata oluştu.', 'error');
+                                    }
+                                }}
+                                className={`w-full py-4 rounded-2xl font-bold text-[15px] shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2 ${isDark ? 'bg-shaco-red text-white shadow-red-500/15' : 'bg-zinc-900 text-white shadow-zinc-900/15'}`}
+                            >
+                                <Coffee size={18} /> Hızlı Sipariş Ver (120₺)
+                            </button>
+
+                        </div>
                     </motion.div>
                 )}
 
                 {/* ============ TOP UP TAB ============ */}
                 {activeTab === 'topup' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <p className={`text-[10px] font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>HIZLI YÜKLEME</p>
+                        <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>HIZLI YÜKLEME</p>
                         <div className="grid grid-cols-3 gap-2 mb-5">
                             {quickAmounts.map((amount) => (
                                 <button key={amount} onClick={() => handleTopUp(amount)}
@@ -221,29 +167,29 @@ export default function Pay() {
                             <div className={`py-2 rounded-xl flex flex-col items-center justify-center ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
                                 <input type="number" value={topUpAmount} onChange={(e) => setTopUpAmount(e.target.value)} placeholder="₺"
                                     className={`w-full text-center text-lg font-bold bg-transparent outline-none ${isDark ? 'text-white placeholder:text-zinc-700' : 'text-zinc-900 placeholder:text-zinc-300'}`} />
-                                <span className={`text-[9px] ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>Özel</span>
+                                <span className={`text-[15px] ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>Özel</span>
                             </div>
                         </div>
 
                         {topUpAmount && Number(topUpAmount) > 0 && (
                             <button onClick={() => handleTopUp()}
-                                className="w-full py-4 rounded-2xl bg-shaco-red text-white font-bold text-[13px] shadow-lg shadow-red-500/15 active:scale-[0.97] transition flex items-center justify-center gap-2 mb-5">
+                                className="w-full py-4 rounded-2xl bg-shaco-red text-white font-bold text-[15px] shadow-lg shadow-red-500/15 active:scale-[0.97] transition flex items-center justify-center gap-2 mb-5">
                                 <Plus size={16} /> ₺{topUpAmount} Yükle
                             </button>
                         )}
 
-                        <p className={`text-[10px] font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SON YÜKLEMELER</p>
+                        <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SON YÜKLEMELER</p>
                         <div className="space-y-1.5">
                             {payHistory.filter(h => h.type === 'topup').map((h) => (
                                 <div key={h.id} className={`p-3 rounded-xl flex items-center justify-between ${isDark ? 'bg-zinc-900/60 border border-zinc-800' : 'bg-white border border-zinc-200'}`}>
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500"><ArrowDownLeft size={14} /></div>
                                         <div>
-                                            <p className={`text-[12px] font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{h.label}</p>
-                                            <p className={`text-[10px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{h.date}</p>
+                                            <p className={`text-base font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{h.label}</p>
+                                            <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{h.date}</p>
                                         </div>
                                     </div>
-                                    <span className="text-emerald-500 text-[12px] font-bold">+₺{h.amount}</span>
+                                    <span className="text-emerald-500 text-base font-bold">+₺{h.amount}</span>
                                 </div>
                             ))}
                         </div>
@@ -262,20 +208,20 @@ export default function Pay() {
                                             {h.type === 'topup' ? <ArrowDownLeft size={14} /> : <ArrowUpRight size={14} />}
                                         </div>
                                         <div>
-                                            <p className={`text-[12px] font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{h.label}</p>
-                                            <p className={`text-[10px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{h.date}</p>
+                                            <p className={`text-base font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{h.label}</p>
+                                            <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{h.date}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className={`text-[12px] font-bold ${h.amount > 0 ? 'text-emerald-500' : isDark ? 'text-white' : 'text-zinc-900'}`}>
+                                        <span className={`text-base font-bold ${h.amount > 0 ? 'text-emerald-500' : isDark ? 'text-white' : 'text-zinc-900'}`}>
                                             {h.amount > 0 ? '+' : ''}₺{Math.abs(h.amount)}
                                         </span>
-                                        {h.stars > 0 && <p className="text-[9px] text-yellow-500 font-bold">+{h.stars} ⭐</p>}
+                                        {h.stars > 0 && <p className="text-[15px] text-yellow-500 font-bold">+{h.stars} ⭐</p>}
                                     </div>
                                 </motion.div>
                             ))}
                         </div>
-                        <p className={`text-center text-[10px] font-bold tracking-wider mt-5 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                        <p className={`text-center text-base font-bold tracking-wider mt-5 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
                             {payHistory.length} İŞLEM
                         </p>
                     </motion.div>

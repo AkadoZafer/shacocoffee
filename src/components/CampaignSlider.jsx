@@ -55,13 +55,13 @@ export default function CampaignSlider() {
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute bottom-0 left-0 p-6 z-20 w-full bg-gradient-to-t from-black/80 to-transparent">
-                        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-white mb-2 inline-block ${campaigns[current].color}`}>
+                        <span className={`px-2 py-1 rounded text-base font-bold uppercase tracking-wider text-white mb-2 inline-block ${campaigns[current].color}`}>
                             Kampanya
                         </span>
                         <h2 className="text-2xl font-display font-bold text-white uppercase leading-none mb-1">
                             {campaigns[current].title}
                         </h2>
-                        <p className="text-zinc-200 text-sm font-medium">
+                        <p className="text-zinc-200 text-base font-medium">
                             {campaigns[current].subtitle}
                         </p>
                     </div>

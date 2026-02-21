@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&display=swap');
+@import "tailwindcss";
 
 @theme {
   --font-display: 'Oswald', sans-serif;
@@ -16,9 +16,9 @@
 }
 
 .dark {
-  --bg-primary: #000000;
+  --bg-primary: #09090b;
   --text-primary: #ffffff;
-  --glass-bg: rgba(20, 20, 20, 0.6);
+  --glass-bg: rgba(9, 9, 11, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
 }
 

@@ -23,7 +23,7 @@ export default function Stores() {
         <div className={`min-h-screen p-6 pb-32 transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
             <header className="mb-8">
                 <h1 className="text-3xl font-display font-bold uppercase mb-2">Mağazalar</h1>
-                <p className={`text-sm ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>En yakın kahve noktalarımız</p>
+                <p className={`text-base ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>En yakın kahve noktalarımız</p>
             </header>
 
             <div className="space-y-6">
@@ -37,7 +37,7 @@ export default function Stores() {
                     >
                         <div className="h-40 relative">
                             <img src={store.image} alt={store.name} className="w-full h-full object-cover" />
-                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-zinc-900 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-zinc-900 text-base font-bold px-3 py-1 rounded-full flex items-center gap-1">
                                 <Star size={12} className="text-yellow-500 fill-yellow-500" />
                                 4.4 <span className="text-zinc-500 font-normal">(138)</span>
                             </div>
@@ -46,12 +46,12 @@ export default function Stores() {
                         <div className="p-5">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-bold font-display text-lg">{store.name}</h3>
-                                <span className="text-shaco-red font-bold text-sm bg-shaco-red/10 px-2 py-1 rounded-lg">{store.distance}</span>
+                                <span className="text-shaco-red font-bold text-base bg-shaco-red/10 px-2 py-1 rounded-lg">{store.distance}</span>
                             </div>
 
                             <div className="flex items-start gap-2 mb-6">
                                 <MapPin size={16} className="text-zinc-400 mt-1 shrink-0" />
-                                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                                <p className={`text-base leading-relaxed ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'}`}>
                                     {store.address}
                                 </p>
                             </div>
@@ -61,7 +61,7 @@ export default function Stores() {
                                     href={store.mapUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
+                                    className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition ${theme === 'dark' ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
                                 >
                                     <Navigation size={16} />
                                     Yol Tarifi

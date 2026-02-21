@@ -73,7 +73,7 @@ export default function CoffeeBuilder({ ingredients, onComplete }) {
                 </div>
             )}
 
-            <div className="mt-8 text-zinc-500 font-mono text-xs">
+            <div className="mt-8 text-zinc-500 font-mono text-base">
                 {Math.round((Math.min(step, ingredients.length) / ingredients.length) * 100)}%
             </div>
         </div>
