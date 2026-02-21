@@ -11,7 +11,7 @@ import LazyImage from '../components/LazyImage';
 import { useSocialMedia } from '../context/SocialMediaContext';
 
 export default function Home() {
-    const { stars, balance } = useRewards();
+    const { stars, balance, favoriteProduct } = useRewards();
     const { user, isGuest, isStaff } = useAuth();
     const { theme } = useTheme();
     const navigate = useNavigate();
@@ -40,6 +40,7 @@ export default function Home() {
     }, []);
 
     const popularProducts = products.slice(0, 4);
+    const pFav = favoriteProduct ? products.find(p => p.name === favoriteProduct.name) : null;
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
@@ -201,6 +202,32 @@ export default function Home() {
                         ))}
                     </div>
                 </motion.div>
+
+                {/* Favorite Product (Müdavim Özelliği) */}
+                {!isGuest && pFav && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mb-7">
+                        <SectionHeader title="Sizin Klasikleriniz" action="Sipariş Ver" onAction={() => navigate(`/product/${pFav.id}`)} isDark={isDark} />
+                        <motion.div whileTap={{ scale: 0.98 }} onClick={() => navigate(`/product/${pFav.id}`)}
+                            className={`flex items-center gap-4 p-3 rounded-2xl cursor-pointer ${isDark ? 'bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/20' : 'bg-gradient-to-r from-yellow-50 to-white border border-yellow-200/50 shadow-sm'}`}
+                        >
+                            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                                <LazyImage src={pFav.image} alt={pFav.name} className="w-full h-full object-cover" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                    <h4 className={`font-bold text-[15px] truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{pFav.name}</h4>
+                                    <span className="bg-yellow-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">MÜDAVİM</span>
+                                </div>
+                                <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                                    Toplam <strong className={isDark ? 'text-yellow-500' : 'text-yellow-600'}>{favoriteProduct.count} kez</strong> aldınız.
+                                </p>
+                            </div>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>
+                                <ChevronRight size={14} />
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
 
                 {/* Social Media */}
                 <SocialMediaSection isDark={isDark} />

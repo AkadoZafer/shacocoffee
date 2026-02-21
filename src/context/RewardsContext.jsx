@@ -21,6 +21,7 @@ export function RewardsProvider({ children }) {
     const [transactions, setTransactions] = useState([]);
     const [orders, setOrders] = useState([]);
     const [activeOrder, setActiveOrder] = useState(null);
+    const [favoriteProduct, setFavoriteProduct] = useState(null);
 
     // Stamp card: 0-8, at 8 = free drink
     const [stampCount, setStampCount] = useState(0);
@@ -106,10 +107,51 @@ export function RewardsProvider({ children }) {
             setOrders(fetchedOrders);
             const latestPending = fetchedOrders.find(o => o.status === 'Bekliyor' && o.userId === user.uid);
             setActiveOrder(latestPending ? latestPending : null);
+
+            // Favori Ürün Hesaplama
+            if (user.role === 'customer') {
+                const productCounts = {};
+                fetchedOrders.forEach(order => {
+                    if (order.status !== 'İptal Edildi' && order.items) {
+                        order.items.forEach(item => {
+                            productCounts[item.name] = (productCounts[item.name] || 0) + (item.quantity || 1);
+                        });
+                    }
+                });
+
+                let maxCount = 0;
+                let favName = null;
+                for (const [name, count] of Object.entries(productCounts)) {
+                    if (count > maxCount && count >= 2) { // En az 2 kez alınmış olmalı
+                        maxCount = count;
+                        favName = name;
+                    }
+                }
+                setFavoriteProduct(favName ? { name: favName, count: maxCount } : null);
+            } else {
+                setFavoriteProduct(null);
+            }
         });
 
         return () => unsubscribe();
     }, [user]);
+
+    // Barista için müşterinin müdavimi olduğu (sık aldığı) ürün kontrolü
+    const isFrequentItem = (userId, itemName) => {
+        if (!orders || orders.length === 0) return false;
+        let count = 0;
+        for (let i = 0; i < orders.length; i++) {
+            const order = orders[i];
+            if (order.userId === userId && order.status !== 'İptal Edildi' && order.items) {
+                for (let j = 0; j < order.items.length; j++) {
+                    if (order.items[j].name === itemName) {
+                        count += (order.items[j].quantity || 1);
+                    }
+                }
+            }
+        }
+        return count >= 2;
+    };
 
 
     const addStar = async (amount) => {
@@ -306,10 +348,10 @@ export function RewardsProvider({ children }) {
 
     return (
         <RewardsContext.Provider value={{
-            stars, balance, transactions, orders, activeOrder,
+            stars, balance, transactions, orders, activeOrder, favoriteProduct,
             addStar, deductBalance, topUpBalance, addBalance: topUpBalance,
             addToCart, removeFromCart, clearCart, checkoutCart,
-            dismissActiveOrder, confirmOrder, cancelOrder, cart,
+            dismissActiveOrder, confirmOrder, cancelOrder, isFrequentItem, cart,
             stampCount, stampJustEarned, freeRewardAvailable, setFreeRewardAvailable,
         }}>
             {children}

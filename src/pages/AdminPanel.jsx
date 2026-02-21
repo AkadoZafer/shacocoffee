@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useRewards } from '../context/RewardsContext';
 import { useSocialMedia } from '../context/SocialMediaContext';
 import { useNavigate } from 'react-router-dom';
-import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign } from 'lucide-react';
+import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star } from 'lucide-react';
 import { products as initialProducts } from '../data/products';
 import { Html5Qrcode } from 'html5-qrcode';
 
@@ -23,7 +23,7 @@ export default function AdminPanel() {
     const { extras, addExtra, removeExtra } = useExtras();
     const { tiers, updateTier } = useMembership();
     const { user } = useAuth();
-    const { orders, confirmOrder } = useRewards();
+    const { orders, confirmOrder, isFrequentItem } = useRewards();
     const { accounts: socialAccounts, addAccount: addSocialAccount, removeAccount: removeSocialAccount, updateAccount: updateSocialAccount, PLATFORM_OPTIONS } = useSocialMedia();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
@@ -283,6 +283,57 @@ export default function AdminPanel() {
                             )}
                         </div>
 
+                        {/* Incoming Orders Section */}
+                        <div className="mt-8">
+                            <SectionLabel label="GELEN SİPARİŞLER" isDark={isDark} />
+                            <div className="space-y-3">
+                                {orders.filter(o => o.status === 'Bekliyor').length === 0 ? (
+                                    <p className={`text-sm ${isDark ? 'text-zinc-600' : 'text-zinc-400'} italic`}>Şu an bekleyen yeni sipariş bulunmuyor.</p>
+                                ) : (
+                                    orders.filter(o => o.status === 'Bekliyor').map(order => (
+                                        <div key={order.id} className={`p-4 rounded-xl border-l-4 border-l-blue-500 relative overflow-hidden ${cardClass}`}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>SİPARİŞ NO: {order.code}</p>
+                                                    <p className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{order.customerName || 'Müşteri'}</p>
+                                                </div>
+                                                <span className="text-shaco-red font-bold text-lg">₺{order.total}</span>
+                                            </div>
+
+                                            <div className="space-y-2 mt-3 p-3 rounded-lg bg-black/5 dark:bg-white/5">
+                                                {order.items?.map((item, idx) => {
+                                                    const isFreq = isFrequentItem(order.userId, item.name);
+                                                    return (
+                                                        <div key={idx} className="flex justify-between items-start">
+                                                            <div>
+                                                                <p className={`text-[15px] font-semibold flex items-center gap-1.5 ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>
+                                                                    {item.quantity || 1}x {item.name}
+                                                                    {isFreq && (
+                                                                        <span className="bg-yellow-500 text-white text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider shadow-sm flex items-center gap-0.5">
+                                                                            <Star size={10} className="fill-white" /> Müdavim Ürünü
+                                                                        </span>
+                                                                    )}
+                                                                </p>
+                                                                {item.customizations?.length > 0 && (
+                                                                    <p className={`text-xs mt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{item.customizations.join(', ')}</p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+
+                                            <div className="mt-4 flex justify-end">
+                                                <button onClick={() => confirmOrder(order.code)}
+                                                    className="px-4 py-2 rounded-lg font-bold text-sm bg-blue-500 text-white shadow-lg shadow-blue-500/20 active:scale-95 transition flex items-center gap-1.5">
+                                                    <Check size={14} /> Hazırla & Onayla
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
 
                     </motion.div>
                 )}
