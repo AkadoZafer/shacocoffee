@@ -227,72 +227,52 @@ export function RewardsProvider({ children }) {
 
         const total = currentItems.reduce((sum, item) => sum + item.totalPrice, 0);
         if (balance >= total) {
-            const orderCode = generateOrderCode();
-            const newOrderData = {
-                code: orderCode,
-                userId: user.uid,
-                customerName: user.name || 'Müşteri',
-                items: currentItems.map(item => ({
+            try {
+                const token = await auth.currentUser.getIdToken();
+                const itemsPayload = currentItems.map(item => ({
                     name: item.product.name,
-                    customizations: item.customizations,
+                    customizations: item.customizations || null,
                     price: item.totalPrice,
                     quantity: 1,
-                })),
-                total,
-                date: new Date().toISOString(),
-                status: 'Bekliyor',
-                timestamp: serverTimestamp(),
-            };
+                }));
 
-            const newBalance = balance - total;
-            const newTransaction = { id: Date.now(), amount: total, type: 'purchase', date: new Date().toLocaleDateString() };
-            const newTransactions = [newTransaction, ...transactions];
-            const newStars = stars + (currentItems.length * 5);
-
-            let newStampCount = stampCount + 1;
-            let earnedFree = false;
-
-            if (newStampCount >= 8) {
-                earnedFree = true;
-                newStampCount = 0;
-            }
-
-            // Write Order to Firestore
-            try {
-                await addDoc(collection(db, 'orders'), newOrderData);
-
-                // Write User Data to Firestore
-                const userRef = doc(db, 'users', user.uid);
-                await updateDoc(userRef, {
-                    balance: newBalance,
-                    transactions: newTransactions,
-                    stars: newStars,
-                    stampCount: newStampCount
+                const response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        items: itemsPayload,
+                        total: total,
+                        customerName: user.name || 'Müşteri'
+                    })
                 });
 
-                // Optimizasyon: React statelerini Firestore işlemi başarılı olduktan sonra güncelle
-                setBalance(newBalance);
-                setStars(newStars);
-                setStampCount(newStampCount);
-                setTransactions(newTransactions);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || 'Sipariş API hatası');
+                }
 
-            } catch (e) {
-                console.error("Sipariş verilirken hata oluştu:", e);
+                const data = await response.json();
+
+                if (data.earned_free) {
+                    setFreeRewardAvailable(true);
+                } else {
+                    setStampJustEarned(true);
+                    setTimeout(() => setStampJustEarned(false), 2000);
+                }
+
+                if (!directItems) clearCart();
+                try { await Haptics.notification({ type: 'SUCCESS' }); } catch (e) { /* ignore */ }
+
+                return data.order;
+            } catch (error) {
+                console.error("Sipariş verilirken hata oluştu:", error);
+                // Bakiye yetersiz vb. kritik hatalarda uyarı titremesi
                 try { await Haptics.notification({ type: 'ERROR' }); } catch (ignore) { }
                 return null;
             }
-
-            if (earnedFree) {
-                setFreeRewardAvailable(true);
-            } else {
-                setStampJustEarned(true);
-                setTimeout(() => setStampJustEarned(false), 2000);
-            }
-
-            if (!directItems) clearCart();
-            try { await Haptics.notification({ type: 'SUCCESS' }); } catch (e) { /* ignore */ }
-
-            return newOrderData;
         }
 
         try { await Haptics.notification({ type: 'ERROR' }); } catch (e) { /* ignore */ }
