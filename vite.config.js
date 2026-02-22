@@ -10,6 +10,12 @@ export default defineConfig({
     hmr: {
       protocol: 'wss',
       clientPort: 443
+    },
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      }
     }
   }
 })
