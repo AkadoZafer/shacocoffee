@@ -10,11 +10,7 @@ import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
-// Pre-defined staff accounts (barista & admin)
-const STAFF_ACCOUNTS = [
-    { email: 'admin@shaco.com', password: 'admin123', name: 'Admin', role: 'admin' },
-    { email: 'barista@shaco.com', password: 'barista123', name: 'Barista', role: 'barista' },
-];
+
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -30,16 +26,9 @@ export function AuthProvider({ children }) {
                     if (docSnap.exists()) {
                         setUser({ uid: firebaseUser.uid, ...docSnap.data() });
                     } else {
-                        // Check if it's a staff account
-                        const staff = STAFF_ACCOUNTS.find(a => a.email.toLowerCase() === firebaseUser.email.toLowerCase());
-                        if (staff) {
-                            const staffData = { name: staff.name, role: staff.role, email: staff.email, avatar: null, joined: new Date().toISOString() };
-                            await setDoc(docRef, staffData);
-                            setUser({ uid: firebaseUser.uid, ...staffData });
-                        } else {
-                            // Fallback
-                            setUser({ uid: firebaseUser.uid, email: firebaseUser.email, role: 'customer', name: 'Müşteri' });
-                        }
+                        // Profil bulunamazsa en düşük yetkiyle (customer) state başlatılır.
+                        // Admin ve Barista rolleri sadece Firestore kuralları (db) veya Cloud Functions ile yönetilebilir.
+                        setUser({ uid: firebaseUser.uid, email: firebaseUser.email, role: 'customer', name: 'Kullanıcı' });
                     }
                 } catch (error) {
                     console.error("Kullanıcı verisi çekilemedi:", error);

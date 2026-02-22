@@ -1,20 +1,17 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useAuth } from './AuthContext';
+import { useToast } from './ToastContext';
 import { db, auth } from '../firebase';
 import { doc, onSnapshot, updateDoc, collection, addDoc, query, where, orderBy, serverTimestamp, getDoc } from 'firebase/firestore';
 
 const RewardsContext = createContext();
 
-function generateOrderCode() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'SHC-';
-    for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    return code;
-}
+
 
 export function RewardsProvider({ children }) {
     const { user } = useAuth();
+    const { addToast } = useToast();
 
     const [stars, setStars] = useState(0);
     const [balance, setBalance] = useState(0);
@@ -193,12 +190,15 @@ export function RewardsProvider({ children }) {
                 throw new Error(errorData.detail || 'Bakiye yükleme API hatası');
             }
 
+            addToast('Bakiye başarıyla yüklendi!', 'success');
+
             // Başarılı olursa Haptic geri bildirim ver, 
             // state güncellemeleri zaten yukarıdaki `onSnapshot` dinleyicisi ile anında yansıtılacak.
             try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { /* ignore */ }
 
         } catch (error) {
             console.error('Güvenli bakiye yükleme başarısız oldu:', error);
+            addToast(error.message || 'Bakiye yükleme başarısız oldu.', 'error');
         }
     };
 
@@ -269,6 +269,9 @@ export function RewardsProvider({ children }) {
                 return data.order;
             } catch (error) {
                 console.error("Sipariş verilirken hata oluştu:", error);
+                // API'den dönen HTTP hatasını Toast mesajı (bildirim) olarak göster.
+                addToast(error.message || 'Siparişiniz işlenirken bir sorun oluştu.', 'error');
+
                 // Bakiye yetersiz vb. kritik hatalarda uyarı titremesi
                 try { await Haptics.notification({ type: 'ERROR' }); } catch (ignore) { }
                 return null;
