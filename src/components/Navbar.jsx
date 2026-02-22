@@ -19,15 +19,7 @@ export default function Navbar() {
                     }`}>
                     <NavLink to="/" icon={<Home size={20} />} label="Ana Sayfa" active={isActive('/')} theme={theme} />
 
-                    {/* Center Highlight Button - Admin Panel */}
-                    <Link to="/admin" className="relative -mt-6">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${isActive('/admin')
-                            ? 'bg-shaco-red text-white shadow-red-500/30'
-                            : 'bg-shaco-red text-white hover:shadow-red-500/40 hover:scale-105'
-                            }`}>
-                            <Shield size={22} />
-                        </div>
-                    </Link>
+                    <NavLink to="/admin" icon={<Shield size={20} />} label="Yönetim" active={isActive('/admin')} theme={theme} />
 
                     <NavLink to="/settings" icon={<User size={20} />} label="Profil" active={isActive('/settings')} theme={theme} />
                 </nav>
@@ -45,15 +37,7 @@ export default function Navbar() {
                 <NavLink to="/" icon={<Home size={24} />} label="Ana Sayfa" active={isActive('/')} theme={theme} />
                 <NavLink to="/menu" icon={<Coffee size={24} />} label="Menü" active={isActive('/menu')} theme={theme} />
 
-                {/* Center Highlight Button - QR Öde */}
-                <Link to="/pay" className="relative -mt-6 mx-2">
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300 ${isActive('/pay')
-                        ? 'bg-shaco-red text-white shadow-red-500/40 scale-105'
-                        : 'bg-shaco-red text-white hover:shadow-red-500/50 hover:scale-110'
-                        }`}>
-                        <QrCode size={28} />
-                    </div>
-                </Link>
+                <NavLink to="/pay" icon={<QrCode size={24} />} label="QR Öde" active={isActive('/pay')} theme={theme} />
 
                 <NavLink to="/settings" icon={<User size={24} />} label="Hesabım" active={isActive('/settings')} theme={theme} />
             </nav>
