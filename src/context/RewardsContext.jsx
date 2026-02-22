@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useAuth } from './AuthContext';
-import { db } from '../firebase';
+import { db, auth } from '../firebase';
 import { doc, onSnapshot, updateDoc, collection, addDoc, query, where, orderBy, serverTimestamp, getDoc } from 'firebase/firestore';
 
 const RewardsContext = createContext();
@@ -174,33 +174,32 @@ export function RewardsProvider({ children }) {
         const numAmount = Number(amount);
         if (isNaN(numAmount) || numAmount <= 0) return;
 
-        const newBalance = balance + numAmount;
-        const newTransaction = {
-            id: Date.now(),
-            amount: numAmount,
-            type: 'topup',
-            date: new Date().toLocaleDateString(),
-        };
-        const newTransactions = [newTransaction, ...transactions];
-
-        setBalance(newBalance);
-        setTransactions(newTransactions);
-
-        const userRef = doc(db, 'users', user.uid);
         try {
-            await updateDoc(userRef, {
-                balance: newBalance,
-                transactions: newTransactions
-            });
-        } catch (error) {
-            console.error('Bakiye yüklenemedi:', error);
-            // Revert state if failed
-            setBalance(balance);
-            setTransactions(transactions);
-            return;
-        }
+            // Firebase kütüphanesinden güncel ID Token'ı al
+            const token = await auth.currentUser.getIdToken();
 
-        try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { /* ignore */ }
+            // Güvenli Backend (FastAPI) Sunucusuna İstek At
+            const response = await fetch('/api/topup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ amount: numAmount })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || 'Bakiye yükleme API hatası');
+            }
+
+            // Başarılı olursa Haptic geri bildirim ver, 
+            // state güncellemeleri zaten yukarıdaki `onSnapshot` dinleyicisi ile anında yansıtılacak.
+            try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { /* ignore */ }
+
+        } catch (error) {
+            console.error('Güvenli bakiye yükleme başarısız oldu:', error);
+        }
     };
 
     const addToCart = async (product, customizations, totalPrice) => {
