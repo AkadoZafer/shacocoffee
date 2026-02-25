@@ -32,36 +32,35 @@ export default function Navbar() {
 
     // Customer / Guest navbar: Ana Sayfa, Menü, QR/Ödeme, Hesabım
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-6 pt-10 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
-            {/* Ortadaki QR Butonu (Floating) */}
-            <div className="absolute bottom-[2.2rem] left-1/2 -translate-x-1/2 z-20 pointer-events-auto">
-                <Link
-                    to="/pay"
-                    onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
-                    className={`flex items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 shadow-[0_8px_30px_rgba(0,0,0,0.5)] ${isActive('/pay') ? 'bg-shaco-red text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]' : isDark ? 'bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700/50' : 'bg-white text-zinc-700 hover:text-zinc-900 border border-zinc-200'}`}
+        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+
+            {/* Yüzen (Floating) Ayrık Butonlar */}
+            <div className="flex items-end justify-center gap-6 pointer-events-auto w-full max-w-sm px-6">
+
+                {/* Ana Sayfa */}
+                <Link to="/" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
+                    className={`flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 shadow-lg ${isActive('/') ? (isDark ? 'bg-zinc-800 border-white/10 text-shaco-red shadow-[0_4px_15px_rgba(239,68,68,0.2)]' : 'bg-white border-zinc-200 text-shaco-red') : (isDark ? 'bg-zinc-900/90 backdrop-blur-md border border-white/5 text-zinc-500 hover:text-white' : 'bg-white/90 backdrop-blur-md border border-zinc-200/50 text-zinc-500')}`}
                 >
-                    <QrCode size={26} className={isActive('/pay') ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''} />
+                    <Home size={22} className={isActive('/') ? 'drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]' : ''} />
+                    <span className={`text-[9px] font-bold mt-0.5 ${isActive('/') ? 'text-shaco-red' : ''}`}>Ana Sayfa</span>
                 </Link>
+
+                {/* QR Öde (Merkez & Büyük) */}
+                <Link to="/pay" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
+                    className={`flex items-center justify-center w-16 h-16 rounded-full transition-all duration-300 active:scale-90 shadow-xl border ${isActive('/pay') ? 'bg-shaco-red border-red-500 text-white shadow-[0_0_25px_rgba(239,68,68,0.6)]' : isDark ? 'bg-zinc-800 border-zinc-700/50 text-zinc-200 hover:text-white' : 'bg-zinc-900 border-zinc-800 text-white hover:bg-black'}`}
+                >
+                    <QrCode size={28} className={isActive('/pay') ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''} />
+                </Link>
+
+                {/* Menü */}
+                <Link to="/menu" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
+                    className={`flex flex-col items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 shadow-lg ${isActive('/menu') ? (isDark ? 'bg-zinc-800 border-white/10 text-shaco-red shadow-[0_4px_15px_rgba(239,68,68,0.2)]' : 'bg-white border-zinc-200 text-shaco-red') : (isDark ? 'bg-zinc-900/90 backdrop-blur-md border border-white/5 text-zinc-500 hover:text-white' : 'bg-white/90 backdrop-blur-md border border-zinc-200/50 text-zinc-500')}`}
+                >
+                    <Coffee size={22} className={isActive('/menu') ? 'drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]' : ''} />
+                    <span className={`text-[9px] font-bold mt-0.5 ${isActive('/menu') ? 'text-shaco-red' : ''}`}>Menü</span>
+                </Link>
+
             </div>
-
-            <nav className={`w-full max-w-sm mx-4 backdrop-blur-3xl border rounded-3xl flex items-center justify-between p-2 px-10 relative pointer-events-auto transition-all duration-300 shadow-xl ${isDark
-                ? 'bg-zinc-900/90 border-white/5'
-                : 'bg-white/95 border-zinc-200/50'
-                }`}>
-
-                {/* Sol Taraf: Ana Sayfa */}
-                <div className="flex justify-center z-10 w-[20%]">
-                    <NavLink to="/" icon={<Home size={22} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
-                </div>
-
-                {/* Orta Boşluk - QR için Rezerve */}
-                <div className="w-[30%] h-12 pointer-events-none" />
-
-                {/* Sağ Taraf: Menü */}
-                <div className="flex justify-center z-10 w-[20%]">
-                    <NavLink to="/menu" icon={<Coffee size={22} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
-                </div>
-            </nav>
         </div>
     );
 }
