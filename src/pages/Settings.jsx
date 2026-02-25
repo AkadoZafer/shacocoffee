@@ -4,8 +4,10 @@ import { useTheme } from '../context/ThemeContext';
 import { useRewards } from '../context/RewardsContext';
 import { useMembership } from '../context/MembershipContext';
 import { User, CreditCard, History, HelpCircle, Shield, ChevronRight, LogOut, Moon, Sun, Star, Camera, ImageIcon, Save, X } from 'lucide-react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Settings() {
     const { user, logout, updateAvatar, updateProfile, isGuest, isStaff } = useAuth();
@@ -23,6 +25,17 @@ export default function Settings() {
         phone: user?.phone || '',
         birthDate: user?.birthDate || ''
     });
+
+    const [supportUrl, setSupportUrl] = useState('');
+
+    useEffect(() => {
+        const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists() && docSnap.data().supportUrl) {
+                setSupportUrl(docSnap.data().supportUrl);
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
     const isDark = theme === 'dark';
     const tier = getTierForStars(stars);
@@ -227,7 +240,9 @@ export default function Settings() {
                         </button>
                     </div>
                     {/* Removed duplicate "Profile Photo" button logic here since it's now in main card */}
-                    <ProfileRow icon={<HelpCircle size={17} />} iconBg="bg-violet-500/10 text-violet-400" label="Yardım & Destek" isDark={isDark} />
+                    {supportUrl && (
+                        <ProfileRow icon={<HelpCircle size={17} />} iconBg="bg-violet-500/10 text-violet-400" label="Yardım & Destek" isDark={isDark} onClick={() => window.open(supportUrl, '_blank')} />
+                    )}
                 </motion.div>
 
                 {/* Logout / Login for Guests */}

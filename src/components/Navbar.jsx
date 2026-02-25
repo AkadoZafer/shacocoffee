@@ -10,43 +10,61 @@ export default function Navbar() {
     const { user, isStaff, isBarista, isAdmin } = useAuth();
     const isActive = (path) => location.pathname === path;
 
+    const isDark = theme === 'dark';
+
     // Staff navbar: Ana Sayfa, Yönetici Panel, Profil
     if (isStaff) {
         return (
             <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-6 pt-4 bg-gradient-to-t from-shaco-black/80 to-transparent">
-                <nav className={`w-full max-w-sm mx-4 backdrop-blur-2xl border rounded-2xl shadow-glass flex items-center justify-between p-2 px-3 relative pointer-events-auto transition-all duration-300 ${theme === 'dark'
+                <nav className={`w-full max-w-sm mx-4 backdrop-blur-2xl border rounded-2xl shadow-glass flex items-center justify-between p-2 px-6 relative pointer-events-auto transition-all duration-300 ${isDark
                     ? 'bg-zinc-900/80 border-white/5'
                     : 'bg-white/90 border-zinc-200/50'
                     }`}>
-                    <NavLink to="/" icon={<Home size={20} />} label="Ana Sayfa" active={isActive('/')} theme={theme} />
+                    <NavLink to="/" icon={<Home size={22} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
 
-                    <NavLink to="/admin" icon={<Shield size={20} />} label="Yönetim" active={isActive('/admin')} theme={theme} />
+                    <NavLink to="/admin" icon={<Shield size={22} />} label="Yönetim" active={isActive('/admin')} isDark={isDark} />
 
-                    <NavLink to="/settings" icon={<User size={20} />} label="Profil" active={isActive('/settings')} theme={theme} />
+                    <NavLink to="/settings" icon={<User size={22} />} label="Hesabım" active={isActive('/settings')} isDark={isDark} />
                 </nav>
             </div>
         );
     }
 
-    // Customer / Guest navbar: Ana Sayfa, Menü, QR/Ödeme, Profil
+    // Customer / Guest navbar: Ana Sayfa, Menü, QR/Ödeme, Hesabım
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-6 pt-4 bg-gradient-to-t from-shaco-black/80 to-transparent">
-            <nav className={`w-full max-w-sm mx-4 backdrop-blur-2xl border rounded-2xl shadow-glass flex items-center justify-between p-2 px-6 relative pointer-events-auto transition-all duration-300 ${theme === 'dark'
-                ? 'bg-zinc-900/80 border-white/5'
-                : 'bg-white/90 border-zinc-200/50'
+        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-6 pt-10 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+            {/* Ortadaki QR Butonu */}
+            <div className="absolute bottom-[2.2rem] left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
+                <Link
+                    to="/pay"
+                    onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
+                    className={`flex items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 shadow-glass ${isActive('/pay') ? 'bg-shaco-red text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]' : isDark ? 'bg-zinc-800 text-zinc-300 hover:text-white border border-white/10' : 'bg-white text-zinc-700 hover:text-zinc-900 border border-zinc-200'}`}
+                >
+                    <QrCode size={26} className={isActive('/pay') ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''} />
+                </Link>
+            </div>
+
+            <nav className={`w-full max-w-sm mx-4 backdrop-blur-3xl border rounded-2xl flex items-center justify-between p-2 px-6 relative pointer-events-auto transition-all duration-300 ${isDark
+                ? 'bg-zinc-900/90 border-white/5 shadow-glass'
+                : 'bg-white/95 border-zinc-200/50 shadow-md'
                 }`}>
-                <NavLink to="/" icon={<Home size={24} />} label="Ana Sayfa" active={isActive('/')} theme={theme} />
-                <NavLink to="/menu" icon={<Coffee size={24} />} label="Menü" active={isActive('/menu')} theme={theme} />
 
-                <NavLink to="/pay" icon={<QrCode size={24} />} label="QR Öde" active={isActive('/pay')} theme={theme} />
+                {/* Sol Taraf: Ana Sayfa & Menü */}
+                <div className="flex justify-start gap-6 w-[40%]">
+                    <NavLink to="/" icon={<Home size={22} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
+                    <NavLink to="/menu" icon={<Coffee size={22} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
+                </div>
 
-                <NavLink to="/settings" icon={<User size={24} />} label="Hesabım" active={isActive('/settings')} theme={theme} />
+                {/* Sağ Taraf: Hesabım (QR butonu ortada havada kaldığı için buraları boşluklu bırakıyoruz) */}
+                <div className="flex justify-end gap-6 w-[40%]">
+                    <NavLink to="/settings" icon={<User size={22} />} label="Hesabım" active={isActive('/settings')} isDark={isDark} />
+                </div>
             </nav>
         </div>
     );
 }
 
-function NavLink({ to, icon, label, active, theme }) {
+function NavLink({ to, icon, label, active, isDark }) {
     const handlePress = async () => {
         try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { }
     };
@@ -54,9 +72,9 @@ function NavLink({ to, icon, label, active, theme }) {
         <Link
             to={to}
             onClick={handlePress}
-            className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all duration-300 active:scale-90 ${active
+            className={`flex flex-col items-center gap-1 transition-all duration-300 active:scale-90 ${active
                 ? 'text-shaco-red'
-                : theme === 'dark'
+                : isDark
                     ? 'text-zinc-500 hover:text-white'
                     : 'text-zinc-400 hover:text-zinc-900'
                 }`}

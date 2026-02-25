@@ -7,8 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useRewards } from '../context/RewardsContext';
 import { useSocialMedia } from '../context/SocialMediaContext';
 import { useNavigate } from 'react-router-dom';
-import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star, Megaphone } from 'lucide-react';
-import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star, Megaphone, Settings as SettingsIcon } from 'lucide-react';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { products as initialProducts } from '../data/products';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -102,6 +102,27 @@ export default function AdminPanel() {
 
     const toggleCampaignStatus = async (id, currentStatus) => {
         try { await updateDoc(doc(db, 'campaigns', id), { isActive: !currentStatus }); } catch (e) { alert('Hata: ' + e.message); }
+    };
+
+    // Settings (Support URL) State
+    const [supportUrl, setSupportUrl] = useState('');
+    useEffect(() => {
+        if (!isAdmin) return;
+        const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
+            if (docSnap.exists()) {
+                setSupportUrl(docSnap.data().supportUrl || '');
+            }
+        });
+        return () => unsubscribe();
+    }, [isAdmin]);
+
+    const handleSaveSettings = async () => {
+        try {
+            await setDoc(doc(db, 'settings', 'general'), { supportUrl }, { merge: true });
+            alert('Ayarlar başarıyla kaydedildi!');
+        } catch (error) {
+            alert('Hata: ' + error.message);
+        }
     };
 
     const isDark = theme === 'dark';
@@ -223,7 +244,8 @@ export default function AdminPanel() {
         { key: 'extras', label: 'Ekstralar', icon: <Plus size={12} /> },
         { key: 'membership', label: 'Üyelik', icon: <Crown size={12} /> },
         { key: 'users', label: 'Bakiye & Log', icon: <QrCode size={12} /> },
-        { key: 'social', label: 'Sosyal Medya', icon: <Share2 size={12} /> },
+        { key: 'social', label: 'Sosyal', icon: <Share2 size={12} /> },
+        { key: 'settings', label: 'Ayarlar', icon: <SettingsIcon size={12} /> },
     ];
 
     const baristaSections = [
@@ -710,6 +732,30 @@ export default function AdminPanel() {
                                     </div>
                                 ))
                             )}
+                        </div>
+                    </motion.div>
+                )}
+                {/* ============ SETTINGS ============ */}
+                {activeSection === 'settings' && isAdmin && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <div className={`p-4 rounded-2xl mb-5 ${cardClass}`}>
+                            <SectionLabel label="GENEL YÖNETİM" isDark={isDark} />
+                            <p className={`text-[13px] mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
+                                Müşterilerin profil sayfasındaki 'Yardım & Destek' butonuna tıkladıklarında yönlendirilecekleri WhatsApp veya Whatsapp/Destek bağlantısını belirleyin. Boş bırakırsanız buton görünmez.
+                            </p>
+
+                            <FormField label="YARDIM & DESTEK LİNKİ" isDark={isDark}>
+                                <input
+                                    value={supportUrl}
+                                    onChange={(e) => setSupportUrl(e.target.value)}
+                                    placeholder="örn: https://wa.me/905320000000"
+                                    className={`w-full p-3 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition mb-3 ${inputClass}`}
+                                />
+                            </FormField>
+
+                            <button onClick={handleSaveSettings} className="w-full py-3.5 rounded-xl bg-shaco-red text-white flex items-center justify-center gap-2 font-bold shadow-lg shadow-red-500/15 active:scale-[0.98] transition">
+                                <Check size={16} /> Kaydet
+                            </button>
                         </div>
                     </motion.div>
                 )}
