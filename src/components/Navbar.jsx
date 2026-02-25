@@ -44,18 +44,18 @@ export default function Navbar() {
                 </Link>
             </div>
 
-            <nav className={`w-full max-w-sm mx-4 backdrop-blur-3xl border rounded-2xl flex items-center justify-between p-2 px-6 relative pointer-events-auto transition-all duration-300 ${isDark
+            <nav className={`w-auto backdrop-blur-3xl border rounded-[2rem] flex items-center justify-center gap-[4.5rem] p-2 px-8 relative pointer-events-auto transition-all duration-300 ${isDark
                 ? 'bg-zinc-900/90 border-white/5 shadow-glass'
                 : 'bg-white/95 border-zinc-200/50 shadow-md'
                 }`}>
 
                 {/* Sol Taraf: Ana Sayfa */}
-                <div className="flex justify-start w-[40%] pl-2">
+                <div className="flex justify-center">
                     <NavLink to="/" icon={<Home size={22} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
                 </div>
 
                 {/* Sağ Taraf: Menü */}
-                <div className="flex justify-end w-[40%] pr-2">
+                <div className="flex justify-center">
                     <NavLink to="/menu" icon={<Coffee size={22} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
                 </div>
             </nav>
