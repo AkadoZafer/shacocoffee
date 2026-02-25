@@ -167,9 +167,9 @@ export default function Settings() {
 
                 {/* HESAP */}
                 <SectionLabel label="HESAP" isDark={isDark} delay={0.15} />
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="space-y-1.5 mb-7">
-                    {/* Personal Info Edit Section */}
-                    <div className={`rounded-2xl overflow-hidden transition-all duration-300 ${editMode ? (isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-lg') : ''}`}>
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-7">
+                    <div className={`rounded-3xl overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
+                        {/* Personal Info Edit Section */}
                         <ProfileRow
                             icon={<User size={17} />}
                             iconBg="bg-red-500/10 text-red-400"
@@ -177,6 +177,7 @@ export default function Settings() {
                             isDark={isDark}
                             onClick={() => setEditMode(!editMode)}
                             rightIcon={editMode ? <X size={16} /> : <ChevronRight size={15} />}
+                            isFirst={true}
                         />
                         <AnimatePresence>
                             {editMode && (
@@ -219,30 +220,37 @@ export default function Settings() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </div>
 
-                    {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
-                    <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} />
+                        {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
+                        <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={true} />
+                    </div>
                 </motion.div>
 
                 {/* GENEL */}
                 <SectionLabel label="GENEL" isDark={isDark} delay={0.25} />
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-1.5 mb-7">
-                    <div className={`p-3.5 rounded-2xl flex items-center justify-between ${isDark ? 'bg-zinc-900 border border-zinc-800/80' : 'bg-white border border-zinc-200 shadow-sm'}`}>
-                        <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-indigo-500/10 text-indigo-500'}`}>
-                                {isDark ? <Sun size={17} /> : <Moon size={17} />}
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-7">
+                    <div className={`rounded-3xl overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
+                        <div className={`p-4 flex items-center justify-between border-b ${isDark ? 'border-zinc-800/80 hover:bg-zinc-800/30' : 'border-zinc-100/80 hover:bg-zinc-50'}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-indigo-500/10 text-indigo-500'}`}>
+                                    {isDark ? <Sun size={17} /> : <Moon size={17} />}
+                                </div>
+                                <span className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Tema</span>
                             </div>
-                            <span className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Tema</span>
+                            <button onClick={toggleTheme} className={`w-11 h-6 rounded-full transition-all duration-300 relative ${isDark ? 'bg-shaco-red' : 'bg-zinc-300'}`}>
+                                <div className={`bg-white rounded-full absolute top-[3px] transition-all duration-300 shadow-sm ${isDark ? 'left-[22px]' : 'left-[3px]'}`} style={{ width: 18, height: 18 }} />
+                            </button>
                         </div>
-                        <button onClick={toggleTheme} className={`w-11 h-6 rounded-full transition-all duration-300 relative ${isDark ? 'bg-shaco-red' : 'bg-zinc-300'}`}>
-                            <div className={`bg-white rounded-full absolute top-[3px] transition-all duration-300 shadow-sm ${isDark ? 'left-[22px]' : 'left-[3px]'}`} style={{ width: 18, height: 18 }} />
-                        </button>
+                        {/* Always show Help & Support, handle empty URL with alert */}
+                        <ProfileRow
+                            icon={<HelpCircle size={17} />}
+                            iconBg="bg-violet-500/10 text-violet-400"
+                            label="Yardım & Destek"
+                            isDark={isDark}
+                            onClick={() => supportUrl ? window.open(supportUrl, '_blank') : alert('Yardım yönlendirmesi şu an kapalıdır.')}
+                            isLast={true}
+                        />
                     </div>
-                    {/* Removed duplicate "Profile Photo" button logic here since it's now in main card */}
-                    {supportUrl && (
-                        <ProfileRow icon={<HelpCircle size={17} />} iconBg="bg-violet-500/10 text-violet-400" label="Yardım & Destek" isDark={isDark} onClick={() => window.open(supportUrl, '_blank')} />
-                    )}
                 </motion.div>
 
                 {/* Logout / Login for Guests */}
@@ -304,10 +312,10 @@ function SectionLabel({ label, isDark, delay }) {
     );
 }
 
-function ProfileRow({ icon, iconBg, label, subtitle, isDark, onClick, rightIcon }) {
+function ProfileRow({ icon, iconBg, label, subtitle, isDark, onClick, rightIcon, isFirst, isLast }) {
     return (
         <button onClick={onClick}
-            className={`w-full p-3.5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800/80 hover:border-zinc-700' : 'bg-white border border-zinc-200 shadow-sm hover:shadow-md'}`}
+            className={`w-full p-4 flex items-center justify-between transition active:bg-black/5 ${isDark ? 'hover:bg-zinc-800/30' : 'hover:bg-zinc-50/50'} ${!isLast ? (isDark ? 'border-b border-zinc-800/80' : 'border-b border-zinc-100/80') : ''}`}
         >
             <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${iconBg}`}>{icon}</div>
