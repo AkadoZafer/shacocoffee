@@ -65,7 +65,7 @@ export default function Home() {
                 <div className="p-6 pt-10 relative z-10">
                     {/* Header row: Brand + Avatar */}
                     <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-start mb-8">
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-1 items-center gap-4">
                             <div>
                                 <h1 className={`text-3xl font-display font-black uppercase tracking-tight leading-none ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO</h1>
                                 <p className="text-shaco-red font-display text-base tracking-[0.3em] font-bold uppercase -mt-0.5">COFFEE CO.</p>
@@ -74,6 +74,22 @@ export default function Home() {
                                 <img src="/images.png" alt="Shaco Logo" className="w-8 h-8 object-contain drop-shadow-md" />
                             </div>
                         </div>
+
+                        {/* User Avatar Button */}
+                        <motion.button whileTap={{ scale: 0.9 }} onClick={async () => {
+                            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                            navigate('/settings');
+                        }} className={`relative w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-800/80 border-zinc-700/50' : 'bg-white border-zinc-200/50'}`}>
+                            {user?.avatar ? (
+                                <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                <span className={`text-lg font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                                    {user?.name ? user.name.charAt(0).toUpperCase() : <UserPlus size={18} />}
+                                </span>
+                            )}
+                            {/* Notification Dot */}
+                            {user && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-shaco-red border border-white" />}
+                        </motion.button>
                     </motion.div>
 
                     {/* Greeting */}

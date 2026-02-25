@@ -49,15 +49,14 @@ export default function Navbar() {
                 : 'bg-white/95 border-zinc-200/50 shadow-md'
                 }`}>
 
-                {/* Sol Taraf: Ana Sayfa & Menü */}
-                <div className="flex justify-start gap-6 w-[40%]">
+                {/* Sol Taraf: Ana Sayfa */}
+                <div className="flex justify-start w-[40%] pl-2">
                     <NavLink to="/" icon={<Home size={22} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
-                    <NavLink to="/menu" icon={<Coffee size={22} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
                 </div>
 
-                {/* Sağ Taraf: Hesabım (QR butonu ortada havada kaldığı için buraları boşluklu bırakıyoruz) */}
-                <div className="flex justify-end gap-6 w-[40%]">
-                    <NavLink to="/settings" icon={<User size={22} />} label="Hesabım" active={isActive('/settings')} isDark={isDark} />
+                {/* Sağ Taraf: Menü */}
+                <div className="flex justify-end w-[40%] pr-2">
+                    <NavLink to="/menu" icon={<Coffee size={22} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
                 </div>
             </nav>
         </div>
