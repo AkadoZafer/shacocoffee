@@ -9,6 +9,9 @@ import { products } from '../data/products';
 import StampCard from '../components/StampCard';
 import LazyImage from '../components/LazyImage';
 import { useSocialMedia } from '../context/SocialMediaContext';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Home() {
     const { stars, balance, favoriteProduct } = useRewards();
@@ -20,16 +23,27 @@ export default function Home() {
 
     const isDark = theme === 'dark';
 
-    const campaigns = [
-        { title: "Yeni Üyelere Özel", subtitle: "İlk siparişte %30 indirim", emoji: "🎁", gradient: "from-red-600 to-red-900" },
-        { title: "3 Al 2 Öde", subtitle: "Tüm soğuk kahvelerde", emoji: "❄️", gradient: "from-cyan-600 to-blue-900" },
-        { title: "Sabah Rutini", subtitle: "Kahve + Kruvasan 95₺", emoji: "☀️", gradient: "from-amber-600 to-orange-900" },
-    ];
+    const [campaigns, setCampaigns] = useState([]);
 
     useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, 'campaigns'), (snapshot) => {
+            const list = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.isActive) {
+                    list.push({ id: doc.id, ...data });
+                }
+            });
+            setCampaigns(list.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis()));
+        });
+        return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        if (campaigns.length === 0) return;
         const timer = setInterval(() => setActiveCampaign(prev => (prev + 1) % campaigns.length), 4000);
         return () => clearInterval(timer);
-    }, []);
+    }, [campaigns.length]);
 
     const [greeting, setGreeting] = useState('');
     useEffect(() => {
@@ -53,12 +67,6 @@ export default function Home() {
                     <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-start mb-8">
                         <div className="flex items-center gap-4">
                             <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-shaco-red" />
-                                    <span className={`text-base font-bold tracking-[0.25em] uppercase ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                        Premium Coffee
-                                    </span>
-                                </div>
                                 <h1 className={`text-3xl font-display font-black uppercase tracking-tight leading-none ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO</h1>
                                 <p className="text-shaco-red font-display text-base tracking-[0.3em] font-bold uppercase -mt-0.5">COFFEE CO.</p>
                             </div>
@@ -66,20 +74,6 @@ export default function Home() {
                                 <img src="/images.png" alt="Shaco Logo" className="w-8 h-8 object-contain drop-shadow-md" />
                             </div>
                         </div>
-                        <button
-                            onClick={() => navigate('/settings')}
-                            className={`w-10 h-10 rounded-xl overflow-hidden border-2 transition ${isDark ? 'border-zinc-800 hover:border-zinc-600' : 'border-zinc-200 hover:border-zinc-400'}`}
-                        >
-                            {user?.avatar ? (
-                                <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
-                            ) : (
-                                <img
-                                    src={`https://ui-avatars.com/api/?name=${user?.name || 'S'}&background=ef4444&color=fff&size=40`}
-                                    alt="avatar"
-                                    className="w-full h-full object-cover"
-                                />
-                            )}
-                        </button>
                     </motion.div>
 
                     {/* Greeting */}
@@ -100,7 +94,7 @@ export default function Home() {
                 {isGuest && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                        className={`rounded-2xl p-5 mb-6 relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-shaco-red/20 to-zinc-900 border border-zinc-800' : 'bg-gradient-to-br from-red-50 to-white border border-zinc-200 shadow-lg'}`}
+                        className={`rounded-2xl p-5 mb-6 relative overflow-hidden glass-panel ${isDark ? 'bg-gradient-to-br from-shaco-red/20 to-zinc-900/80 border-white/5' : 'bg-gradient-to-br from-red-50 to-white/90 border-zinc-200/50 shadow-lg'}`}
                     >
                         <div className="absolute top-0 right-0 w-24 h-24 bg-shaco-red/10 rounded-full blur-2xl -translate-y-6 translate-x-6" />
                         <div className="relative z-10">
@@ -112,12 +106,12 @@ export default function Home() {
                                 Kayıt olun, yıldız kazanın ve özel fırsatlardan yararlanın.
                             </p>
                             <div className="flex gap-2">
-                                <button onClick={() => navigate('/register')}
-                                    className="flex-1 py-3 rounded-xl bg-shaco-red text-white font-bold text-base flex items-center justify-center gap-2 shadow-lg shadow-red-500/15 active:scale-[0.97] transition">
+                                <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/register'); }}
+                                    className="flex-1 py-3 rounded-xl bg-shaco-red text-white font-bold text-base flex items-center justify-center gap-2 shadow-neon-red hover:shadow-neon-red-strong active:scale-95 transition-all duration-300">
                                     <UserPlus size={14} /> Kayıt Ol
                                 </button>
-                                <button onClick={() => navigate('/login')}
-                                    className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition active:scale-[0.97] ${isDark ? 'bg-zinc-800 border border-zinc-700 text-zinc-300' : 'bg-white border border-zinc-200 text-zinc-600 shadow-sm'}`}>
+                                <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/login'); }}
+                                    className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 active:scale-95 hover:shadow-glass ${isDark ? 'bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 hover:bg-zinc-700/80' : 'bg-white/80 border border-zinc-200/50 text-zinc-600 shadow-sm hover:bg-white'}`}>
                                     <LogIn size={14} /> Giriş Yap
                                 </button>
                             </div>
@@ -129,9 +123,10 @@ export default function Home() {
                 {!isGuest && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                        className={`rounded-2xl p-4 mb-6 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}
+                        className={`rounded-2xl p-5 mb-6 glass-panel relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-white/5 to-transparent border-white/10 shadow-[0_4px_30px_rgba(239,68,68,0.15)]' : 'bg-white/80 border-zinc-200/50 shadow-sm'}`}
                     >
-                        <div className="flex items-center gap-4">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-shaco-red/20 rounded-full blur-3xl -translate-y-10 translate-x-10" />
+                        <div className="flex items-center gap-4 relative z-10">
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star size={13} className="text-yellow-500 fill-yellow-500" />
@@ -167,40 +162,48 @@ export default function Home() {
                 )}
 
                 {/* Quick Actions */}
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2 mb-7 overflow-x-auto no-scrollbar">
-                    <QuickPill icon={<QrCode size={15} />} label="QR Öde" onClick={() => navigate('/pay')} isDark={isDark} />
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2.5 mb-7 overflow-x-auto no-scrollbar pb-2">
+                    <QuickPill icon={<QrCode size={15} />} label="QR Öde" onClick={() => navigate('/pay')} isDark={isDark} accent />
                     <QuickPill icon={<Wallet size={15} />} label="Bakiye Yükle" onClick={() => navigate('/wallet')} isDark={isDark} />
                     <QuickPill icon={<Store size={15} />} label="Mağazalar" onClick={() => navigate('/stores')} isDark={isDark} />
-                    <QuickPill icon={<Gift size={15} />} label="Kuponlar" isDark={isDark} accent />
                 </motion.div>
 
                 {/* Campaigns */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-7">
                     <SectionHeader title="Kampanyalar" action="Tümü" isDark={isDark} />
-                    <div className="relative h-32 rounded-2xl overflow-hidden">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={activeCampaign}
-                                initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.02 }}
-                                transition={{ duration: 0.35 }}
-                                className={`absolute inset-0 bg-gradient-to-br ${campaigns[activeCampaign].gradient} rounded-2xl p-5 flex items-center justify-between`}
-                            >
-                                <div>
-                                    <h4 className="text-base font-bold text-white mb-0.5">{campaigns[activeCampaign].title}</h4>
-                                    <p className="text-base text-white/60 mb-3">{campaigns[activeCampaign].subtitle}</p>
-                                    <button className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-3.5 py-1.5 rounded-lg">Kullan →</button>
-                                </div>
-                                <span className="text-4xl">{campaigns[activeCampaign].emoji}</span>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-                    <div className="flex justify-center gap-1.5 mt-3">
-                        {campaigns.map((_, i) => (
-                            <button key={i} onClick={() => setActiveCampaign(i)}
-                                className={`h-1 rounded-full transition-all duration-300 ${i === activeCampaign ? 'w-5 bg-shaco-red' : `w-1.5 ${isDark ? 'bg-zinc-800' : 'bg-zinc-300'}`}`}
-                            />
-                        ))}
-                    </div>
+                    {campaigns.length > 0 ? (
+                        <>
+                            <div className="relative h-32 rounded-2xl overflow-hidden">
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeCampaign}
+                                        initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.02 }}
+                                        transition={{ duration: 0.35 }}
+                                        className={`absolute inset-0 bg-gradient-to-br ${campaigns[activeCampaign]?.gradient} rounded-2xl p-5 flex items-center justify-between`}
+                                    >
+                                        <div>
+                                            <h4 className="text-base font-bold text-white mb-0.5">{campaigns[activeCampaign]?.title}</h4>
+                                            <p className="text-base text-white/60 mb-3">{campaigns[activeCampaign]?.subtitle}</p>
+                                            <button className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-3.5 py-1.5 rounded-lg">Kullan →</button>
+                                        </div>
+                                        <span className="text-4xl">{campaigns[activeCampaign]?.emoji}</span>
+                                    </motion.div>
+                                </AnimatePresence>
+                            </div>
+                            <div className="flex justify-center gap-1.5 mt-3">
+                                {campaigns.map((_, i) => (
+                                    <button key={i} onClick={() => setActiveCampaign(i)}
+                                        className={`h-1 rounded-full transition-all duration-300 ${i === activeCampaign ? 'w-5 bg-shaco-red' : `w-1.5 ${isDark ? 'bg-zinc-800' : 'bg-zinc-300'}`}`}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className={`h-32 rounded-2xl flex flex-col items-center justify-center border border-dashed ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-red-50/50 border-red-200'}`}>
+                            <Gift size={24} className={`mb-2 ${isDark ? 'text-zinc-600' : 'text-red-300'}`} />
+                            <p className={`text-[15px] font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Şu an aktif kampanya bulunmuyor.</p>
+                        </div>
+                    )}
                 </motion.div>
 
                 {/* Favorite Product (Müdavim Özelliği) */}
@@ -208,21 +211,22 @@ export default function Home() {
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mb-7">
                         <SectionHeader title="Sizin Klasikleriniz" action="Sipariş Ver" onAction={() => navigate(`/product/${pFav.id}`)} isDark={isDark} />
                         <motion.div whileTap={{ scale: 0.98 }} onClick={() => navigate(`/product/${pFav.id}`)}
-                            className={`flex items-center gap-4 p-3 rounded-2xl cursor-pointer ${isDark ? 'bg-gradient-to-r from-yellow-500/10 to-transparent border border-yellow-500/20' : 'bg-gradient-to-r from-yellow-50 to-white border border-yellow-200/50 shadow-sm'}`}
+                            className={`flex items-center gap-4 p-3 rounded-2xl cursor-pointer relative overflow-hidden ${isDark ? 'bg-white/5 border border-white/10 shadow-[0_0_20px_rgba(234,179,8,0.1)]' : 'bg-gradient-to-r from-yellow-50 to-white border border-yellow-200/50 shadow-sm'}`}
                         >
-                            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-transparent pointer-events-none" />
+                            <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 relative z-10">
                                 <LazyImage src={pFav.image} alt={pFav.name} className="w-full h-full object-cover" />
                             </div>
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 relative z-10">
                                 <div className="flex items-center gap-1.5 mb-0.5">
                                     <h4 className={`font-bold text-[15px] truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{pFav.name}</h4>
-                                    <span className="bg-yellow-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider">MÜDAVİM</span>
+                                    <span className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest shadow-lg shadow-yellow-500/20">MÜDAVİM</span>
                                 </div>
                                 <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                                    Toplam <strong className={isDark ? 'text-yellow-500' : 'text-yellow-600'}>{favoriteProduct.count} kez</strong> aldınız.
+                                    Toplam <strong className={isDark ? 'text-yellow-400' : 'text-yellow-600'}>{favoriteProduct.count} kez</strong> aldınız.
                                 </p>
                             </div>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 relative z-10 ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
                                 <ChevronRight size={14} />
                             </div>
                         </motion.div>
@@ -238,18 +242,21 @@ export default function Home() {
                     <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
                         {popularProducts.map((product, i) => (
                             <motion.div key={product.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 + i * 0.08 }}
-                                onClick={() => navigate(`/product/${product.id}`)}
-                                className={`flex-shrink-0 w-36 rounded-2xl overflow-hidden cursor-pointer group ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}
+                                onClick={async () => {
+                                    try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                                    navigate(`/product/${product.id}`);
+                                }}
+                                className={`flex-shrink-0 w-36 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:-translate-y-1 active:scale-95 ${isDark ? 'bg-zinc-900/80 border border-white/5 hover:border-zinc-700 hover:shadow-glass' : 'bg-white/90 border border-zinc-200/50 shadow-sm hover:shadow-md'}`}
                             >
                                 <div className="relative h-28 overflow-hidden">
                                     <LazyImage src={product.image} alt={product.name} className="w-full h-full" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                                 </div>
-                                <div className="p-2.5">
+                                <div className="p-3">
                                     <h4 className={`font-bold text-base leading-tight truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{product.name}</h4>
                                     <div className="flex items-center justify-between mt-1">
-                                        <span className="text-shaco-red text-[15px] font-bold">₺{product.price}</span>
-                                        <span className={`text-[15px] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>⭐ {product.rating}</span>
+                                        <span className="text-shaco-red text-[16px] font-black drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">₺{product.price}</span>
+                                        <span className={`text-[14px] font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>⭐ {product.rating}</span>
                                     </div>
                                 </div>
                             </motion.div>
@@ -259,20 +266,23 @@ export default function Home() {
 
                 {/* History shortcut */}
                 <motion.button
-                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} whileTap={{ scale: 0.98 }}
-                    onClick={() => setShowHistory(true)}
-                    className={`w-full p-4 rounded-2xl flex items-center justify-between transition ${isDark ? 'bg-zinc-900 border border-zinc-800 hover:border-zinc-700' : 'bg-white border border-zinc-200 shadow-sm hover:shadow-md'}`}
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} whileTap={{ scale: 0.95 }}
+                    onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } setShowHistory(true); }}
+                    className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all duration-300 glass-panel relative overflow-hidden ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]' : 'bg-white/80 border-zinc-200/50 shadow-sm hover:shadow-md'}`}
                 >
-                    <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>
-                            <History size={17} />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-shaco-red to-shaco-dark-red" />
+                    <div className="flex items-center gap-4 pl-2">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-inner ${isDark ? 'bg-black/50 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
+                            <History size={18} />
                         </div>
                         <div className="text-left">
-                            <p className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
-                            <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Son siparişleri gör</p>
+                            <p className={`text-[16px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
+                            <p className={`text-[13px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Son siparişleri gör</p>
                         </div>
                     </div>
-                    <ChevronRight size={15} className={isDark ? 'text-zinc-700' : 'text-zinc-300'} />
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
+                        <ChevronRight size={16} />
+                    </div>
                 </motion.button>
             </div>
 
@@ -319,11 +329,15 @@ export default function Home() {
 }
 
 function QuickPill({ icon, label, onClick, isDark, accent }) {
+    const handleClick = async (e) => {
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { }
+        if (onClick) onClick(e);
+    };
     return (
-        <button onClick={onClick}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[15px] font-bold whitespace-nowrap transition active:scale-95 ${accent
-                ? 'bg-shaco-red/10 text-shaco-red border border-shaco-red/20'
-                : isDark ? 'bg-zinc-900 text-zinc-300 border border-zinc-800 hover:border-zinc-700' : 'bg-white text-zinc-700 border border-zinc-200 shadow-sm hover:shadow-md'
+        <button onClick={handleClick}
+            className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[15px] font-bold whitespace-nowrap transition-all duration-300 active:scale-95 ${accent
+                ? 'bg-gradient-to-r from-shaco-red to-red-600 text-white shadow-[0_4px_20px_rgba(239,68,68,0.5)] hover:shadow-[0_4px_25px_rgba(239,68,68,0.6)] border border-red-400/30'
+                : isDark ? 'glass-panel bg-white/5 text-white border-white/10 hover:bg-white/10 hover:shadow-[0_4px_20px_rgba(255,255,255,0.05)]' : 'bg-white text-zinc-800 border border-zinc-200 shadow-sm hover:shadow-md hover:bg-zinc-50'
                 }`}
         > {icon} {label} </button>
     );

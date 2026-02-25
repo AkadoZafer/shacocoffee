@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
@@ -36,7 +37,7 @@ export default function Pay() {
     };
 
     return (
-        <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
+        <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-shaco-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
 
             {/* Header */}
@@ -47,7 +48,7 @@ export default function Pay() {
 
             {/* Balance Card */}
             <div className="px-6 mb-5">
-                <div className={`p-5 rounded-2xl relative overflow-hidden ${isDark ? 'bg-gradient-to-br from-shaco-red/20 to-zinc-900 border border-zinc-800' : 'bg-gradient-to-br from-red-50 to-white border border-zinc-200 shadow-lg'}`}>
+                <div className={`p-5 rounded-2xl relative overflow-hidden glass-panel ${isDark ? 'bg-gradient-to-br from-shaco-red/10 to-zinc-900/80 border-white/5' : 'bg-gradient-to-br from-red-50 to-white/90 border-zinc-200/50 shadow-lg'}`}>
                     <div className="absolute top-3 right-4">
                         <span className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SHACO</span>
                     </div>
@@ -71,10 +72,13 @@ export default function Pay() {
                         { key: 'topup', label: '₺ Yükle' },
                         { key: 'history', label: '⏱ Geçmiş' },
                     ].map(tab => (
-                        <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                            className={`flex-1 py-2.5 rounded-lg text-[15px] font-bold tracking-wide transition relative ${activeTab === tab.key
-                                ? isDark ? 'bg-zinc-800 text-white shadow-md' : 'bg-white text-zinc-900 shadow-md'
-                                : isDark ? 'text-zinc-500' : 'text-zinc-400'
+                        <button key={tab.key} onClick={async () => {
+                            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                            setActiveTab(tab.key);
+                        }}
+                            className={`flex-1 py-2.5 rounded-lg text-[15px] font-bold tracking-wide transition-all duration-300 relative ${activeTab === tab.key
+                                ? isDark ? 'bg-zinc-800/80 text-white shadow-glass shadow-md' : 'bg-white text-zinc-900 shadow-md'
+                                : isDark ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/30' : 'text-zinc-400 hover:text-zinc-600 hover:bg-white/50'
                                 }`}
                         >
                             {tab.label}
@@ -128,26 +132,7 @@ export default function Pay() {
                                 </p>
                             </div>
 
-                            {/* DEMO ORDER BUTTON FOR FIREBASE TESTING */}
-                            <button
-                                onClick={async () => {
-                                    // React state gecikmesini önlemek için doğrudan directItems gönderiyoruz
-                                    const demoCart = [{
-                                        product: { name: 'Filtre Kahve - Demo', price: 120 },
-                                        customizations: [],
-                                        totalPrice: 120
-                                    }];
-                                    const res = await checkoutCart(demoCart);
-                                    if (res) {
-                                        addToast('Sipariş Firebase\'e başarıyla iletildi!', 'success');
-                                    } else {
-                                        addToast('Bakiye yetersiz veya hata oluştu.', 'error');
-                                    }
-                                }}
-                                className={`w-full py-4 rounded-2xl font-bold text-[15px] shadow-lg active:scale-[0.97] transition flex items-center justify-center gap-2 ${isDark ? 'bg-shaco-red text-white shadow-red-500/15' : 'bg-zinc-900 text-white shadow-zinc-900/15'}`}
-                            >
-                                <Coffee size={18} /> Hızlı Sipariş Ver (120₺)
-                            </button>
+
 
                         </div>
                     </motion.div>
@@ -159,8 +144,11 @@ export default function Pay() {
                         <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>HIZLI YÜKLEME</p>
                         <div className="grid grid-cols-3 gap-2 mb-5">
                             {quickAmounts.map((amount) => (
-                                <button key={amount} onClick={() => handleTopUp(amount)}
-                                    className={`py-4 rounded-xl text-center transition active:scale-95 ${isDark ? 'bg-zinc-900 border border-zinc-800 hover:border-shaco-red/30' : 'bg-white border border-zinc-200 shadow-sm hover:border-shaco-red/30'}`}>
+                                <button key={amount} onClick={async () => {
+                                    try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                                    handleTopUp(amount);
+                                }}
+                                    className={`py-4 rounded-xl text-center transition-all duration-300 active:scale-95 ${isDark ? 'bg-zinc-900/60 border border-white/5 hover:border-shaco-red/30 hover:shadow-glass hover:bg-zinc-800/80' : 'bg-white border border-zinc-200 mb-1 shadow-sm hover:border-shaco-red/30 hover:shadow-md'}`}>
                                     <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{amount}</span>
                                 </button>
                             ))}

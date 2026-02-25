@@ -95,10 +95,7 @@ export default function Login() {
                         </button>
                     </form>
 
-                    {/* Staff hint */}
-                    <div className="mt-4 pt-4 border-t border-zinc-800/50">
-                        <p className="text-zinc-700 text-[15px] font-mono">Personel: admin@shaco.com / barista@shaco.com</p>
-                    </div>
+                    {/* No staff hints for security */}
                 </div>
 
                 <p className="text-zinc-600 text-base text-center mt-6 font-mono">EST. 2024</p>

@@ -39,7 +39,7 @@ export default function StampCard() {
             </AnimatePresence>
 
             {/* Stamp Card */}
-            <div className={`rounded-2xl overflow-hidden relative ${isDark ? 'bg-zinc-950 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
+            <div className={`rounded-2xl overflow-hidden relative glass-panel ${isDark ? 'bg-gradient-to-br from-white/5 to-transparent border-white/10 shadow-[0_4px_30px_rgba(239,68,68,0.1)]' : 'bg-white border-zinc-200 shadow-sm'}`}>
                 {/* Card Header */}
                 <div className="px-5 pt-5 pb-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">

@@ -7,7 +7,9 @@ import { useAuth } from '../context/AuthContext';
 import { useRewards } from '../context/RewardsContext';
 import { useSocialMedia } from '../context/SocialMediaContext';
 import { useNavigate } from 'react-router-dom';
-import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star } from 'lucide-react';
+import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star, Megaphone } from 'lucide-react';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import { products as initialProducts } from '../data/products';
 import { Html5Qrcode } from 'html5-qrcode';
 
@@ -63,6 +65,44 @@ export default function AdminPanel() {
             setCustomers([]);
         }
     }, [scanResult]);
+
+    // Campaigns State
+    const [campaigns, setCampaigns] = useState([]);
+    const [newCampaign, setNewCampaign] = useState({ title: '', subtitle: '', emoji: '🎁', gradient: 'from-red-600 to-red-900', isActive: true });
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        const unsubscribe = onSnapshot(collection(db, 'campaigns'), (snapshot) => {
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            setCampaigns(list.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis()));
+        });
+        return () => unsubscribe();
+    }, [isAdmin]);
+
+    const handleAddCampaign = async () => {
+        if (!newCampaign.title.trim() || !newCampaign.subtitle.trim()) return;
+        try {
+            await addDoc(collection(db, 'campaigns'), {
+                ...newCampaign,
+                createdAt: serverTimestamp()
+            });
+            setNewCampaign({ title: '', subtitle: '', emoji: '🎁', gradient: 'from-red-600 to-red-900', isActive: true });
+            alert('Kampanya başarıyla eklendi!');
+        } catch (error) {
+            alert('Hata: ' + error.message);
+        }
+    };
+
+    const handleDeleteCampaign = async (id) => {
+        if (confirm('Bu kampanyayı silmek istediğinize emin misiniz?')) {
+            try { await deleteDoc(doc(db, 'campaigns', id)); } catch (e) { alert('Hata: ' + e.message); }
+        }
+    };
+
+    const toggleCampaignStatus = async (id, currentStatus) => {
+        try { await updateDoc(doc(db, 'campaigns', id), { isActive: !currentStatus }); } catch (e) { alert('Hata: ' + e.message); }
+    };
 
     const isDark = theme === 'dark';
     const cardClass = isDark ? 'bg-zinc-900/80 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm';
@@ -179,6 +219,7 @@ export default function AdminPanel() {
 
     const adminSections = [
         { key: 'products', label: 'Ürünler', icon: <Coffee size={12} /> },
+        { key: 'campaigns', label: 'Kampanyalar', icon: <Megaphone size={12} /> },
         { key: 'extras', label: 'Ekstralar', icon: <Plus size={12} /> },
         { key: 'membership', label: 'Üyelik', icon: <Crown size={12} /> },
         { key: 'users', label: 'Bakiye & Log', icon: <QrCode size={12} /> },
@@ -606,6 +647,69 @@ export default function AdminPanel() {
                             >
                                 <Plus size={14} /> Hesap Ekle
                             </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* ============ CAMPAIGNS ============ */}
+                {activeSection === 'campaigns' && isAdmin && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <div className={`p-4 rounded-2xl mb-5 ${cardClass}`}>
+                            <SectionLabel label="YENİ KAMPANYA EKLE" isDark={isDark} />
+                            <div className="space-y-3">
+                                <FormField label="BAŞLIK" isDark={isDark}>
+                                    <input value={newCampaign.title} onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })} placeholder="Kısa başlık (örn: 3 Al 2 Öde)" className={`w-full p-2.5 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition ${inputClass}`} />
+                                </FormField>
+                                <FormField label="ALT BAŞLIK" isDark={isDark}>
+                                    <input value={newCampaign.subtitle} onChange={(e) => setNewCampaign({ ...newCampaign, subtitle: e.target.value })} placeholder="Açıklama (örn: Tüm soğuklarda geçerli)" className={`w-full p-2.5 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition ${inputClass}`} />
+                                </FormField>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <FormField label="EMOJİ" isDark={isDark}>
+                                        <input value={newCampaign.emoji} onChange={(e) => setNewCampaign({ ...newCampaign, emoji: e.target.value })} placeholder="🎁" className={`w-full p-2.5 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition text-center ${inputClass}`} />
+                                    </FormField>
+                                    <FormField label="GRADYAN" isDark={isDark}>
+                                        <select value={newCampaign.gradient} onChange={(e) => setNewCampaign({ ...newCampaign, gradient: e.target.value })} className={`w-full p-2.5 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition ${inputClass}`}>
+                                            <option value="from-red-600 to-red-900">Kırmızı</option>
+                                            <option value="from-cyan-600 to-blue-900">Mavi</option>
+                                            <option value="from-amber-600 to-orange-900">Turuncu</option>
+                                            <option value="from-emerald-600 to-green-900">Yeşil</option>
+                                            <option value="from-purple-600 to-fuchsia-900">Mor</option>
+                                        </select>
+                                    </FormField>
+                                </div>
+                                <button onClick={handleAddCampaign} className="w-full mt-2 py-3 rounded-xl bg-shaco-red text-white flex items-center justify-center gap-2 font-bold shadow-lg shadow-red-500/15 active:scale-[0.98] transition">
+                                    <Plus size={16} /> Kampanya Ekle
+                                </button>
+                            </div>
+                        </div>
+
+                        <SectionLabel label="MEVCUT KAMPANYALAR" isDark={isDark} />
+                        <div className="space-y-3">
+                            {campaigns.length === 0 ? (
+                                <p className={`text-sm italic ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Henüz hiç kampanya eklenmemiş.</p>
+                            ) : (
+                                campaigns.map((camp) => (
+                                    <div key={camp.id} className={`p-4 rounded-xl flex items-center justify-between transition-all ${!camp.isActive ? 'opacity-50' : ''} ${cardClass}`}>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${camp.gradient} flex items-center justify-center text-lg`}>
+                                                {camp.emoji}
+                                            </div>
+                                            <div>
+                                                <h4 className={`text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{camp.title}</h4>
+                                                <p className={`text-xs ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{camp.subtitle}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button onClick={() => toggleCampaignStatus(camp.id, camp.isActive)} className={`text-[10px] uppercase font-bold px-2 py-1 rounded-md border transition ${camp.isActive ? 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20' : 'text-zinc-500 border-zinc-500/30 hover:bg-zinc-800'}`}>
+                                                {camp.isActive ? 'Aktif' : 'Pasif'}
+                                            </button>
+                                            <button onClick={() => handleDeleteCampaign(camp.id)} className={`p-1.5 rounded-lg transition ${isDark ? 'text-zinc-600 hover:text-red-500' : 'text-zinc-400 hover:text-red-500'}`}>
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </motion.div>
                 )}

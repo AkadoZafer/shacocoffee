@@ -6,6 +6,7 @@ import { useToast } from '../context/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
@@ -37,7 +38,7 @@ export default function Wallet() {
     const activeAmount = selectedAmount || parseInt(customAmount) || 0;
 
     return (
-        <div className={`min-h-screen p-6 pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
+        <div className={`min-h-screen p-6 pb-32 transition-colors duration-300 ${isDark ? 'bg-shaco-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
 
             {/* Header */}
@@ -92,12 +93,15 @@ export default function Wallet() {
                     {quickAmounts.map((amount) => (
                         <button
                             key={amount}
-                            onClick={() => { setSelectedAmount(amount); setCustomAmount(''); }}
-                            className={`py-3 rounded-xl text-center transition active:scale-95 ${selectedAmount === amount
-                                ? 'bg-shaco-red text-white shadow-lg shadow-red-500/20'
+                            onClick={async () => {
+                                try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                                setSelectedAmount(amount); setCustomAmount('');
+                            }}
+                            className={`py-3 rounded-xl text-center transition-all duration-300 active:scale-95 ${selectedAmount === amount
+                                ? 'bg-shaco-red text-white shadow-neon-red hover:shadow-neon-red-strong'
                                 : isDark
-                                    ? 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-zinc-700'
-                                    : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-300 shadow-sm'
+                                    ? 'bg-zinc-900/80 border border-white/5 text-zinc-400 hover:border-zinc-700 hover:shadow-glass hover:bg-zinc-800/80'
+                                    : 'bg-white border border-zinc-200/50 text-zinc-600 hover:border-zinc-300 shadow-sm hover:shadow-md'
                                 }`}
                         >
                             <p className="text-[15px] font-bold">₺{amount}</p>
@@ -106,7 +110,7 @@ export default function Wallet() {
                 </div>
 
                 {/* Custom Amount */}
-                <div className={`flex items-center gap-3 p-3 rounded-xl mb-4 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
+                <div className={`flex items-center gap-3 p-3 rounded-xl mb-4 transition-all duration-300 glass-panel ${isDark ? 'bg-zinc-900/60 border border-white/5 focus-within:border-zinc-700 focus-within:shadow-glass' : 'bg-white/80 border border-zinc-200/50 shadow-sm focus-within:border-zinc-300 focus-within:shadow-md'}`}>
                     <span className={`text-lg font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>₺</span>
                     <input
                         type="number"
@@ -119,11 +123,14 @@ export default function Wallet() {
 
                 {/* Load Button */}
                 <button
-                    onClick={handleTopUp}
+                    onClick={async () => {
+                        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                        handleTopUp();
+                    }}
                     disabled={activeAmount <= 0}
-                    className={`w-full py-4 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 transition active:scale-[0.97] ${activeAmount > 0
-                        ? 'bg-shaco-red text-white shadow-lg shadow-red-500/20'
-                        : isDark ? 'bg-zinc-900 text-zinc-700 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+                    className={`w-full py-4 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 transition-all duration-300 active:scale-95 ${activeAmount > 0
+                        ? 'bg-shaco-red text-white shadow-neon-red hover:shadow-neon-red-strong'
+                        : isDark ? 'bg-zinc-900/50 border border-white/5 text-zinc-700 cursor-not-allowed' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
                         }`}
                 >
                     <ArrowUpRight size={16} />

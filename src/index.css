@@ -2,50 +2,62 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: 'Inter', sans-serif;
   --font-display: 'Oswald', sans-serif;
+
+  --color-shaco-black: #050505;
   --color-shaco-red: #ef4444;
-  --color-shaco-black: #09090b;
+  --color-shaco-dark-red: #991b1b;
+  --color-shaco-gray: #121212;
+
+  --shadow-neon-red: 0 0 15px rgba(239, 68, 68, 0.4);
+  --shadow-neon-red-strong: 0 0 25px rgba(239, 68, 68, 0.55);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 /* Light / Dark Variables */
 :root {
-  --bg-primary: #ffffff;
-  --text-primary: #09090b;
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.1);
+  --bg-primary: #f8fafc;
+  --text-primary: #050505;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
-  --bg-primary: #09090b;
+  --bg-primary: #050505;
   --text-primary: #ffffff;
-  --glass-bg: rgba(9, 9, 11, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(20, 20, 20, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 @layer utilities {
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--glass-border);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
 
   .glass-dark {
-    /* Legacy support or specific dark glass */
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Extreme dark mode premium glass */
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .neon-box {
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
   }
 }
 
@@ -54,5 +66,7 @@ body {
   padding: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
