@@ -44,7 +44,7 @@ export default function Navbar() {
                 </Link>
             </div>
 
-            <nav className={`w-auto backdrop-blur-3xl border rounded-[2rem] flex items-center justify-center gap-[4.5rem] p-2 px-8 relative pointer-events-auto transition-all duration-300 ${isDark
+            <nav className={`w-auto backdrop-blur-3xl border rounded-[2rem] flex items-center justify-center gap-16 p-2 px-6 relative pointer-events-auto transition-all duration-300 ${isDark
                 ? 'bg-zinc-900/90 border-white/5 shadow-glass'
                 : 'bg-white/95 border-zinc-200/50 shadow-md'
                 }`}>
