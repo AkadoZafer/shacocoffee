@@ -10,27 +10,37 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(false);
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
+        if (isLoading) return;
+
         setError('');
         if (!email.trim()) { setError('E-posta veya telefon gerekli'); return; }
         if (!password.trim()) { setError('Şifre gerekli'); return; }
         if (password.length < 4) { setError('Şifre en az 4 karakter olmalı'); return; }
 
-        const result = await login(email, password);
-        if (result.success) {
-            navigate('/');
-        } else {
-            setError(result.error);
+        setIsLoading(true);
+        try {
+            const result = await login(email, password);
+            if (result.success) {
+                navigate('/');
+            } else {
+                setError(result.error);
+                setIsLoading(false);
+            }
+        } catch (err) {
+            setError('Bir hata oluştu.');
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-shaco-red/10 to-transparent pointer-events-none" />
 
             {/* Back Button */}
@@ -78,12 +88,14 @@ export default function Login() {
                         )}
 
                         <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileHover={!isLoading ? { scale: 1.02 } : {}}
+                            whileTap={!isLoading ? { scale: 0.98 } : {}}
                             type="submit"
-                            className="w-full bg-shaco-red text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-500 transition text-base"
+                            onClick={handleSubmit}
+                            disabled={isLoading}
+                            className={`w-full text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base ${isLoading ? 'bg-red-500/50 cursor-not-allowed cursor-wait' : 'bg-shaco-red hover:bg-red-500'}`}
                         >
-                            Giriş Yap
+                            {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
                         </motion.button>
 
                         <button
