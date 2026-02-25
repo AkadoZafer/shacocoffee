@@ -32,31 +32,31 @@ export default function Navbar() {
 
     // Customer / Guest navbar: Ana Sayfa, Menü, QR/Ödeme, Hesabım
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-6 pt-10 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-5 pt-10 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
             {/* Ortadaki QR Butonu */}
-            <div className="absolute bottom-[2.2rem] left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
+            <div className="absolute bottom-[2.0rem] left-1/2 -translate-x-1/2 z-10 pointer-events-auto">
                 <Link
                     to="/pay"
                     onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
-                    className={`flex items-center justify-center w-14 h-14 rounded-full transition-all duration-300 active:scale-90 shadow-glass ${isActive('/pay') ? 'bg-shaco-red text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]' : isDark ? 'bg-zinc-800 text-zinc-300 hover:text-white border border-white/10' : 'bg-white text-zinc-700 hover:text-zinc-900 border border-zinc-200'}`}
+                    className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 active:scale-90 shadow-glass ${isActive('/pay') ? 'bg-shaco-red text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]' : isDark ? 'bg-zinc-800 text-zinc-300 hover:text-white border border-white/10' : 'bg-white text-zinc-700 hover:text-zinc-900 border border-zinc-200'}`}
                 >
-                    <QrCode size={26} className={isActive('/pay') ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''} />
+                    <QrCode size={24} className={isActive('/pay') ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : ''} />
                 </Link>
             </div>
 
-            <nav className={`w-auto backdrop-blur-3xl border rounded-[2rem] flex items-center justify-center gap-16 p-2 px-6 relative pointer-events-auto transition-all duration-300 ${isDark
+            <nav className={`w-auto backdrop-blur-3xl border rounded-[2rem] flex items-center justify-center gap-12 p-1.5 px-5 relative pointer-events-auto transition-all duration-300 ${isDark
                 ? 'bg-zinc-900/90 border-white/5 shadow-glass'
                 : 'bg-white/95 border-zinc-200/50 shadow-md'
                 }`}>
 
                 {/* Sol Taraf: Ana Sayfa */}
                 <div className="flex justify-center">
-                    <NavLink to="/" icon={<Home size={22} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
+                    <NavLink to="/" icon={<Home size={20} />} label="Ana Sayfa" active={isActive('/')} isDark={isDark} />
                 </div>
 
                 {/* Sağ Taraf: Menü */}
                 <div className="flex justify-center">
-                    <NavLink to="/menu" icon={<Coffee size={22} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
+                    <NavLink to="/menu" icon={<Coffee size={20} />} label="Menü" active={isActive('/menu')} isDark={isDark} />
                 </div>
             </nav>
         </div>
@@ -81,7 +81,7 @@ function NavLink({ to, icon, label, active, isDark }) {
             <div className={`relative transition-all duration-300 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]' : ''}`}>
                 {icon}
             </div>
-            <span className={`text-[12px] md:text-[14px] font-bold tracking-wider transition-all duration-300 ${active ? 'text-shaco-red' : ''}`}>
+            <span className={`text-[11px] font-semibold tracking-wide transition-all duration-300 ${active ? 'text-shaco-red' : ''}`}>
                 {label}
             </span>
         </Link>
