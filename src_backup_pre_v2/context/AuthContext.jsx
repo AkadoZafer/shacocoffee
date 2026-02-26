@@ -31,8 +31,10 @@ export function AuthProvider({ children }) {
                         userData = { email: firebaseUser.email, role: 'customer', name: 'Kullanıcı' };
                     }
 
-                    // LOCAL DEV HACK: Eğer barista e-postası ile girilmişse yetkiyi zorla yükselt (Firestore'u manipüle etmeden lokal state'te)
-                    if (firebaseUser.email === 'barista@shacocoffee.com' || firebaseUser.email === 'barista@shaco.com') {
+                    // LOCAL DEV HACK: Eğer admin/barista e-postası ile girilmişse yetkiyi zorla yükselt (Firestore'u manipüle etmeden lokal state'te)
+                    if (firebaseUser.email === 'admin@shacocoffee.com' || firebaseUser.email === 'admin@shaco.com') {
+                        userData.role = 'admin';
+                    } else if (firebaseUser.email === 'barista@shacocoffee.com' || firebaseUser.email === 'barista@shaco.com') {
                         userData.role = 'barista';
                     }
 
@@ -149,12 +151,13 @@ export function AuthProvider({ children }) {
     const isGuest = user?.role === 'guest';
     const isCustomer = user?.role === 'customer';
     const isBarista = user?.role === 'barista';
-    const isStaff = isBarista;
+    const isAdmin = user?.role === 'admin';
+    const isStaff = isBarista || isAdmin;
 
     return (
         <AuthContext.Provider value={{
             user, login, logout, register, updateProfile, updateAvatar, updateRole, loading,
-            isGuest, isCustomer, isBarista, isStaff,
+            isGuest, isCustomer, isBarista, isAdmin, isStaff,
         }}>
             {children}
         </AuthContext.Provider>

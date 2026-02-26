@@ -7,11 +7,12 @@ import { useAuth } from '../context/AuthContext';
 import { useRewards } from '../context/RewardsContext';
 import { useSocialMedia } from '../context/SocialMediaContext';
 import { useNavigate } from 'react-router-dom';
-import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star, Megaphone, Settings as SettingsIcon } from 'lucide-react';
+import { X, ImageIcon, Upload, Plus, Trash2, QrCode, Check, Crown, Shield, Coffee, Camera, Share2, DollarSign, Star, Megaphone, Settings as SettingsIcon, ImagePlay, TrendingUp, Users, Clock, Activity, ArrowUp, Bell, Send } from 'lucide-react';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { products as initialProducts } from '../data/products';
+import { fetchProducts } from '../services/menuService';
 import { Html5Qrcode } from 'html5-qrcode';
+import LazyImage from '../components/LazyImage';
 
 const categories = [
     { label: '☕ Sıcak', value: 'hot' },
@@ -31,12 +32,29 @@ export default function AdminPanel() {
     const fileInputRef = useRef(null);
     const videoRef = useRef(null);
     const streamRef = useRef(null);
-    const [products] = useState(initialProducts);
+
+    const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [editingProduct, setEditingProduct] = useState(null);
     const [showForm, setShowForm] = useState(false);
 
     const isAdmin = user?.role === 'admin';
     const isBarista = user?.role === 'barista';
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        const loadProducts = async () => {
+            try {
+                const data = await fetchProducts();
+                setProducts(data);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadProducts();
+    }, [isAdmin]);
 
     const defaultSection = isBarista ? 'orders' : 'products';
     const [activeSection, setActiveSection] = useState(defaultSection);
@@ -104,13 +122,73 @@ export default function AdminPanel() {
         try { await updateDoc(doc(db, 'campaigns', id), { isActive: !currentStatus }); } catch (e) { alert('Hata: ' + e.message); }
     };
 
-    // Settings (Support URL) State
-    const [supportUrl, setSupportUrl] = useState('');
+    // Push Notifications State
+    const [newNotification, setNewNotification] = useState({ title: '', body: '', segment: 'all' });
+
+    const handleSendNotification = () => {
+        if (!newNotification.title || !newNotification.body) return alert('Lütfen başlık ve mesajı doldurun.');
+        // Burada gerçek bir Firebase Cloud Messaging tetiklenebilir.
+        alert(`BİLDİRİM GÖNDERİLDİ!\nBaşlık: ${newNotification.title}\nHedef Kitle: ${newNotification.segment.toUpperCase()}\n\nSimülasyon başarılı.`);
+        setNewNotification({ title: '', body: '', segment: 'all' });
+    };
+
+    // Stories (Hikayeler) State
+    const [stories, setStories] = useState([]);
+    const [newStory, setNewStory] = useState({ image: '', title: '', text: '' });
+    const storyFileRef = useRef(null);
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        const unsubscribe = onSnapshot(collection(db, 'stories'), (snapshot) => {
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            setStories(list.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis()));
+        });
+        return () => unsubscribe();
+    }, [isAdmin]);
+
+    const handleStoryUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => setNewStory({ ...newStory, image: reader.result });
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleAddStory = async () => {
+        if (!newStory.image) return alert('Lütfen bir görsel seçin!');
+        try {
+            await addDoc(collection(db, 'stories'), {
+                ...newStory,
+                createdAt: serverTimestamp()
+            });
+            setNewStory({ image: '', title: '', text: '' });
+            alert('Hikaye başarıyla eklendi!');
+        } catch (error) {
+            alert('Hata: ' + error.message);
+        }
+    };
+
+    const handleDeleteStory = async (id) => {
+        if (confirm('Bu hikayeyi silmek istediğinize emin misiniz?')) {
+            try { await deleteDoc(doc(db, 'stories', id)); } catch (e) { alert('Hata: ' + e.message); }
+        }
+    };
+
+    // Settings (Support Information & Product of the Day) State
+    const [supportPhone, setSupportPhone] = useState('');
+    const [supportEmail, setSupportEmail] = useState('');
+    const [productOfTheDay, setProductOfTheDay] = useState('');
+
     useEffect(() => {
         if (!isAdmin) return;
         const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (docSnap) => {
             if (docSnap.exists()) {
-                setSupportUrl(docSnap.data().supportUrl || '');
+                const data = docSnap.data();
+                setSupportPhone(data.supportPhone || '');
+                setSupportEmail(data.supportEmail || '');
+                setProductOfTheDay(data.productOfTheDay || '');
             }
         });
         return () => unsubscribe();
@@ -118,7 +196,7 @@ export default function AdminPanel() {
 
     const handleSaveSettings = async () => {
         try {
-            await setDoc(doc(db, 'settings', 'general'), { supportUrl }, { merge: true });
+            await setDoc(doc(db, 'settings', 'general'), { supportPhone, supportEmail, productOfTheDay }, { merge: true });
             alert('Ayarlar başarıyla kaydedildi!');
         } catch (error) {
             alert('Hata: ' + error.message);
@@ -239,7 +317,9 @@ export default function AdminPanel() {
     }, []);
 
     const adminSections = [
+        { key: 'analytics', label: 'Analizler', icon: <TrendingUp size={12} /> },
         { key: 'products', label: 'Ürünler', icon: <Coffee size={12} /> },
+        { key: 'stories', label: 'Hikayeler', icon: <ImagePlay size={12} /> },
         { key: 'campaigns', label: 'Kampanyalar', icon: <Megaphone size={12} /> },
         { key: 'extras', label: 'Ekstralar', icon: <Plus size={12} /> },
         { key: 'membership', label: 'Üyelik', icon: <Crown size={12} /> },
@@ -292,6 +372,73 @@ export default function AdminPanel() {
                         </button>
                     ))}
                 </div>
+
+                {/* ============ ANALYTICS (DASHBOARD) ============ */}
+                {activeSection === 'analytics' && isAdmin && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                        <SectionLabel label="BUGÜNÜN ÖZETİ" isDark={isDark} />
+                        <div className="grid grid-cols-2 gap-3 mb-2">
+                            <div className={`p-4 rounded-2xl flex flex-col justify-center ${cardClass}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                        <DollarSign size={16} />
+                                    </div>
+                                    <span className={`text-[13px] font-bold ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Ciro</span>
+                                </div>
+                                <h3 className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺4,250</h3>
+                                <p className="text-emerald-500 text-[11px] font-bold flex items-center gap-0.5 mt-1"><ArrowUp size={10} /> +12% dün</p>
+                            </div>
+                            <div className={`p-4 rounded-2xl flex flex-col justify-center ${cardClass}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                                        <QrCode size={16} />
+                                    </div>
+                                    <span className={`text-[13px] font-bold ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Sipariş</span>
+                                </div>
+                                <h3 className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>142</h3>
+                                <p className="text-emerald-500 text-[11px] font-bold flex items-center gap-0.5 mt-1"><ArrowUp size={10} /> +5% dün</p>
+                            </div>
+                            <div className={`p-4 rounded-2xl flex flex-col justify-center ${cardClass}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center">
+                                        <Users size={16} />
+                                    </div>
+                                    <span className={`text-[13px] font-bold ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Yeni Üye</span>
+                                </div>
+                                <h3 className={`text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>28</h3>
+                                <p className="text-emerald-500 text-[11px] font-bold flex items-center gap-0.5 mt-1"><ArrowUp size={10} /> +4% dün</p>
+                            </div>
+                            <div className={`p-4 rounded-2xl flex flex-col justify-center ${cardClass}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center">
+                                        <Clock size={16} />
+                                    </div>
+                                    <span className={`text-[13px] font-bold ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Yoğun Saat</span>
+                                </div>
+                                <h3 className={`text-xl font-black tracking-tight mt-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>14:00 - 15:00</h3>
+                                <p className={`text-[11px] font-medium mt-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>En çok Sipariş The Jester</p>
+                            </div>
+                        </div>
+
+                        <SectionLabel label="POPÜLER ÜRÜNLER (BU HAFTA)" isDark={isDark} />
+                        <div className={`rounded-xl p-1 ${cardClass}`}>
+                            {[
+                                { name: 'Lotus Biscoff Latte', sales: 342, bg: 'bg-warm-amber' },
+                                { name: "The Jester's Delight", sales: 289, bg: 'bg-purple-500' },
+                                { name: 'Iced Caramel Macchiato', sales: 215, bg: 'bg-orange-400' },
+                                { name: 'Filtre Kahve', sales: 180, bg: 'bg-zinc-700' }
+                            ].map((item, i) => (
+                                <div key={i} className="px-4 py-3 flex items-center gap-3 border-b border-zinc-500/10 last:border-0">
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white ${item.bg}`}>
+                                        #{i + 1}
+                                    </div>
+                                    <span className={`flex-1 text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{item.name}</span>
+                                    <span className={`text-[13px] font-bold ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{item.sales} sat.</span>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
 
                 {/* ============ ORDERS / BARISTA ============ */}
                 {activeSection === 'orders' && (
@@ -489,18 +636,24 @@ export default function AdminPanel() {
                             </button>
                         </div>
                         <div className="space-y-2">
-                            {products.map((p, i) => (
-                                <motion.div key={p.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                                    onClick={() => handleEdit(p)}
-                                    className={`p-3 rounded-2xl cursor-pointer flex items-center gap-3.5 transition active:scale-[0.98] hover:border-shaco-red/20 ${cardClass}`}>
-                                    <img src={p.image} alt={p.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className={`font-semibold text-[15px] truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{p.name}</h3>
-                                        <p className={`text-[15px] truncate ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{p.shortDesc}</p>
-                                    </div>
-                                    <span className="text-shaco-red font-bold text-[15px] flex-shrink-0">₺{p.price}</span>
-                                </motion.div>
-                            ))}
+                            {isLoading ? (
+                                <p className={`text-base py-6 text-center italic ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Ürünler yükleniyor...</p>
+                            ) : products.length === 0 ? (
+                                <p className={`text-base py-6 text-center italic ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Kayıtlı ürün bulunamadı.</p>
+                            ) : (
+                                products.map((p, i) => (
+                                    <motion.div key={p.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                                        onClick={() => handleEdit(p)}
+                                        className={`p-3 rounded-2xl cursor-pointer flex items-center gap-3.5 transition active:scale-[0.98] hover:border-shaco-red/20 ${cardClass}`}>
+                                        <LazyImage src={p.imageUrl || p.image} alt={p.name} className="w-12 h-12 rounded-xl flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className={`font-semibold text-[15px] truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>{p.name}</h3>
+                                            <p className={`text-[13px] line-clamp-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{p.shortDesc || p.description}</p>
+                                        </div>
+                                        <span className="text-shaco-red font-bold text-[15px] flex-shrink-0">₺{p.price}</span>
+                                    </motion.div>
+                                ))
+                            )}
                         </div>
                     </motion.div>
                 )}
@@ -735,22 +888,144 @@ export default function AdminPanel() {
                         </div>
                     </motion.div>
                 )}
+
+                {/* ============ STORIES ============ */}
+                {activeSection === 'stories' && isAdmin && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <div className={`p-4 rounded-2xl mb-5 ${cardClass}`}>
+                            <SectionLabel label="YENİ HİKAYE EKLE" isDark={isDark} />
+
+                            <div className="space-y-4">
+                                <FormField label="GÖRSEL (Zorunlu)" isDark={isDark}>
+                                    {newStory.image && (
+                                        <div className="rounded-xl overflow-hidden mb-3 aspect-[9/16] max-h-48 relative group w-28 mx-auto border border-zinc-200 dark:border-zinc-800">
+                                            <img src={newStory.image} alt="Story Preview" className="w-full h-full object-cover" />
+                                            <button onClick={() => setNewStory({ ...newStory, image: '' })}
+                                                className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-md opacity-100 transition shadow-md">
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    )}
+                                    {!newStory.image && (
+                                        <div onClick={() => storyFileRef.current?.click()} className={`w-full h-24 rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition active:scale-95 ${isDark ? 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/50' : 'border-zinc-300 hover:border-zinc-400 bg-zinc-50'}`}>
+                                            <Upload size={20} className={isDark ? 'text-zinc-600 mb-1' : 'text-zinc-400 mb-1'} />
+                                            <span className={`text-[13px] font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Görsel Seç</span>
+                                        </div>
+                                    )}
+                                    <input ref={storyFileRef} type="file" accept="image/*" onChange={handleStoryUpload} className="hidden" />
+                                </FormField>
+
+                                <FormField label="BAŞLIK (Opsiyonel)" isDark={isDark}>
+                                    <input value={newStory.title} onChange={(e) => setNewStory({ ...newStory, title: e.target.value })} placeholder="örn: Yeni Yaz Menüsü" className={`w-full p-2.5 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition ${inputClass}`} />
+                                </FormField>
+
+                                <FormField label="AÇIKLAMA / METİN (Opsiyonel)" isDark={isDark}>
+                                    <textarea value={newStory.text} onChange={(e) => setNewStory({ ...newStory, text: e.target.value })} placeholder="Hikayenin altında çıkacak kampanya metnini girebilirsiniz..." rows={2} className={`w-full p-2.5 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition resize-none ${inputClass}`} />
+                                </FormField>
+
+                                <button onClick={handleAddStory} disabled={!newStory.image} className={`w-full py-3.5 rounded-xl text-white font-bold flex items-center justify-center gap-2 shadow-lg transition ${newStory.image ? 'bg-shaco-red shadow-red-500/15 active:scale-[0.98]' : 'bg-red-400/50 cursor-not-allowed'}`}>
+                                    <Plus size={16} /> Hikayeyi Yayınla (Story)
+                                </button>
+                            </div>
+                        </div>
+
+                        <SectionLabel label="YAYINDAKİ HİKAYELER" isDark={isDark} />
+                        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-4 pt-1 px-1 -mx-1">
+                            {stories.length === 0 ? (
+                                <p className={`text-sm italic w-full text-center ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Henüz hiç hikaye yüklenmemiş.</p>
+                            ) : (
+                                stories.map((st) => (
+                                    <div key={st.id} className={`shrink-0 w-28 rounded-2xl overflow-hidden relative group border ${isDark ? 'border-zinc-800' : 'border-zinc-200'}`}>
+                                        <div className="aspect-[9/16] relative bg-black/10 dark:bg-zinc-800">
+                                            <LazyImage src={st.image} alt={st.title} className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
+                                            <button onClick={() => handleDeleteStory(st.id)} className="absolute top-1.5 right-1.5 p-1.5 bg-red-500/80 text-white rounded-lg opacity-90 transition hover:bg-red-500 active:scale-95 shadow-md">
+                                                <Trash2 size={12} />
+                                            </button>
+                                            <div className="absolute bottom-2 left-2 right-2">
+                                                <p className="text-white text-[10px] font-bold truncate drop-shadow-md">{st.title || 'İsimsiz'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Push Notification Segmentasyonu */}
+                        <div className={`mt-6 p-4 rounded-2xl ${cardClass}`}>
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="w-8 h-8 rounded-full bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                                    <Bell size={16} />
+                                </div>
+                                <div>
+                                    <h3 className={`text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Bildirim Gönder (Push)</h3>
+                                    <p className={`text-[12px] ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Hedef kitleye özel anlık bildirim atın.</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <FormField label="BİLDİRİM BAŞLIĞI" isDark={isDark}>
+                                    <input value={newNotification.title} onChange={(e) => setNewNotification({ ...newNotification, title: e.target.value })} placeholder="örn: Harika Bir Gün, Harika Bir Kahve" className={`w-full p-2.5 rounded-xl border text-[14px] outline-none focus:border-indigo-500/50 transition ${inputClass}`} />
+                                </FormField>
+
+                                <FormField label="MESAJ" isDark={isDark}>
+                                    <textarea value={newNotification.body} onChange={(e) => setNewNotification({ ...newNotification, body: e.target.value })} placeholder="Bugün tüm soğuk içeceklerde %20 indirim sizi bekliyor!" rows={2} className={`w-full p-2.5 rounded-xl border text-[14px] outline-none focus:border-indigo-500/50 transition resize-none ${inputClass}`} />
+                                </FormField>
+
+                                <FormField label="HEDEF KİTLE (SEGMENTASYON)" isDark={isDark}>
+                                    <select value={newNotification.segment} onChange={(e) => setNewNotification({ ...newNotification, segment: e.target.value })} className={`w-full p-2.5 rounded-xl border text-[14px] font-bold outline-none focus:border-indigo-500/50 transition ${inputClass}`}>
+                                        <option value="all">Tüm Müşteriler</option>
+                                        <option value="bronze">Sadece Bronze Üyeler (Aktifleşmeyi Bekleyen)</option>
+                                        <option value="silver">Sadece Silver Üyeler (Potansiyel Müdavimler)</option>
+                                        <option value="gold">Sadece Gold Üyeler (VIP Müşteriler)</option>
+                                    </select>
+                                </FormField>
+
+                                <button onClick={handleSendNotification} className="w-full mt-2 py-3 rounded-xl bg-indigo-500 text-white flex items-center justify-center gap-2 font-bold shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition">
+                                    <Send size={14} /> Şimdi Gönder
+                                </button>
+                            </div>
+                        </div>
+
+                    </motion.div>
+                )}
+
                 {/* ============ SETTINGS ============ */}
                 {activeSection === 'settings' && isAdmin && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         <div className={`p-4 rounded-2xl mb-5 ${cardClass}`}>
-                            <SectionLabel label="GENEL YÖNETİM" isDark={isDark} />
+                            <SectionLabel label="İLETİŞİM BİLGİLERİ" isDark={isDark} />
                             <p className={`text-[13px] mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>
-                                Müşterilerin profil sayfasındaki 'Yardım & Destek' butonuna tıkladıklarında yönlendirilecekleri WhatsApp veya Whatsapp/Destek bağlantısını belirleyin. Boş bırakırsanız buton görünmez.
+                                Müşterilerin profil sayfasındaki 'Yardım & Destek' sayfasında göreceği kurumsal iletişim numarası ve e-posta adresini alt kısımdan güncelleyebilirsiniz.
                             </p>
 
-                            <FormField label="YARDIM & DESTEK LİNKİ" isDark={isDark}>
+                            <FormField label="DESTEK TELEFONU" isDark={isDark}>
                                 <input
-                                    value={supportUrl}
-                                    onChange={(e) => setSupportUrl(e.target.value)}
-                                    placeholder="örn: https://wa.me/905320000000"
+                                    value={supportPhone}
+                                    onChange={(e) => setSupportPhone(e.target.value)}
+                                    placeholder="örn: +90 553 697 09 07"
                                     className={`w-full p-3 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition mb-3 ${inputClass}`}
                                 />
+                            </FormField>
+                            <FormField label="DESTEK E-POSTA" isDark={isDark}>
+                                <input
+                                    value={supportEmail}
+                                    onChange={(e) => setSupportEmail(e.target.value)}
+                                    placeholder="örn: iletisim@shacocoffee.com"
+                                    className={`w-full p-3 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition mb-4 ${inputClass}`}
+                                />
+                            </FormField>
+                            <FormField label="GÜNÜN ÖNERİSİ" isDark={isDark}>
+                                <select
+                                    value={productOfTheDay}
+                                    onChange={(e) => setProductOfTheDay(e.target.value)}
+                                    className={`w-full p-3 rounded-xl border text-[15px] outline-none focus:border-shaco-red/50 transition mb-4 ${inputClass}`}
+                                >
+                                    <option value="">-- Kapat / Kaldır --</option>
+                                    {products.map(p => (
+                                        <option key={p.id} value={p.id}>{p.name}</option>
+                                    ))}
+                                </select>
                             </FormField>
 
                             <button onClick={handleSaveSettings} className="w-full py-3.5 rounded-xl bg-shaco-red text-white flex items-center justify-center gap-2 font-bold shadow-lg shadow-red-500/15 active:scale-[0.98] transition">
