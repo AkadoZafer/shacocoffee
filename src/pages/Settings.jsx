@@ -97,23 +97,25 @@ export default function Settings() {
                                 <img
                                     src={user.avatar}
                                     alt="avatar"
-                                    className="w-16 h-16 rounded-2xl object-cover shadow-lg shadow-red-500/20 cursor-pointer"
-                                    onClick={() => fileInputRef.current?.click()}
+                                    className={`w-16 h-16 rounded-2xl object-cover shadow-lg shadow-red-500/20 ${!isGuest ? 'cursor-pointer' : ''}`}
+                                    onClick={() => !isGuest && fileInputRef.current?.click()}
                                 />
                             ) : (
                                 <div
-                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black uppercase ${isDark ? 'bg-gradient-to-br from-shaco-red to-red-700' : 'bg-gradient-to-br from-shaco-red to-red-600'} text-white shadow-lg shadow-red-500/20 cursor-pointer`}
-                                    onClick={() => fileInputRef.current?.click()}
+                                    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black uppercase ${isDark ? 'bg-gradient-to-br from-shaco-red to-red-700' : 'bg-gradient-to-br from-shaco-red to-red-600'} text-white shadow-lg shadow-red-500/20 ${!isGuest ? 'cursor-pointer' : ''}`}
+                                    onClick={() => !isGuest && fileInputRef.current?.click()}
                                 >
                                     {user?.name ? user.name.charAt(0) : 'S'}
                                 </div>
                             )}
-                            <div
-                                className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-lg flex items-center justify-center cursor-pointer ${isDark ? 'bg-zinc-800 border border-zinc-700' : 'bg-white border border-zinc-300 shadow-sm'}`}
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                <ImageIcon size={12} className={isDark ? 'text-zinc-400' : 'text-zinc-500'} />
-                            </div>
+                            {!isGuest && (
+                                <div
+                                    className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-lg flex items-center justify-center cursor-pointer ${isDark ? 'bg-zinc-800 border border-zinc-700' : 'bg-white border border-zinc-300 shadow-sm'}`}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <ImageIcon size={12} className={isDark ? 'text-zinc-400' : 'text-zinc-500'} />
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex-1">
