@@ -66,7 +66,7 @@ export default function Settings() {
         setEditMode(false);
     };
 
-    const roleLabel = user?.role === 'admin' ? 'Yönetici' : user?.role === 'barista' ? 'Barista' : 'Müşteri';
+    const roleLabel = user?.role === 'admin' ? 'Yönetici' : user?.role === 'barista' ? 'Barista' : user?.role === 'guest' ? 'Misafir' : 'Müşteri';
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
@@ -128,44 +128,57 @@ export default function Settings() {
                                 <h2 className={`text-lg font-bold leading-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{user?.name || 'Misafir'}</h2>
                             )}
 
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className={`text-base font-bold tracking-wider px-2 py-0.5 rounded-md border ${membership.bg} ${membership.color} ${membership.border}`}>
-                                    {tier.emoji} {tier.label}
-                                </span>
-                                {tier.discount > 0 && (
-                                    <span className="text-[15px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                                        %{tier.discount} İndirim
+                            {!isGuest && (
+                                <>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className={`text-base font-bold tracking-wider px-2 py-0.5 rounded-md border ${membership.bg} ${membership.color} ${membership.border}`}>
+                                            {tier.emoji} {tier.label}
+                                        </span>
+                                        {tier.discount > 0 && (
+                                            <span className="text-[15px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                                                %{tier.discount} İndirim
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <span className={`text-[15px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                            <Star size={10} className="inline text-yellow-500 fill-yellow-500 -mt-0.5" /> {stars} yıldız
+                                        </span>
+                                        <span className={`text-base px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
+                                            {roleLabel}
+                                        </span>
+                                    </div>
+                                </>
+                            )}
+                            {isGuest && (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className={`text-base px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
+                                        {roleLabel}
                                     </span>
-                                )}
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className={`text-[15px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                    <Star size={10} className="inline text-yellow-500 fill-yellow-500 -mt-0.5" /> {stars} yıldız
-                                </span>
-                                <span className={`text-base px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
-                                    {roleLabel}
-                                </span>
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     {/* Mini stats */}
-                    <div className={`flex gap-4 mt-4 pt-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
-                        <div className="flex-1 text-center">
-                            <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>BAKİYE</p>
-                            <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{balance.toFixed(0)}</p>
+                    {!isGuest && (
+                        <div className={`flex gap-4 mt-4 pt-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
+                            <div className="flex-1 text-center">
+                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>BAKİYE</p>
+                                <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{balance.toFixed(0)}</p>
+                            </div>
+                            <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+                            <div className="flex-1 text-center">
+                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SİPARİŞ</p>
+                                <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{orders.length}</p>
+                            </div>
+                            <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+                            <div className="flex-1 text-center">
+                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>KUPON</p>
+                                <p className={`text-lg font-bold text-shaco-red`}>0</p>
+                            </div>
                         </div>
-                        <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                        <div className="flex-1 text-center">
-                            <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SİPARİŞ</p>
-                            <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{orders.length}</p>
-                        </div>
-                        <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
-                        <div className="flex-1 text-center">
-                            <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>KUPON</p>
-                            <p className={`text-lg font-bold text-shaco-red`}>0</p>
-                        </div>
-                    </div>
+                    )}
                 </motion.div>
 
                 {/* HESAP */}
@@ -224,8 +237,8 @@ export default function Settings() {
                             )}
                         </AnimatePresence>
 
-                        {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
-                        <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={true} />
+                        {!isGuest && !isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
+                        {!isGuest && <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={true} />}
                     </div>
                 </motion.div>
 

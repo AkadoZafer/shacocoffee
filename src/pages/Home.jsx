@@ -263,7 +263,8 @@ export default function Home() {
                 {/* Quick Actions */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2.5 mb-7 overflow-x-auto no-scrollbar pb-2">
                     <QuickPill icon={<QrCode size={15} />} label="QR Öde" onClick={() => navigate('/pay')} isDark={isDark} accent />
-                    <QuickPill icon={<Wallet size={15} />} label="Bakiye Yükle" onClick={() => navigate('/wallet')} isDark={isDark} />
+                    {/* Only members can top up balance */}
+                    {!isGuest && <QuickPill icon={<Wallet size={15} />} label="Bakiye Yükle" onClick={() => navigate('/wallet')} isDark={isDark} />}
                     <QuickPill icon={<Store size={15} />} label="Mağazalar" onClick={() => navigate('/stores')} isDark={isDark} />
                 </motion.div>
 
@@ -398,15 +399,18 @@ export default function Home() {
                                                 <Coffee size={28} strokeWidth={1} className={isDark ? 'text-zinc-600' : 'text-zinc-300'} />
                                             </div>
                                         )}
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                toggleFavorite(product.id);
-                                            }}
-                                            className={`absolute top-2 right-2 p-1.5 rounded-lg z-10 backdrop-blur-md transition-all active:scale-90 ${isFavorite(product.id) ? 'bg-shaco-red/20 text-shaco-red' : 'bg-black/30 text-white'}`}
-                                        >
-                                            <Heart size={14} className={isFavorite(product.id) ? 'fill-current' : ''} />
-                                        </button>
+                                        {/* Favori ikonu sadece üyelerde */}
+                                        {!isGuest && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleFavorite(product.id);
+                                                }}
+                                                className={`absolute top-2 right-2 p-1.5 rounded-lg z-10 backdrop-blur-md transition-all active:scale-90 ${isFavorite(product.id) ? 'bg-shaco-red/20 text-shaco-red' : 'bg-black/30 text-white'}`}
+                                            >
+                                                <Heart size={14} className={isFavorite(product.id) ? 'fill-current' : ''} />
+                                            </button>
+                                        )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
                                         {/* Fiyat etiketi resmin üstüne Liquid Glass olarak */}
                                         <div className="absolute bottom-2 left-2 right-2 glass-liquid rounded-lg py-1 px-2 flex justify-between items-center bg-black/30">
@@ -432,25 +436,27 @@ export default function Home() {
                 </motion.div>
 
                 {/* History shortcut */}
-                <motion.button
-                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} whileTap={{ scale: 0.95 }}
-                    onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } setShowHistory(true); }}
-                    className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all duration-300 glass-panel relative overflow-hidden ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]' : 'bg-white/80 border-zinc-200/50 shadow-sm hover:shadow-md'}`}
-                >
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-shaco-red to-shaco-dark-red" />
-                    <div className="flex items-center gap-4 pl-2">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-inner ${isDark ? 'bg-black/50 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
-                            <History size={18} />
+                {!isGuest && (
+                    <motion.button
+                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} whileTap={{ scale: 0.95 }}
+                        onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } setShowHistory(true); }}
+                        className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all duration-300 glass-panel relative overflow-hidden ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]' : 'bg-white/80 border-zinc-200/50 shadow-sm hover:shadow-md'}`}
+                    >
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-shaco-red to-shaco-dark-red" />
+                        <div className="flex items-center gap-4 pl-2">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-inner ${isDark ? 'bg-black/50 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
+                                <History size={18} />
+                            </div>
+                            <div className="text-left">
+                                <p className={`text-[16px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
+                                <p className={`text-[13px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Son siparişleri gör</p>
+                            </div>
                         </div>
-                        <div className="text-left">
-                            <p className={`text-[16px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
-                            <p className={`text-[13px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Son siparişleri gör</p>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
+                            <ChevronRight size={16} />
                         </div>
-                    </div>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
-                        <ChevronRight size={16} />
-                    </div>
-                </motion.button>
+                    </motion.button>
+                )}
             </div>
 
             {/* History Modal */}

@@ -84,7 +84,7 @@ export function AuthProvider({ children }) {
                 name: `${firstName} ${lastName}`,
                 phone,
                 email,
-                role: 'customer',
+                role: 'member',
                 avatar: null,
                 joined: new Date().toISOString()
             };

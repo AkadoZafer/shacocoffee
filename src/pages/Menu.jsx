@@ -7,10 +7,12 @@ import LazyImage from '../components/LazyImage';
 import { useTheme } from '../context/ThemeContext';
 import { fetchProducts, fetchMenuCategories } from '../services/menuService';
 import { useFavorites } from '../context/FavoritesContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Menu() {
     const navigate = useNavigate();
     const { theme } = useTheme();
+    const { isGuest } = useAuth();
 
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -151,15 +153,17 @@ export default function Menu() {
                                                     <Coffee size={24} className={isDark ? 'text-zinc-600' : 'text-zinc-300'} />
                                                 </div>
                                             )}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    toggleFavorite(product.id);
-                                                }}
-                                                className={`absolute top-1 left-1 p-1.5 rounded-lg z-10 transition-all active:scale-90 ${isFavorite(product.id) ? 'bg-shaco-red/20 text-shaco-red backdrop-blur-md' : 'bg-black/30 text-white backdrop-blur-sm'}`}
-                                            >
-                                                <Heart size={14} className={isFavorite(product.id) ? 'fill-current' : ''} />
-                                            </button>
+                                            {!isGuest && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        toggleFavorite(product.id);
+                                                    }}
+                                                    className={`absolute top-1 left-1 p-1.5 rounded-lg z-10 transition-all active:scale-90 ${isFavorite(product.id) ? 'bg-shaco-red/20 text-shaco-red backdrop-blur-md' : 'bg-black/30 text-white backdrop-blur-sm'}`}
+                                                >
+                                                    <Heart size={14} className={isFavorite(product.id) ? 'fill-current' : ''} />
+                                                </button>
+                                            )}
                                         </div>
 
                                         {/* Info */}

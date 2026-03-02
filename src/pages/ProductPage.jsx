@@ -6,6 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useState, useEffect } from 'react';
 import { fetchProducts } from '../services/menuService';
 import { useFavorites } from '../context/FavoritesContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -13,6 +14,7 @@ export default function ProductPage() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     const { isFavorite, toggleFavorite } = useFavorites();
+    const { isGuest } = useAuth();
 
     const [product, setProduct] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function ProductPage() {
     );
 
     return (
-        <div className={`min-h-screen pb-28 transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-zinc-50'}`}>
+        <div className={`transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-zinc-50'}`}>
 
             {/* Hero Image */}
             <div className="relative h-[45vh] overflow-hidden">
@@ -77,12 +79,14 @@ export default function ProductPage() {
                 >
                     <ArrowLeft size={20} />
                 </button>
-                <button
-                    onClick={() => toggleFavorite(product.id)}
-                    className={`absolute top-6 right-6 p-3 rounded-2xl glass-liquid transition-all active:scale-90 z-20 ${isFavorite(product.id) ? 'bg-shaco-red/20 text-shaco-red border-shaco-red/20' : isDark ? 'bg-black/20 text-white border-white/10' : 'bg-white/80 text-zinc-900 border-zinc-200/50'}`}
-                >
-                    <Heart size={20} className={isFavorite(product.id) ? 'fill-current' : ''} />
-                </button>
+                {!isGuest && (
+                    <button
+                        onClick={() => toggleFavorite(product.id)}
+                        className={`absolute top-6 right-6 p-3 rounded-2xl glass-liquid transition-all active:scale-90 z-20 ${isFavorite(product.id) ? 'bg-shaco-red/20 text-shaco-red border-shaco-red/20' : isDark ? 'bg-black/20 text-white border-white/10' : 'bg-white/80 text-zinc-900 border-zinc-200/50'}`}
+                    >
+                        <Heart size={20} className={isFavorite(product.id) ? 'fill-current' : ''} />
+                    </button>
+                )}
             </div>
 
             {/* Content */}
@@ -90,7 +94,7 @@ export default function ProductPage() {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.15 }}
-                className={`relative -mt-12 rounded-t-[2.5rem] px-7 pt-8 z-10 min-h-[55vh] ${isDark ? 'glass-liquid bg-black/40' : 'glass-liquid bg-white/60 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]'}`}
+                className={`relative -mt-12 rounded-t-[2.5rem] px-7 pt-8 pb-8 z-10 ${isDark ? 'glass-liquid bg-black/40' : 'glass-liquid bg-white/60 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]'}`}
             >
                 <div className={`w-12 h-1.5 rounded-full mx-auto mb-6 ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-300'}`} />
 

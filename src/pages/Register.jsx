@@ -163,6 +163,7 @@ export default function Register() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
+                            onClick={handleSubmit}
                             className="w-full bg-shaco-red text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:bg-red-500 transition text-base mt-2"
                         >
                             Kayıt Ol

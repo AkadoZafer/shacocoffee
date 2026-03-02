@@ -21,9 +21,9 @@ export default function Intro({ onComplete }) {
             <div className="relative flex flex-col items-center">
 
                 {/* Animated spinning ring 1 */}
-                <motion.div
-                    className="absolute w-56 h-56 rounded-full"
-                    style={{ border: '2px solid transparent', borderTopColor: '#dc2626', borderBottomColor: '#dc2626' }}
+                <motion.svg
+                    className="absolute w-56 h-56"
+                    viewBox="0 0 100 100"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={phase >= 1 ? {
                         opacity: phase >= 2 ? [1, 0] : 1,
@@ -35,12 +35,15 @@ export default function Intro({ onComplete }) {
                         scale: { duration: 0.6, ease: "backOut" },
                         opacity: { duration: 0.4 }
                     }}
-                />
+                >
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="#dc2626" strokeWidth="1.5" strokeDasharray="80 70.8" strokeLinecap="round" />
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="#dc2626" strokeWidth="1.5" strokeDasharray="80 70.8" strokeDashoffset="-150.8" strokeLinecap="round" />
+                </motion.svg>
 
                 {/* Animated spinning ring 2 - opposite direction */}
-                <motion.div
-                    className="absolute w-64 h-64 rounded-full"
-                    style={{ border: '1px solid transparent', borderLeftColor: '#ef444466', borderRightColor: '#ef444466' }}
+                <motion.svg
+                    className="absolute w-64 h-64"
+                    viewBox="0 0 100 100"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={phase >= 1 ? {
                         opacity: phase >= 2 ? [0.6, 0] : 0.6,
@@ -52,7 +55,10 @@ export default function Intro({ onComplete }) {
                         scale: { duration: 0.8, ease: "backOut" },
                         opacity: { duration: 0.4 }
                     }}
-                />
+                >
+                    <circle cx="50" cy="50" r="49" fill="none" stroke="#ef4444" strokeOpacity="0.4" strokeWidth="1" strokeDasharray="80 73.9" strokeLinecap="round" />
+                    <circle cx="50" cy="50" r="49" fill="none" stroke="#ef4444" strokeOpacity="0.4" strokeWidth="1" strokeDasharray="80 73.9" strokeDashoffset="-153.9" strokeLinecap="round" />
+                </motion.svg>
 
                 {/* Breathing ambient glow */}
                 <motion.div
