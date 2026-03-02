@@ -77,14 +77,15 @@ export default function Stores() {
     const checkStoreStatus = (workingHours) => {
         if (!workingHours) return { isOpen: false, text: 'Saat bilgisi yok' };
 
-        const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
         const now = new Date();
-        const currentDayStr = days[now.getDay()];
-        const todayHours = workingHours[currentDayStr];
+        const dayOfWeek = now.getDay(); // 0 is Sunday, 6 is Saturday
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        const todayHours = isWeekend ? workingHours.weekend : workingHours.weekdays;
 
-        if (!todayHours || todayHours === 'Kapalı') return { isOpen: false, text: 'Kapalı' };
+        if (!todayHours || !todayHours.open || !todayHours.close) return { isOpen: false, text: 'Kapalı' };
 
-        const [openStr, closeStr] = todayHours.split('-');
+        const openStr = todayHours.open;
+        const closeStr = todayHours.close;
         if (!openStr || !closeStr) return { isOpen: false, text: 'Kapalı' };
 
         const currentHour = now.getHours();
@@ -181,12 +182,14 @@ export default function Stores() {
                                                 initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                                 className={`px-4 pb-4 text-sm space-y-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}
                                             >
-                                                {['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'].map((day) => (
-                                                    <div key={day} className="flex justify-between items-center">
-                                                        <span className={`${new Date().getDay() === (day === 'Pazar' ? 0 : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'].indexOf(day) + 1) ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}`}>{day}</span>
-                                                        <span className={`font-mono ${new Date().getDay() === (day === 'Pazar' ? 0 : ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'].indexOf(day) + 1) ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}`}>{store.workingHours[day]}</span>
-                                                    </div>
-                                                ))}
+                                                <div className="flex justify-between items-center">
+                                                    <span className={new Date().getDay() !== 0 && new Date().getDay() !== 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}>Hafta İçi</span>
+                                                    <span className={`font-mono ${new Date().getDay() !== 0 && new Date().getDay() !== 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}`}>{store.workingHours.weekdays?.open} - {store.workingHours.weekdays?.close}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className={new Date().getDay() === 0 || new Date().getDay() === 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}>Hafta Sonu</span>
+                                                    <span className={`font-mono ${new Date().getDay() === 0 || new Date().getDay() === 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}`}>{store.workingHours.weekend?.open} - {store.workingHours.weekend?.close}</span>
+                                                </div>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
