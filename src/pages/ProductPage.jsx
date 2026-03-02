@@ -182,9 +182,9 @@ export default function ProductPage() {
                         <div>
                             <SectionLabel label="İÇİNDEKİLER & EKSTRALAR" isDark={isDark} />
                             <div className="flex flex-wrap gap-2 mt-3">
-                                {product.extras.map((extra, i) => (
+                                {(Array.isArray(product.extras) ? product.extras : product.extras.split(',')).map((extra, i) => (
                                     <span key={i} className={`px-4 py-2 rounded-xl text-[13px] font-bold tracking-wide ${isDark ? 'glass-liquid text-zinc-200' : 'bg-white text-zinc-700 border border-zinc-200 shadow-sm'}`}>
-                                        {extra}
+                                        {extra.trim()}
                                     </span>
                                 ))}
                             </div>
@@ -192,7 +192,7 @@ export default function ProductPage() {
                     )}
 
                     {/* Allergen Info */}
-                    {product.allergens && product.allergens.length > 0 && (
+                    {product.allergens && (Array.isArray(product.allergens) ? product.allergens.length > 0 : product.allergens.trim() !== '') && (
                         <div className={`p-5 rounded-2xl flex items-start gap-4 mt-6 glass-liquid ${isDark ? 'bg-amber-500/5' : 'bg-amber-50 border-amber-200/50'}`}>
                             <div className="bg-amber-500/20 p-2.5 rounded-xl shrink-0">
                                 <Wheat size={24} className="text-amber-500" />
@@ -200,7 +200,7 @@ export default function ProductPage() {
                             <div>
                                 <p className={`text-[15px] font-black tracking-wide mb-1.5 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>Alerjen Bilgisi</p>
                                 <p className={`text-[13px] leading-relaxed ${isDark ? 'text-zinc-400' : 'text-amber-800/80'}`}>
-                                    Bu ürün <strong>{product.allergens.join(', ')}</strong> içermektedir. Lütfen sipariş verirken baristamızı bilgilendiriniz.
+                                    Bu ürün <strong>{Array.isArray(product.allergens) ? product.allergens.join(', ') : product.allergens}</strong> içermektedir. Lütfen sipariş verirken baristamızı bilgilendiriniz.
                                 </p>
                             </div>
                         </div>
