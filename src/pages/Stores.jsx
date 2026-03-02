@@ -62,7 +62,13 @@ export default function Stores() {
     const getDistance = (store) => {
         if (loadingLocation) return null;
         if (!userLocation) return locationError || 'Konum kapalı';
-        const dist = getDistanceKm(userLocation.lat, userLocation.lng, store.coordinates.lat, store.coordinates.lng);
+
+        const storeLat = store.coordinates?.lat ?? store.location?.lat ?? null;
+        const storeLng = store.coordinates?.lng ?? store.location?.lng ?? null;
+
+        if (storeLat == null || storeLng == null) return 'Uzaklık hesaplanamıyor';
+
+        const dist = getDistanceKm(userLocation.lat, userLocation.lng, storeLat, storeLng);
         if (dist < 1) return `${Math.round(dist * 1000)} m`;
         return `${dist.toFixed(1)} km`;
     };
@@ -187,11 +193,17 @@ export default function Stores() {
                                 </div>
 
                                 <div className="flex gap-3">
-                                    <a href={`https://maps.google.com/?q=${store.coordinates.lat},${store.coordinates.lng}`} target="_blank" rel="noreferrer"
-                                        className={`flex-1 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 shadow-lg transition active:scale-[0.98] ${isDark ? 'bg-white text-black hover:bg-zinc-200 shadow-white/5' : 'bg-zinc-900 text-white shadow-black/10'}`}
-                                    >
-                                        <Navigation size={16} /> Yol Tarifi
-                                    </a>
+                                    {store.coordinates?.lat || store.location?.lat ? (
+                                        <a href={`https://maps.google.com/?q=${store.coordinates?.lat ?? store.location?.lat},${store.coordinates?.lng ?? store.location?.lng}`} target="_blank" rel="noreferrer"
+                                            className={`flex-1 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 shadow-lg transition active:scale-[0.98] ${isDark ? 'bg-white text-black hover:bg-zinc-200 shadow-white/5' : 'bg-zinc-900 text-white shadow-black/10'}`}
+                                        >
+                                            <Navigation size={16} /> Yol Tarifi
+                                        </a>
+                                    ) : (
+                                        <div className={`flex-1 py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 border opacity-60 cursor-not-allowed ${isDark ? 'border-zinc-800 text-zinc-500 bg-black/20' : 'border-zinc-200 text-zinc-400 bg-zinc-50'}`}>
+                                            <Navigation size={16} /> Yol Tarifi Kapalı
+                                        </div>
+                                    )}
                                     <a href={`tel:${store.phone.replace(/\s+/g, '')}`} className={`w-14 rounded-xl flex items-center justify-center transition active:scale-[0.98] ${isDark ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700' : 'bg-white border text-zinc-700 hover:bg-zinc-50'}`}>
                                         <Phone size={18} />
                                     </a>
