@@ -182,65 +182,69 @@ export default function Settings() {
                 </motion.div>
 
                 {/* HESAP */}
-                <SectionLabel label="HESAP" isDark={isDark} delay={0.15} />
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-7">
-                    <div className={`rounded-3xl overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
-                        {/* Personal Info Edit Section */}
-                        <ProfileRow
-                            icon={<User size={17} />}
-                            iconBg="bg-red-500/10 text-red-400"
-                            label="Kişisel Bilgiler"
-                            isDark={isDark}
-                            onClick={() => setEditMode(!editMode)}
-                            rightIcon={editMode ? <X size={16} /> : <ChevronRight size={15} />}
-                            isFirst={true}
-                        />
-                        <AnimatePresence>
-                            {editMode && (
-                                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4">
-                                    <div className="space-y-4 pt-2">
-                                        <div className="space-y-1">
-                                            <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Ad Soyad</label>
-                                            <input
-                                                type="text"
-                                                value={formData.name}
-                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                className={`w-full p-3 rounded-xl text-base ${isDark ? 'bg-zinc-800/50 text-white' : 'bg-zinc-50 text-zinc-900'}`}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Telefon</label>
-                                            <input
-                                                type="tel"
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                className={`w-full p-3 rounded-xl text-base ${isDark ? 'bg-zinc-800/50 text-white' : 'bg-zinc-50 text-zinc-900'}`}
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Doğum Tarihi</label>
-                                            <input
-                                                type="date"
-                                                value={formData.birthDate}
-                                                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                                                className={`w-full p-3 rounded-xl text-base ${isDark ? 'bg-zinc-800/50 text-white' : 'bg-zinc-50 text-zinc-900'}`}
-                                            />
-                                        </div>
-                                        <button
-                                            onClick={handleSaveProfile}
-                                            className="w-full py-3 bg-shaco-red text-white text-base font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition"
-                                        >
-                                            <Save size={16} /> Kaydet
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                {!isGuest && (
+                    <>
+                        <SectionLabel label="HESAP" isDark={isDark} delay={0.15} />
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-7">
+                            <div className={`rounded-3xl overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
+                                {/* Personal Info Edit Section */}
+                                <ProfileRow
+                                    icon={<User size={17} />}
+                                    iconBg="bg-red-500/10 text-red-400"
+                                    label="Kişisel Bilgiler"
+                                    isDark={isDark}
+                                    onClick={() => setEditMode(!editMode)}
+                                    rightIcon={editMode ? <X size={16} /> : <ChevronRight size={15} />}
+                                    isFirst={true}
+                                />
+                                <AnimatePresence>
+                                    {editMode && (
+                                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4">
+                                            <div className="space-y-4 pt-2">
+                                                <div className="space-y-1">
+                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Ad Soyad</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.name}
+                                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                        className={`w-full p-3 rounded-xl text-base ${isDark ? 'bg-zinc-800/50 text-white' : 'bg-zinc-50 text-zinc-900'}`}
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Telefon</label>
+                                                    <input
+                                                        type="tel"
+                                                        value={formData.phone}
+                                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                        className={`w-full p-3 rounded-xl text-base ${isDark ? 'bg-zinc-800/50 text-white' : 'bg-zinc-50 text-zinc-900'}`}
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Doğum Tarihi</label>
+                                                    <input
+                                                        type="date"
+                                                        value={formData.birthDate}
+                                                        onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                                                        className={`w-full p-3 rounded-xl text-base ${isDark ? 'bg-zinc-800/50 text-white' : 'bg-zinc-50 text-zinc-900'}`}
+                                                    />
+                                                </div>
+                                                <button
+                                                    onClick={handleSaveProfile}
+                                                    className="w-full py-3 bg-shaco-red text-white text-base font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition"
+                                                >
+                                                    <Save size={16} /> Kaydet
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
 
-                        {!isGuest && !isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
-                        {!isGuest && <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={true} />}
-                    </div>
-                </motion.div>
+                                {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
+                                <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={true} />
+                            </div>
+                        </motion.div>
+                    </>
+                )}
 
                 {/* GENEL */}
                 <SectionLabel label="GENEL" isDark={isDark} delay={0.25} />
