@@ -15,7 +15,6 @@ import Stores from './pages/Stores';
 import Orders from './pages/Orders';
 import Layout from './components/Layout';
 import Intro from './components/Intro';
-import Onboarding from './components/Onboarding';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { RewardsProvider } from './context/RewardsContext';
@@ -57,13 +56,9 @@ function AppRoutes() {
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [backPressedOnce, setBackPressedOnce] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem('shaco_onboarded')) {
-      setShowOnboarding(true);
-    }
 
     // Double back to exit logic
     const handleBackButton = async () => {
@@ -117,14 +112,6 @@ export default function App() {
                       <AnimatePresence mode="wait">
                         {showIntro ? (
                           <Intro key="intro" onComplete={() => setShowIntro(false)} />
-                        ) : showOnboarding ? (
-                          <Onboarding
-                            key="onboarding"
-                            onComplete={() => {
-                              setShowOnboarding(false);
-                              localStorage.setItem('shaco_onboarded', 'true');
-                            }}
-                          />
                         ) : (
                           <BrowserRouter>
                             <AppRoutes />
