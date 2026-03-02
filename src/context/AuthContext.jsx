@@ -31,11 +31,6 @@ export function AuthProvider({ children }) {
                         userData = { email: firebaseUser.email, role: 'customer', name: 'Kullanıcı' };
                     }
 
-                    // LOCAL DEV HACK: Eğer barista e-postası ile girilmişse yetkiyi zorla yükselt (Firestore'u manipüle etmeden lokal state'te)
-                    if (firebaseUser.email === 'barista@shacocoffee.com' || firebaseUser.email === 'barista@shaco.com') {
-                        userData.role = 'barista';
-                    }
-
                     setUser({ uid: firebaseUser.uid, ...userData });
                 } catch (error) {
                     console.error("Kullanıcı verisi çekilemedi:", error);
