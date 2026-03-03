@@ -96,12 +96,12 @@ export default function Menu() {
 
                 {/* Category Filter Pills */}
                 {!isLoading && categories.length > 0 && (
-                    <div className="flex gap-2 overflow-x-auto no-scrollbar mb-6 px-1">
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar mb-6 px-1 snap-x">
                         {categories.map((cat) => (
                             <button
                                 key={cat.id}
                                 onClick={() => setActiveCategory(cat.id)}
-                                className={`px-4 py-2 rounded-xl text-[14px] font-bold whitespace-nowrap transition-all duration-300 active:scale-95 ${activeCategory === cat.id
+                                className={`shrink-0 snap-start px-4 py-2 rounded-xl text-[14px] font-bold whitespace-nowrap transition-all duration-300 active:scale-95 ${activeCategory === cat.id
                                     ? 'bg-gradient-to-r from-warm-amber to-amber-light text-espresso-dark shadow-[0_4px_15px_rgba(200,151,58,0.4)]'
                                     : isDark
                                         ? 'glass-liquid text-zinc-400 hover:text-white'
