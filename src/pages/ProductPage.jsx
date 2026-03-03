@@ -132,7 +132,7 @@ export default function ProductPage() {
                         <SectionLabel label="BESİN DEĞERLERİ" isDark={isDark} />
                         <div className="grid grid-cols-2 gap-3 mt-3">
                             {product.nutrition.calories !== undefined && (
-                                <div className={`flex items-center gap-3 p-3 rounded-2xl ${isDark ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-orange-50 border border-orange-200/50'}`}>
+                                <div className={`flex items-center gap-3 p-3 rounded-2xl glass-liquid ${isDark ? 'bg-white/5 border border-white/10' : 'bg-white/60 border border-zinc-200/50'}`}>
                                     <div className="bg-orange-500/20 p-2 rounded-xl text-orange-500">
                                         <Flame size={18} />
                                     </div>
@@ -143,7 +143,7 @@ export default function ProductPage() {
                                 </div>
                             )}
                             {product.nutrition.caffeine !== undefined && (
-                                <div className={`flex items-center gap-3 p-3 rounded-2xl ${isDark ? 'bg-yellow-500/10 border border-yellow-500/20' : 'bg-yellow-50 border border-yellow-200/50'}`}>
+                                <div className={`flex items-center gap-3 p-3 rounded-2xl glass-liquid ${isDark ? 'bg-white/5 border border-white/10' : 'bg-white/60 border border-zinc-200/50'}`}>
                                     <div className="bg-yellow-500/20 p-2 rounded-xl text-yellow-500">
                                         <Zap size={18} />
                                     </div>
@@ -154,7 +154,7 @@ export default function ProductPage() {
                                 </div>
                             )}
                             {product.nutrition.protein !== undefined && (
-                                <div className={`flex items-center gap-3 p-3 rounded-2xl ${isDark ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-200/50'}`}>
+                                <div className={`flex items-center gap-3 p-3 rounded-2xl glass-liquid ${isDark ? 'bg-white/5 border border-white/10' : 'bg-white/60 border border-zinc-200/50'}`}>
                                     <div className="bg-blue-500/20 p-2 rounded-xl text-blue-500">
                                         <Dumbbell size={18} />
                                     </div>
@@ -165,7 +165,7 @@ export default function ProductPage() {
                                 </div>
                             )}
                             {product.nutrition.fat !== undefined && (
-                                <div className={`flex items-center gap-3 p-3 rounded-2xl ${isDark ? 'bg-stone-500/10 border border-stone-500/20' : 'bg-stone-50 border border-stone-200/50'}`}>
+                                <div className={`flex items-center gap-3 p-3 rounded-2xl glass-liquid ${isDark ? 'bg-white/5 border border-white/10' : 'bg-white/60 border border-zinc-200/50'}`}>
                                     <div className="bg-stone-500/20 p-2 rounded-xl text-stone-500">
                                         <Droplets size={18} />
                                     </div>
