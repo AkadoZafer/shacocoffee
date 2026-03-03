@@ -56,7 +56,7 @@ export default function ProductPage() {
     );
 
     return (
-        <div className={`transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-zinc-50'}`}>
+        <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-zinc-50'}`}>
 
             {/* Hero Image */}
             <div className="relative h-[45vh] overflow-hidden">
