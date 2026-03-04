@@ -23,8 +23,12 @@ export default function Register() {
     const update = (key, val) => setForm({ ...form, [key]: val });
 
     const handleRegister = async () => {
+        console.log('currentUser:', auth.currentUser?.uid);
         const currentUser = auth.currentUser;
-        if (!currentUser) return;
+        if (!currentUser) {
+            console.log('KULLANICI YOK!');
+            return;
+        }
 
         setError('');
 
