@@ -22,33 +22,44 @@ export default function Login() {
     useEffect(() => {
         const isPathCorrect = window.location.pathname.includes('/login');
         if (isPathCorrect && step === 'phone' && !window.recaptchaVerifier) {
-            console.log('reCAPTCHA başlatılıyor (Login)...');
             try {
                 window.recaptchaVerifier = new RecaptchaVerifier(
                     auth,
                     'recaptcha-container',
                     {
                         size: 'invisible',
+                        sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
                         callback: () => { },
-                        'expired-callback': () => { }
+                        'expired-callback': () => {
+                            window.recaptchaVerifier = null;
+                        }
                     }
                 );
+                // KRİTİK: render() çağrılması şart!
+                window.recaptchaVerifier.render()
+                    .then((widgetId) => {
+                        window.recaptchaWidgetId = widgetId;
+                        console.log('reCAPTCHA hazır:', widgetId);
+                    })
+                    .catch((err) => {
+                        console.error('reCAPTCHA render hatası:', err);
+                        window.recaptchaVerifier = null;
+                    });
             } catch (err) {
                 console.error('reCAPTCHA init hatası:', err);
+                window.recaptchaVerifier = null;
             }
         }
-    }, [step]);
 
-    // Sayfadan ayrılırken tam temizlik
-    useEffect(() => {
+        // Sayfadan ayrılırken veya adım değiştiğinde temizlik
         return () => {
             if (window.recaptchaVerifier) {
-                console.log('reCAPTCHA temizleniyor (Unmount)');
+                console.log('reCAPTCHA temizleniyor (Unmount/Cleanup)');
                 try { window.recaptchaVerifier.clear(); } catch (e) { }
                 window.recaptchaVerifier = null;
             }
         };
-    }, []);
+    }, [step]);
 
     // Geri sayım
     useEffect(() => {
