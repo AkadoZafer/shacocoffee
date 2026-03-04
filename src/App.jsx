@@ -26,6 +26,14 @@ import { SocialMediaProvider } from './context/SocialMediaContext';
 import { ToastProvider } from './context/ToastContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 
+function ProtectedRoute({ children }) {
+  const { isGuest } = useAuth();
+  if (isGuest) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
 function AppRoutes() {
   const { user, loading: authLoading, isGuest, isStaff, isBarista, needsRegistration } = useAuth();
   const location = useLocation();
@@ -47,11 +55,11 @@ function AppRoutes() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="menu" element={<Menu />} />
-          <Route path="pay" element={<Pay />} />
-          <Route path="wallet" element={<Wallet />} />
+          <Route path="pay" element={<ProtectedRoute><Pay /></ProtectedRoute>} />
+          <Route path="wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
           <Route path="settings" element={<Settings />} />
           <Route path="stores" element={<Stores />} />
-          <Route path="orders" element={<Orders />} />
+          <Route path="orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
           <Route path="product/:id" element={<ProductPage />} />
         </Route>
       </Routes>

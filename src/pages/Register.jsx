@@ -59,7 +59,12 @@ export default function Register() {
             await setDoc(doc(db, 'users', currentUser.uid), {
                 firstName: form.firstName,
                 lastName: form.lastName,
+                name: `${form.firstName} ${form.lastName}`,
                 phone: currentUser.phoneNumber,
+                role: 'member',
+                balance: 0,
+                stars: 0,
+                tier: 'bronze',
                 createdAt: new Date()
             });
 
