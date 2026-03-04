@@ -24,6 +24,9 @@ export function AuthProvider({ children }) {
 
                     if (docSnap.exists()) {
                         console.log("Kullanıcı Firestore'da bulundu, eksik alanlar tamamlanıyor...");
+
+                        const userData = docSnap.data();
+
                         const mergedData = {
                             ...userData,
                             role: userData.role || 'member',
