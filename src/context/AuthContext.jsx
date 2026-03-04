@@ -45,31 +45,22 @@ export function AuthProvider({ children }) {
         return () => unsubscribe();
     }, []);
 
-    // Invisible reCAPTCHA başlatma
-    const setupRecaptcha = (buttonId) => {
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, buttonId, {
-                size: 'invisible',
-                callback: () => { },
-                'expired-callback': () => {
-                    window.recaptchaVerifier = null;
-                }
-            });
-        }
-        return window.recaptchaVerifier;
-    };
-
     // Telefon numarasına SMS kodu gönder
-    const sendOTP = async (phoneNumber, buttonId = 'send-otp-btn') => {
+    const sendOTP = async (phoneNumber) => {
         try {
-            const recaptchaVerifier = setupRecaptcha(buttonId);
-            const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+            if (!window.recaptchaVerifier) {
+                return { success: false, error: 'reCAPTCHA yüklenemedi, sayfayı yenileyin.' };
+            }
+            const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
             window.confirmationResult = confirmationResult;
             return { success: true };
         } catch (error) {
             console.error('SMS gönderme hatası:', error);
-            // reCAPTCHA resetle
-            window.recaptchaVerifier = null;
+            // reCAPTCHA'yı resetle (tekrar oluşturulsun diye)
+            if (window.recaptchaVerifier) {
+                try { window.recaptchaVerifier.clear(); } catch (e) { }
+                window.recaptchaVerifier = null;
+            }
 
             let errorMsg = 'SMS gönderilemedi.';
             if (error.code === 'auth/invalid-phone-number') {

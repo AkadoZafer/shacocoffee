@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, Shield } from 'lucide-react';
+import { RecaptchaVerifier } from 'firebase/auth';
+import { auth } from '../firebase';
 import logo from '../assets/logo.png';
 
 export default function Login() {
@@ -15,6 +17,26 @@ export default function Login() {
     const { sendOTP, verifyOTP } = useAuth();
     const navigate = useNavigate();
     const otpRefs = useRef([]);
+
+    // reCAPTCHA'yı component mount'ta BİR KEZ initialize et (Claude'un önerisi)
+    useEffect(() => {
+        if (!window.recaptchaVerifier) {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'send-otp-btn', {
+                size: 'invisible',
+                callback: () => { },
+                'expired-callback': () => {
+                    window.recaptchaVerifier = null;
+                }
+            });
+        }
+        return () => {
+            // Cleanup on unmount
+            if (window.recaptchaVerifier) {
+                try { window.recaptchaVerifier.clear(); } catch (e) { }
+                window.recaptchaVerifier = null;
+            }
+        };
+    }, []);
 
     // Geri sayım
     useEffect(() => {
@@ -43,7 +65,7 @@ export default function Login() {
         }
 
         setIsLoading(true);
-        const result = await sendOTP(formatted, 'send-otp-btn');
+        const result = await sendOTP(formatted);
         setIsLoading(false);
 
         if (result.success) {
