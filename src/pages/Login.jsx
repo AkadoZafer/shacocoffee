@@ -24,17 +24,15 @@ export default function Login() {
         if (isPathCorrect && step === 'phone' && !window.recaptchaVerifier) {
             console.log('reCAPTCHA başlatılıyor (Login)...');
             try {
-                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                    size: 'invisible',
-                    callback: () => { },
-                    'expired-callback': () => {
-                        console.log('reCAPTCHA süresi doldu');
-                        if (window.recaptchaVerifier) {
-                            try { window.recaptchaVerifier.clear(); } catch (e) { }
-                            window.recaptchaVerifier = null;
-                        }
+                window.recaptchaVerifier = new RecaptchaVerifier(
+                    auth,
+                    'recaptcha-container',
+                    {
+                        size: 'invisible',
+                        callback: () => { },
+                        'expired-callback': () => { }
                     }
-                });
+                );
             } catch (err) {
                 console.error('reCAPTCHA init hatası:', err);
             }
