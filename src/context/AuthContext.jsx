@@ -28,14 +28,14 @@ export function AuthProvider({ children }) {
                         setNeedsRegistration(false);
                     } else {
                         console.log("Kullanıcı Firestore'da YOK -> Kayıt gerekli.");
-                        // SADECE PENDING DURUMUNA AL, GUEST YAPMA
+                        setNeedsRegistration(true);
                         setUser({
                             uid: firebaseUser.uid,
                             phone: firebaseUser.phoneNumber,
-                            role: 'pending',
-                            name: 'Yeni Üye'
+                            role: 'pending'
                         });
-                        setNeedsRegistration(true);
+                        setLoading(false);
+                        return;
                     }
                 } catch (error) {
                     console.error("Kullanıcı verisi çekilemedi:", error);
