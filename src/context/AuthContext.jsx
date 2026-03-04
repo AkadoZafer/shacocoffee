@@ -56,9 +56,17 @@ export function AuthProvider({ children }) {
             return { success: true };
         } catch (error) {
             console.error('SMS gönderme hatası:', error);
+
             // reCAPTCHA'yı resetle (tekrar oluşturulsun diye)
             if (window.recaptchaVerifier) {
-                try { window.recaptchaVerifier.clear(); } catch (e) { }
+                try {
+                    // reCAPTCHA'yı güvenli bir şekilde temizle
+                    if (typeof window.recaptchaVerifier.clear === 'function') {
+                        window.recaptchaVerifier.clear();
+                    }
+                } catch (e) {
+                    console.warn('reCAPTCHA temizleme hatası:', e);
+                }
                 window.recaptchaVerifier = null;
             }
 
@@ -66,9 +74,11 @@ export function AuthProvider({ children }) {
             if (error.code === 'auth/invalid-phone-number') {
                 errorMsg = 'Geçersiz telefon numarası. +90 ile başlayın.';
             } else if (error.code === 'auth/too-many-requests') {
-                errorMsg = 'Çok fazla deneme yapıldı. Lütfen biraz bekleyin.';
+                errorMsg = 'Çok fazla deneme yapıldı. Lütfen biraz bekleyin (reCAPTCHA limitine takılmış olabilirsiniz).';
             } else if (error.code === 'auth/quota-exceeded') {
                 errorMsg = 'SMS kotası aşıldı.';
+            } else if (error.code === 'auth/captcha-check-failed') {
+                errorMsg = 'reCAPTCHA doğrulaması başarısız oldu.';
             }
             return { success: false, error: errorMsg };
         }

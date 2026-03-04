@@ -25,15 +25,23 @@ export default function Register() {
         if (!form.firstName.trim()) { setError('Ad gerekli'); return; }
         if (!form.lastName.trim()) { setError('Soyad gerekli'); return; }
 
-        setIsLoading(true);
-        const result = await completeRegistration(form);
-        setIsLoading(false);
+        try {
+            setIsLoading(true);
+            console.log('Kayıt başlatılıyor...', form);
+            const result = await completeRegistration(form);
+            console.log('Kayıt sonucu:', result);
+            setIsLoading(false);
 
-        if (result.success) {
-            setSuccess(true);
-            setTimeout(() => navigate('/'), 1500);
-        } else {
-            setError(result.error);
+            if (result.success) {
+                setSuccess(true);
+                setTimeout(() => navigate('/'), 1500);
+            } else {
+                setError(result.error || 'Beklenmedik bir hata oluştu');
+            }
+        } catch (err) {
+            console.error('Kayıt sırasında teknik hata:', err);
+            setError('Sistem hatası: ' + err.message);
+            setIsLoading(false);
         }
     };
 

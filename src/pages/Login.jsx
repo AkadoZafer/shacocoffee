@@ -18,19 +18,21 @@ export default function Login() {
     const navigate = useNavigate();
     const otpRefs = useRef([]);
 
-    // reCAPTCHA'yı component mount'ta BİR KEZ initialize et (Claude'un önerisi)
+    // reCAPTCHA'yı component mount'ta BİR KEZ initialize et
     useEffect(() => {
         if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'send-otp-btn', {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
                 size: 'invisible',
                 callback: () => { },
                 'expired-callback': () => {
-                    window.recaptchaVerifier = null;
+                    if (window.recaptchaVerifier) {
+                        try { window.recaptchaVerifier.clear(); } catch (e) { }
+                        window.recaptchaVerifier = null;
+                    }
                 }
             });
         }
         return () => {
-            // Cleanup on unmount
             if (window.recaptchaVerifier) {
                 try { window.recaptchaVerifier.clear(); } catch (e) { }
                 window.recaptchaVerifier = null;
@@ -201,8 +203,8 @@ export default function Login() {
                         </div>
                     ) : (
                         /* ============ OTP DOĞRULAMA ADIMI ============ */
-                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                            <div className="mb-2">
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+                            <div className="space-y-2">
                                 <p className="text-zinc-400 text-sm font-medium">
                                     <span className="text-white font-bold">{formatPhone(phone)}</span> numarasına
                                 </p>
@@ -221,29 +223,34 @@ export default function Login() {
                                         value={digit}
                                         onChange={(e) => handleOtpChange(i, e.target.value)}
                                         onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                                        className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border transition-all duration-200 bg-black/50 text-white focus:outline-none
+                                        className={`w-11 h-14 text-center text-2xl font-bold rounded-xl border transition-all duration-200 bg-black/50 text-white focus:outline-none
                                             ${digit ? 'border-shaco-red shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'border-zinc-800'}
                                             focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)]`}
                                     />
                                 ))}
                             </div>
 
-                            {/* Geri Sayım */}
-                            {countdown > 0 && (
-                                <p className="text-zinc-600 text-sm font-mono">
-                                    Kod geçerlilik: <span className="text-zinc-400">{Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}</span>
-                                </p>
-                            )}
+                            <p className="text-center text-[13px] text-zinc-500 px-4">
+                                Mesaj gelmediyse lütfen <span className="text-zinc-400 font-bold">Spam/Gereksiz</span> klasörünü kontrol edin.
+                            </p>
 
-                            {/* Tekrar Gönder */}
-                            {countdown === 0 && (
-                                <button
-                                    onClick={() => { setStep('phone'); setOtp(['', '', '', '', '', '']); setError(''); }}
-                                    className="text-shaco-red text-sm font-bold hover:underline"
-                                >
-                                    Tekrar Kod Gönder
-                                </button>
-                            )}
+                            <div className="flex flex-col items-center gap-2">
+                                {/* Geri Sayım */}
+                                {countdown > 0 ? (
+                                    <p className="text-zinc-600 text-sm font-mono">
+                                        Kod geçerlilik: <span className="text-zinc-400">{Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}</span>
+                                    </p>
+                                ) : (
+                                    /* Tekrar Gönder */
+                                    <button
+                                        type="button"
+                                        onClick={() => { setStep('phone'); setOtp(['', '', '', '', '', '']); setError(''); }}
+                                        className="text-shaco-red text-sm font-bold hover:underline"
+                                    >
+                                        Tekrar Kod Gönder
+                                    </button>
+                                )}
+                            </div>
 
                             {error && (
                                 <p className="text-red-400 text-[15px] font-bold animate-pulse">{error}</p>
@@ -270,6 +277,8 @@ export default function Login() {
 
                 <p className="text-zinc-600 text-base text-center mt-6 font-mono">EST. 2024</p>
             </motion.div>
+            {/* Invisible reCAPTCHA Container */}
+            <div id="recaptcha-container"></div>
         </div>
     );
 }
