@@ -112,7 +112,38 @@ export function AuthProvider({ children }) {
             const firebaseUser = auth.currentUser;
             if (!firebaseUser) return { success: false, error: 'Oturum bulunamadı.' };
 
+            const userRef = doc(db, 'users', firebaseUser.uid);
+            const existingDoc = await getDoc(userRef);
+
+            if (existingDoc.exists()) {
+                // Döküman zaten var (önceki deneme/listener), sadece güvenli alanları güncelle
+                await updateDoc(userRef, {
+                    firstName,
+                    lastName,
+                    name: `${firstName} ${lastName}`,
+                    phone: firebaseUser.phoneNumber,
+                    avatar: null,
+                    joined: new Date().toISOString(),
+                });
+            } else {
+                // Yeni döküman oluştur (balance/stars/tier dahil)
+                await setDoc(userRef, {
+                    firstName,
+                    lastName,
+                    name: `${firstName} ${lastName}`,
+                    phone: firebaseUser.phoneNumber,
+                    role: 'member',
+                    balance: 0,
+                    stars: 0,
+                    tier: 'bronze',
+                    avatar: null,
+                    joined: new Date().toISOString(),
+                    createdAt: new Date().toISOString()
+                });
+            }
+
             const userData = {
+                uid: firebaseUser.uid,
                 firstName,
                 lastName,
                 name: `${firstName} ${lastName}`,
@@ -122,16 +153,12 @@ export function AuthProvider({ children }) {
                 stars: 0,
                 tier: 'bronze',
                 avatar: null,
-                joined: new Date().toISOString(),
-                createdAt: new Date().toISOString()
             };
-
-            await setDoc(doc(db, 'users', firebaseUser.uid), userData);
-            setUser({ uid: firebaseUser.uid, ...userData });
+            setUser(userData);
             return { success: true };
         } catch (error) {
             console.error('Kayıt hatası:', error);
-            return { success: false, error: 'Profil kaydedilemedi.' };
+            return { success: false, error: 'Profil kaydedilemedi: ' + error.message };
         }
     };
 
