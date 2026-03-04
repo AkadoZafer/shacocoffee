@@ -5,9 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
 import LazyImage from '../components/LazyImage';
 import { useTheme } from '../context/ThemeContext';
-import { fetchProducts, fetchMenuCategories } from '../services/menuService';
+import { fetchMenuCategories } from '../services/menuService';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Menu() {
     const navigate = useNavigate();
@@ -26,30 +28,52 @@ export default function Menu() {
     const { favorites, toggleFavorite, isFavorite } = useFavorites();
 
     useEffect(() => {
-        const loadServices = async () => {
+        const loadCategories = async () => {
             try {
-                const [prods, cats] = await Promise.all([fetchProducts(), fetchMenuCategories()]);
-                setProducts(prods);
+                const cats = await fetchMenuCategories();
                 setCategories([{ id: 'all', name: 'Tümü' }, ...cats]);
+            } catch (err) {
+                console.error("Kategori yükleme hatası", err);
+            }
+        };
+        loadCategories();
+    }, []);
+
+    useEffect(() => {
+        const loadProducts = async () => {
+            setIsLoading(true);
+            try {
+                let qArgs = [collection(db, 'menu')];
+                if (activeCategory !== 'all') {
+                    qArgs.push(where('category', '==', activeCategory));
+                }
+                const q = query(...qArgs);
+                const snapshot = await getDocs(q);
+
+                const list = [];
+                snapshot.forEach(d => {
+                    const data = d.data();
+                    if (data.isAvailable !== false) {
+                        list.push({ id: d.id, ...data });
+                    }
+                });
+                setProducts(list);
             } catch (err) {
                 console.error("Menü yükleme hatası", err);
             } finally {
                 setIsLoading(false);
             }
         };
-        loadServices();
-    }, []);
+        loadProducts();
+    }, [activeCategory]);
 
     const filteredProducts = useMemo(() => {
         let items = products;
-        if (activeCategory !== 'all') {
-            items = items.filter(p => p.category === activeCategory);
-        }
         if (searchQuery.trim()) {
             items = items.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
         }
         return items;
-    }, [products, activeCategory, searchQuery]);
+    }, [products, searchQuery]);
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
