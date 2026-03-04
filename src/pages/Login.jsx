@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, Shield } from 'lucide-react';
-import { RecaptchaVerifier } from 'firebase/auth';
+import { RecaptchaVerifier, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 import logo from '../assets/logo.png';
 
@@ -144,7 +144,13 @@ export default function Login() {
 
         if (result.success) {
             if (result.isNewUser) {
-                navigate('/register');
+                // Firebase Auth state'in tamamen hazır olduğundan emin olmak için listener kullanıyoruz
+                const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        unsubscribe(); // Sadece ilk tetiklemede çalışsın
+                        navigate('/register');
+                    }
+                });
             } else {
                 navigate('/');
             }
