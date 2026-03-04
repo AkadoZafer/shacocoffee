@@ -20,8 +20,7 @@ export default function Login() {
 
     // reCAPTCHA'yı sadece /login yolunda ve telefon adımında başlat
     useEffect(() => {
-        const isPathCorrect = window.location.pathname.includes('/login');
-        if (isPathCorrect && step === 'phone' && !window.recaptchaVerifier) {
+        if (!window.recaptchaVerifier) {
             try {
                 window.recaptchaVerifier = new RecaptchaVerifier(
                     auth,
@@ -50,15 +49,15 @@ export default function Login() {
             }
         }
 
-        // Sayfadan ayrılırken veya adım değiştiğinde temizlik
+        // Sayfadan ayrılırken temizlik
         return () => {
             if (window.recaptchaVerifier) {
-                console.log('reCAPTCHA temizleniyor (Unmount/Cleanup)');
+                console.log('reCAPTCHA temizleniyor (Unmount)');
                 try { window.recaptchaVerifier.clear(); } catch (e) { }
                 window.recaptchaVerifier = null;
             }
         };
-    }, [step]);
+    }, []);
 
     // Geri sayım
     useEffect(() => {
