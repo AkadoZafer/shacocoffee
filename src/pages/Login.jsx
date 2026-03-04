@@ -28,7 +28,6 @@ export default function Login() {
                     'recaptcha-container',
                     {
                         size: 'invisible',
-                        sitekey: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
                         callback: () => { },
                         'expired-callback': () => {
                             window.recaptchaVerifier = null;
