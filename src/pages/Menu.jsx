@@ -31,9 +31,21 @@ export default function Menu() {
         const loadCategories = async () => {
             try {
                 const cats = await fetchMenuCategories();
-                setCategories([{ id: 'all', name: 'Tümü' }, ...cats]);
+                if (cats && cats.length > 0) {
+                    setCategories([{ id: 'all', name: 'Tümü' }, ...cats]);
+                } else {
+                    throw new Error('Boş kategori listesi');
+                }
             } catch (err) {
-                console.error("Kategori yükleme hatası", err);
+                console.error("Kategori yükleme hatası, hardcoded kullanılıyor", err);
+                setCategories([
+                    { id: 'all', name: 'Tümü' },
+                    { id: 'espresso-based', name: 'Espresso Based' },
+                    { id: 'tea-based', name: 'Tea Based' },
+                    { id: 'special-lattes', name: 'Special Lattes' },
+                    { id: 'shaco-special', name: 'Shaco Special' },
+                    { id: 'shacochino', name: 'Shacochino' }
+                ]);
             }
         };
         loadCategories();
@@ -88,7 +100,7 @@ export default function Menu() {
                         >
                             <ArrowLeft size={16} />
                         </button>
-                        <h1 className={`text-[28px] font-serif font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>Koleksiyon</h1>
+                        <h1 className={`text-[28px] font-serif font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>Menü</h1>
                     </div>
                     <button
                         onClick={() => setShowSearch(!showSearch)}
