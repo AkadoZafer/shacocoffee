@@ -6,6 +6,7 @@ import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock } f
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { auth } from '../firebase';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
@@ -16,6 +17,42 @@ export default function Pay() {
     const { theme } = useTheme();
     const { addToast } = useToast();
     const isDark = theme === 'dark';
+
+    const [qrToken, setQrToken] = useState(null);
+    const [qrLoading, setQrLoading] = useState(false);
+
+    const fetchQRToken = async () => {
+        if (!auth.currentUser) return;
+        setQrLoading(true);
+        try {
+            const idToken = await auth.currentUser.getIdToken();
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/wallet/qr-token`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                setQrToken(data.token);
+            } else {
+                addToast('QR kodu alınamadı', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+        }
+        setQrLoading(false);
+    };
+
+    useEffect(() => {
+        let interval;
+        if (activeTab === 'qr') {
+            fetchQRToken();
+            interval = setInterval(fetchQRToken, 240000); // 4 dakikada bir yenile (5dk bitmeden)
+        } else {
+            setQrToken(null);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [activeTab]);
 
     const [payHistory] = useState([
         { id: 1, type: 'payment', label: 'Caffe Latte', amount: -85, date: 'Bugün, 14:30', stars: 5 },
@@ -109,14 +146,20 @@ export default function Pay() {
 
                             {/* Clean QR Code without distractions or animations */}
                             <div className={`w-full rounded-3xl p-8 mb-6 relative overflow-hidden flex flex-col items-center justify-center ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-xl'}`}>
-                                <div className="bg-white p-4 rounded-2xl shadow-sm mb-4">
-                                    <QRCode
-                                        size={220}
-                                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                                        value={JSON.stringify({ userId: "USR-999120", action: "pay", timestamp: Date.now() })}
-                                        viewBox="0 0 256 256"
-                                        level="M"
-                                    />
+                                <div className="bg-white p-4 rounded-2xl shadow-sm mb-4 min-h-[250px] min-w-[250px] flex items-center justify-center">
+                                    {qrLoading && !qrToken ? (
+                                        <div className="animate-spin w-8 h-8 border-4 border-shaco-red border-t-transparent rounded-full"></div>
+                                    ) : qrToken ? (
+                                        <QRCode
+                                            size={220}
+                                            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                                            value={qrToken}
+                                            viewBox="0 0 256 256"
+                                            level="M"
+                                        />
+                                    ) : (
+                                        <p className="text-zinc-500 font-medium">QR Yüklenemedi</p>
+                                    )}
                                 </div>
                                 <p className={`text-center text-[15px] font-bold mt-4 ${isDark ? 'text-white' : 'text-zinc-900'}`}>
                                     Sipariş vermek ve ödemek için<br />
