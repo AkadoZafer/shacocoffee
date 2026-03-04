@@ -74,7 +74,8 @@ export default function Register() {
 
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5" />
+            {/* Background elements MUST have pointer-events-none */}
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-shaco-red/10 to-transparent pointer-events-none" />
 
             {/* Back Button */}
@@ -83,7 +84,8 @@ export default function Register() {
                 <ArrowLeft size={18} />
             </button>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-sm">
+            {/* Main Content Container - needs relative and z-10 to stay above backgrounds */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-sm relative z-10">
                 {/* Logo */}
                 <div className="flex justify-center mb-6">
                     <img src={logo} alt="Shaco" className="w-20 h-20 rounded-full border-4 border-zinc-900 bg-black object-cover" />
