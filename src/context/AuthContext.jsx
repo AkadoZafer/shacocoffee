@@ -12,32 +12,40 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [needsRegistration, setNeedsRegistration] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+            console.log("Auth State Değişti:", firebaseUser?.uid);
             if (firebaseUser) {
                 try {
                     const docRef = doc(db, 'users', firebaseUser.uid);
                     const docSnap = await getDoc(docRef);
-                    let userData = {};
+
                     if (docSnap.exists()) {
-                        userData = docSnap.data();
+                        console.log("Kullanıcı Firestore'da bulundu.");
+                        setUser({ uid: firebaseUser.uid, ...docSnap.data() });
+                        setNeedsRegistration(false);
                     } else {
-                        // Telefon ile giriş yapıldı ama Firestore'da profil yok → Kayıt gerekiyor
-                        userData = {
+                        console.log("Kullanıcı Firestore'da YOK -> Kayıt gerekli.");
+                        // SADECE PENDING DURUMUNA AL, GUEST YAPMA
+                        setUser({
+                            uid: firebaseUser.uid,
                             phone: firebaseUser.phoneNumber,
-                            role: 'member',
-                            name: 'Yeni Üye',
-                            needsRegistration: true
-                        };
+                            role: 'pending',
+                            name: 'Yeni Üye'
+                        });
+                        setNeedsRegistration(true);
                     }
-                    setUser({ uid: firebaseUser.uid, ...userData });
                 } catch (error) {
                     console.error("Kullanıcı verisi çekilemedi:", error);
                     setUser({ name: 'Misafir', role: 'guest', avatar: null });
+                    setNeedsRegistration(false);
                 }
             } else {
+                console.log("Kullanıcı oturumu yok -> Guest.");
                 setUser({ name: 'Misafir', role: 'guest', avatar: null });
+                setNeedsRegistration(false);
             }
             setLoading(false);
         });
@@ -163,6 +171,8 @@ export function AuthProvider({ children }) {
 
             console.log('Firestore yazma başarılı.');
 
+            setNeedsRegistration(false);
+
             // Local state'i zorla güncelle
             setUser(prev => ({
                 ...prev,
@@ -171,7 +181,6 @@ export function AuthProvider({ children }) {
                 balance: prev?.balance || 0,
                 stars: prev?.stars || 0,
                 tier: prev?.tier || 'bronze',
-                needsRegistration: false
             }));
 
             return { success: true };
@@ -188,6 +197,7 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         try {
             await signOut(auth);
+            setNeedsRegistration(false);
             window.recaptchaVerifier = null;
             window.confirmationResult = null;
             setUser({ name: 'Misafir', role: 'guest', avatar: null });
@@ -230,7 +240,7 @@ export function AuthProvider({ children }) {
     return (
         <AuthContext.Provider value={{
             user, logout, sendOTP, verifyOTP, completeRegistration, updateProfile, updateAvatar, updateRole, loading,
-            isGuest, isCustomer, isMember, isBarista, isStaff,
+            isGuest, isCustomer, isMember, isBarista, isStaff, needsRegistration
         }}>
             {children}
         </AuthContext.Provider>
