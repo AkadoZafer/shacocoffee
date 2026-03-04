@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Check } from 'lucide-react';
+import { auth, db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import logo from '../assets/logo.png';
 
 console.log('Register.jsx yüklendi');
@@ -15,41 +17,40 @@ export default function Register() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { completeRegistration, user } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const update = (key, val) => setForm({ ...form, [key]: val });
 
     const handleRegister = async () => {
-        console.log('--- Register Butonuna Basıldı ---');
+        const currentUser = auth.currentUser;
+        if (!currentUser) return;
+
         setError('');
 
         if (!form.firstName.trim()) {
-            console.log('Hata: Ad boş');
             setError('Ad gerekli');
             return;
         }
         if (!form.lastName.trim()) {
-            console.log('Hata: Soyad boş');
             setError('Soyad gerekli');
             return;
         }
 
         try {
             setIsLoading(true);
-            console.log('Kayıt işlemi başlatılıyor...', form);
-            const result = await completeRegistration(form);
-            console.log('Kayıt işlemi sonucu:', result);
-            setIsLoading(false);
 
-            if (result.success) {
-                console.log('Kayıt başarılı, yönlendiriliyor...');
-                setSuccess(true);
-                setTimeout(() => navigate('/'), 1500);
-            } else {
-                console.error('Kayıt başarısız:', result.error);
-                setError(result.error || 'Beklenmedik bir hata oluştu');
-            }
+            await setDoc(doc(db, 'users', currentUser.uid), {
+                firstName: form.firstName,
+                lastName: form.lastName,
+                phone: currentUser.phoneNumber,
+                createdAt: new Date()
+            });
+
+            setIsLoading(false);
+            setSuccess(true);
+            setTimeout(() => navigate('/'), 1500);
+
         } catch (err) {
             console.error('Kayıt sırasında teknik hata fırlatıldı:', err);
             setError('Sistem hatası: ' + err.message);
@@ -129,7 +130,7 @@ export default function Register() {
                         <button
                             type="button"
                             onClick={() => {
-                                console.log('Butona tıklama yakalandı (RAW)');
+                                console.log('BUTONA BASILDI');
                                 handleRegister();
                             }}
                             disabled={isLoading}
@@ -138,7 +139,7 @@ export default function Register() {
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
-                                'Hesap Oluştur'
+                                'HESAP OLUŞTUR'
                             )}
                         </button>
                     </div>
