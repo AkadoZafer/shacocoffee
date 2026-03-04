@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Check } from 'lucide-react';
 import { auth, db } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import logo from '../assets/logo.png';
 
@@ -17,14 +18,25 @@ export default function Register() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                setCurrentUser(firebaseUser);
+            } else {
+                navigate('/login');
+            }
+        });
+        return () => unsubscribe();
+    }, [navigate]);
 
     const update = (key, val) => setForm({ ...form, [key]: val });
 
     const handleRegister = async () => {
-        console.log('currentUser:', auth.currentUser?.uid);
-        const currentUser = auth.currentUser;
+        console.log('currentUser state:', currentUser?.uid);
         if (!currentUser) {
             console.log('KULLANICI YOK!');
             return;
