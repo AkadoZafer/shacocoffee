@@ -18,10 +18,11 @@ export default function Login() {
     const navigate = useNavigate();
     const otpRefs = useRef([]);
 
-    // reCAPTCHA'yı sadece telefon adımında initialize et
+    // reCAPTCHA'yı sadece /login yolunda ve telefon adımında başlat
     useEffect(() => {
-        if (step === 'phone' && !window.recaptchaVerifier) {
-            console.log('reCAPTCHA başlatılıyor...');
+        const isPathCorrect = window.location.pathname.includes('/login');
+        if (isPathCorrect && step === 'phone' && !window.recaptchaVerifier) {
+            console.log('reCAPTCHA başlatılıyor (Login)...');
             try {
                 window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
                     size: 'invisible',
@@ -38,11 +39,6 @@ export default function Login() {
                 console.error('reCAPTCHA init hatası:', err);
             }
         }
-
-        return () => {
-            // Sadece Login sayfasından tamamen çıkıldığında veya unmount'ta temizle
-            // Step değişiminde (phone -> otp) temizlemiyoruz ki nesne hayatta kalsın
-        };
     }, [step]);
 
     // Sayfadan ayrılırken tam temizlik
