@@ -3,11 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useRewards } from '../context/RewardsContext';
 import { useMembership } from '../context/MembershipContext';
-import { User, CreditCard, History, HelpCircle, Shield, ChevronRight, LogOut, Moon, Sun, Star, Camera, ImageIcon, Save, X } from 'lucide-react';
+import { User, CreditCard, History, HelpCircle, Shield, ChevronRight, LogOut, Moon, Sun, Star, Camera, ImageIcon, Save, X, MessageSquare, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../firebase';
+import { doc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../firebase';
 
 export default function Settings() {
     const { user, logout, updateAvatar, updateProfile, isGuest, isStaff } = useAuth();
@@ -67,6 +67,41 @@ export default function Settings() {
     };
 
     const roleLabel = user?.role === 'admin' ? 'Yönetici' : user?.role === 'barista' ? 'Barista' : user?.role === 'guest' ? 'Misafir' : 'Müşteri';
+
+    // Feedback State
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [feedbackRating, setFeedbackRating] = useState(0);
+    const [feedbackComment, setFeedbackComment] = useState('');
+    const [feedbackAnonymous, setFeedbackAnonymous] = useState(false);
+    const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+
+    const handleSubmitFeedback = async () => {
+        if (feedbackRating < 1) {
+            alert('Lütfen en az 1 yıldız veriniz.');
+            return;
+        }
+        setIsSubmittingFeedback(true);
+        try {
+            await addDoc(collection(db, 'feedbacks'), {
+                uid: auth.currentUser.uid,
+                displayName: feedbackAnonymous ? 'Anonim' : (user?.firstName ? `${user.firstName} ${user.lastName}` : 'Kullanıcı'),
+                rating: feedbackRating,
+                comment: feedbackComment,
+                isAnonymous: feedbackAnonymous,
+                createdAt: serverTimestamp()
+            });
+            setShowFeedback(false);
+            setFeedbackRating(0);
+            setFeedbackComment('');
+            setFeedbackAnonymous(false);
+            alert('Geri bildiriminiz için teşekkürler!');
+        } catch (error) {
+            console.error('Feedback error:', error);
+            alert('Gönderilirken bir hata oluştu.');
+        } finally {
+            setIsSubmittingFeedback(false);
+        }
+    };
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
@@ -242,7 +277,8 @@ export default function Settings() {
                                 </AnimatePresence>
 
                                 {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
-                                <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={true} />
+                                <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={false} />
+                                <ProfileRow icon={<MessageSquare size={17} />} iconBg="bg-yellow-500/10 text-yellow-500" label="Öneri & Geri Bildirim" isDark={isDark} onClick={() => setShowFeedback(true)} isLast={true} />
                             </div>
                         </motion.div>
                     </>
@@ -342,6 +378,71 @@ export default function Settings() {
                                 <button onClick={() => setShowLogoutConfirm(false)} className={`flex-1 py-3 rounded-xl font-bold text-base ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>Vazgeç</button>
                                 <button onClick={() => { setShowLogoutConfirm(false); logout(); }} className="flex-1 py-3 rounded-xl font-bold text-base bg-red-500 text-white">Çıkış</button>
                             </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Feedback Modal */}
+            <AnimatePresence>
+                {showFeedback && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={() => setShowFeedback(false)}>
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                            className={`w-full max-w-sm rounded-3xl p-6 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border-zinc-200'}`}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center mb-5">
+                                <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-zinc-900'}`}>Deneyimini Paylaş</h3>
+                                <button onClick={() => setShowFeedback(false)} className={`p-1.5 rounded-lg ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-zinc-100 text-zinc-500 hover:text-zinc-900'}`}>
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Stars */}
+                            <div className="flex justify-center gap-2 mb-6">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                        key={star}
+                                        onClick={() => setFeedbackRating(star)}
+                                        className="transition-transform active:scale-90"
+                                    >
+                                        <Star size={32} className={`${feedbackRating >= star ? 'text-yellow-400 fill-yellow-400' : isDark ? 'text-zinc-700' : 'text-zinc-300'}`} />
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Comment Box */}
+                            <div className="mb-4">
+                                <textarea
+                                    value={feedbackComment}
+                                    onChange={(e) => setFeedbackComment(e.target.value)}
+                                    maxLength={300}
+                                    placeholder="Görüşlerinizi bizimle paylaşın..."
+                                    className={`w-full p-3 rounded-xl border h-28 resize-none text-[15px] outline-none transition-colors ${isDark ? 'bg-zinc-800/50 border-zinc-700/50 text-white focus:border-shaco-red focus:bg-zinc-800' : 'bg-zinc-50 border-zinc-200 text-zinc-900 focus:border-shaco-red focus:bg-white'}`}
+                                />
+                                <div className={`text-right text-[11px] mt-1 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                                    {feedbackComment.length} / 300
+                                </div>
+                            </div>
+
+                            {/* Anonymous Toggle */}
+                            <label className="flex items-center gap-3 mb-6 cursor-pointer">
+                                <div className={`w-5 h-5 rounded-md flex items-center justify-center border transition-colors ${feedbackAnonymous ? 'bg-shaco-red border-shaco-red' : isDark ? 'border-zinc-700 bg-zinc-800/50' : 'border-zinc-300 bg-zinc-50'}`}>
+                                    {feedbackAnonymous && <Check size={14} className="text-white" />}
+                                </div>
+                                <input type="checkbox" checked={feedbackAnonymous} onChange={(e) => setFeedbackAnonymous(e.target.checked)} className="hidden" />
+                                <span className={`text-[15px] font-medium select-none ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>Anonim gönder</span>
+                            </label>
+
+                            {/* Submit Button */}
+                            <button
+                                onClick={handleSubmitFeedback}
+                                disabled={isSubmittingFeedback || feedbackRating < 1}
+                                className={`w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center transition-all ${isSubmittingFeedback || feedbackRating < 1 ? (isDark ? 'bg-zinc-800 text-zinc-600' : 'bg-zinc-200 text-zinc-400') : 'bg-shaco-red text-white hover:bg-red-600 shadow-lg shadow-red-500/20 active:scale-[0.98]'}`}
+                            >
+                                {isSubmittingFeedback ? 'Gönderiliyor...' : 'Gönder'}
+                            </button>
                         </motion.div>
                     </div>
                 )}
