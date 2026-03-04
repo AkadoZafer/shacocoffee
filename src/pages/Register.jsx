@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Check } from 'lucide-react';
 import logo from '../assets/logo.png';
 
+console.log('Register.jsx yüklendi');
+
 export default function Register() {
     const [form, setForm] = useState({
         firstName: '',
@@ -124,11 +126,12 @@ export default function Register() {
                             <p className="text-red-400 text-[15px] font-bold animate-pulse text-center">{error}</p>
                         )}
 
-                        <motion.button
-                            whileHover={!isLoading ? { scale: 1.02 } : {}}
-                            whileTap={!isLoading ? { scale: 0.98 } : {}}
+                        <button
                             type="button"
-                            onClick={handleRegister}
+                            onClick={() => {
+                                console.log('Butona tıklama yakalandı (RAW)');
+                                handleRegister();
+                            }}
                             disabled={isLoading}
                             className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base mt-2 flex items-center justify-center gap-2 ${isLoading ? 'bg-red-500/50 cursor-not-allowed' : 'bg-shaco-red hover:bg-red-500'}`}
                         >
@@ -137,7 +140,7 @@ export default function Register() {
                             ) : (
                                 'Hesap Oluştur'
                             )}
-                        </motion.button>
+                        </button>
                     </div>
                 </div>
             </motion.div>

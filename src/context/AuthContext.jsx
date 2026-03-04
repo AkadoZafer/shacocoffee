@@ -2,7 +2,6 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import {
     signInWithPhoneNumber,
-    RecaptchaVerifier,
     signOut,
     onAuthStateChanged
 } from 'firebase/auth';
