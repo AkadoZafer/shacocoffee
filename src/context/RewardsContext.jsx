@@ -58,12 +58,9 @@ export function RewardsProvider({ children }) {
                 setStars(data.stars || 0);
                 setTransactions(data.transactions || []);
                 setStampCount(data.stampCount || 0);
-
-                // Initial setup for new accounts
-                if (data.balance === undefined) {
-                    updateDoc(userRef, { balance: 150, stars: 12, stampCount: 0, transactions: [] });
-                }
             }
+        }, (error) => {
+            console.warn('RewardsContext snapshot hatası:', error.message);
         });
 
         return () => unsubscribe();
