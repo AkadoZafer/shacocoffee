@@ -50,8 +50,8 @@ export function AuthProvider({ children }) {
                         return;
                     }
                 } catch (error) {
-                    console.error("Kullanıcı verisi çekilemedi:", error);
-                    setUser({ name: 'Misafir', role: 'guest', avatar: null });
+                    console.error("Kullanıcı verisi çekilemedi (AuthContext):", error);
+                    // Hata varsa (örn: permission-denied), hemen 'Misafir' yapma veya Registration'a zorlama, işlemi askıya al.
                     setNeedsRegistration(false);
                 }
             } else {
