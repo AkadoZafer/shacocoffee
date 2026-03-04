@@ -142,7 +142,7 @@ export default function Home() {
                                 <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
                             ) : (
                                 <span className={`text-lg font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                                    {user?.name ? user.name.charAt(0).toUpperCase() : <UserPlus size={18} />}
+                                    {user?.firstName ? user.firstName.charAt(0).toUpperCase() : <UserPlus size={18} />}
                                 </span>
                             )}
                             {/* Notification Dot */}
@@ -153,7 +153,7 @@ export default function Home() {
                     {/* Greeting */}
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
                         <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                            {greeting}, {user?.name?.split(' ')[0] || 'Misafir'} 👋
+                            {greeting}, {user?.firstName ? `${user.firstName} ${user.lastName}` : 'Misafir'} 👋
                         </h2>
                         <p className={`text-base mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
                             {isStaff ? 'Güzel bir gün, iyi çalışmalar!' : 'Bugün ne içmek istersiniz?'}

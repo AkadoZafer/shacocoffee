@@ -21,7 +21,7 @@ export default function Settings() {
 
     // Form State
     const [formData, setFormData] = useState({
-        name: user?.name || '',
+        name: user?.firstName ? `${user.firstName} ${user.lastName}` : '',
         phone: user?.phone || '',
         birthDate: user?.birthDate || ''
     });
@@ -105,7 +105,7 @@ export default function Settings() {
                                     className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black uppercase ${isDark ? 'bg-gradient-to-br from-shaco-red to-red-700' : 'bg-gradient-to-br from-shaco-red to-red-600'} text-white shadow-lg shadow-red-500/20 ${!isGuest ? 'cursor-pointer' : ''}`}
                                     onClick={() => !isGuest && fileInputRef.current?.click()}
                                 >
-                                    {user?.name ? user.name.charAt(0) : 'S'}
+                                    {user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'S'}
                                 </div>
                             )}
                             {!isGuest && (
@@ -127,7 +127,7 @@ export default function Settings() {
                                     className={`w-full bg-transparent font-bold border-b text-lg focus:outline-none ${isDark ? 'border-zinc-700 text-white' : 'border-zinc-300 text-zinc-900'}`}
                                 />
                             ) : (
-                                <h2 className={`text-lg font-bold leading-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{user?.name || 'Misafir'}</h2>
+                                <h2 className={`text-lg font-bold leading-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{user?.firstName ? `${user.firstName} ${user.lastName}` : 'Misafir'}</h2>
                             )}
 
                             {!isGuest && (
