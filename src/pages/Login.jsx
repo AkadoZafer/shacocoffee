@@ -1,40 +1,112 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Phone, Shield } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPass, setShowPass] = useState(false);
+    const [phone, setPhone] = useState('');
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [step, setStep] = useState('phone'); // 'phone' | 'otp'
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const [countdown, setCountdown] = useState(0);
+    const { sendOTP, verifyOTP } = useAuth();
     const navigate = useNavigate();
+    const otpRefs = useRef([]);
 
-    const handleSubmit = async (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        if (isLoading) return;
+    // Geri sayım
+    useEffect(() => {
+        if (countdown <= 0) return;
+        const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [countdown]);
 
+    // Telefon numarasını formatla
+    const formatPhone = (val) => {
+        const digits = val.replace(/\D/g, '');
+        if (digits.startsWith('90')) return '+' + digits;
+        if (digits.startsWith('0')) return '+9' + digits;
+        if (digits.startsWith('5')) return '+90' + digits;
+        return '+90' + digits;
+    };
+
+    // SMS Gönder
+    const handleSendOTP = async () => {
         setError('');
-        if (!email.trim()) { setError('E-posta veya telefon gerekli'); return; }
-        if (!password.trim()) { setError('Şifre gerekli'); return; }
-        if (password.length < 4) { setError('Şifre en az 4 karakter olmalı'); return; }
+        const formatted = formatPhone(phone);
+
+        if (formatted.length < 13) {
+            setError('Geçerli bir telefon numarası girin');
+            return;
+        }
 
         setIsLoading(true);
-        try {
-            const result = await login(email, password);
-            if (result.success) {
-                navigate('/');
+        const result = await sendOTP(formatted, 'send-otp-btn');
+        setIsLoading(false);
+
+        if (result.success) {
+            setStep('otp');
+            setCountdown(120); // 2 dakika geri sayım
+            setTimeout(() => otpRefs.current[0]?.focus(), 300);
+        } else {
+            setError(result.error);
+        }
+    };
+
+    // OTP Kutusu Değişimi
+    const handleOtpChange = (index, value) => {
+        if (!/^\d*$/.test(value)) return;
+
+        const newOtp = [...otp];
+        newOtp[index] = value.slice(-1);
+        setOtp(newOtp);
+
+        // Sonraki kutuya otomatik geç
+        if (value && index < 5) {
+            otpRefs.current[index + 1]?.focus();
+        }
+    };
+
+    // OTP Silme
+    const handleOtpKeyDown = (index, e) => {
+        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+            otpRefs.current[index - 1]?.focus();
+        }
+    };
+
+    // OTP Yapıştırma
+    const handleOtpPaste = (e) => {
+        e.preventDefault();
+        const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+        if (pasted.length === 6) {
+            setOtp(pasted.split(''));
+            otpRefs.current[5]?.focus();
+        }
+    };
+
+    // Kodu Doğrula
+    const handleVerifyOTP = async () => {
+        setError('');
+        const code = otp.join('');
+        if (code.length < 6) {
+            setError('6 haneli kodu eksiksiz girin');
+            return;
+        }
+
+        setIsLoading(true);
+        const result = await verifyOTP(code);
+        setIsLoading(false);
+
+        if (result.success) {
+            if (result.isNewUser) {
+                navigate('/register');
             } else {
-                setError(result.error);
-                setIsLoading(false);
+                navigate('/');
             }
-        } catch (err) {
-            setError('Bir hata oluştu.');
-            setIsLoading(false);
+        } else {
+            setError(result.error);
         }
     };
 
@@ -44,7 +116,7 @@ export default function Login() {
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-shaco-red/10 to-transparent pointer-events-none" />
 
             {/* Back Button */}
-            <button onClick={() => navigate('/')}
+            <button onClick={() => step === 'otp' ? setStep('phone') : navigate('/')}
                 className="absolute top-8 left-6 z-20 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition">
                 <ArrowLeft size={18} />
             </button>
@@ -60,52 +132,116 @@ export default function Login() {
                     <h1 className="text-3xl font-display font-bold text-white mb-0.5 uppercase tracking-tighter">Shaco</h1>
                     <h2 className="text-lg font-display text-shaco-red uppercase tracking-[0.4em] font-bold mb-5">Coffee Co.</h2>
 
-                    <form onSubmit={handleSubmit} className="space-y-3">
-                        <input
-                            type="text"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="E-posta veya telefon"
-                            className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-base"
-                        />
+                    {step === 'phone' ? (
+                        /* ============ TELEFON NUMARASI ADIMI ============ */
+                        <div className="space-y-3">
+                            <div className="relative">
+                                <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="05XX XXX XXXX"
+                                    maxLength={15}
+                                    className="w-full bg-black/50 border border-zinc-800 text-white pl-10 pr-4 py-3.5 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-lg tracking-wider"
+                                />
+                            </div>
 
-                        <div className="relative">
-                            <input
-                                type={showPass ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Şifre"
-                                className="w-full bg-black/50 border border-zinc-800 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)] transition text-center font-display placeholder:text-zinc-600 text-base"
-                            />
-                            <button type="button" onClick={() => setShowPass(!showPass)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition">
-                                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                            {error && (
+                                <p className="text-red-400 text-[15px] font-bold animate-pulse">{error}</p>
+                            )}
+
+                            <motion.button
+                                id="send-otp-btn"
+                                whileHover={!isLoading ? { scale: 1.02 } : {}}
+                                whileTap={!isLoading ? { scale: 0.98 } : {}}
+                                onClick={handleSendOTP}
+                                disabled={isLoading}
+                                className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base flex items-center justify-center gap-2 ${isLoading ? 'bg-red-500/50 cursor-not-allowed' : 'bg-shaco-red hover:bg-red-500'}`}
+                            >
+                                {isLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        <Shield size={16} />
+                                        Kod Gönder
+                                    </>
+                                )}
+                            </motion.button>
+
+                            <button
+                                type="button"
+                                onClick={() => navigate('/')}
+                                className="w-full text-zinc-600 text-base font-bold hover:text-zinc-400 transition py-2"
+                            >
+                                Giriş yapmadan devam et
                             </button>
                         </div>
+                    ) : (
+                        /* ============ OTP DOĞRULAMA ADIMI ============ */
+                        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+                            <div className="mb-2">
+                                <p className="text-zinc-400 text-sm font-medium">
+                                    <span className="text-white font-bold">{formatPhone(phone)}</span> numarasına
+                                </p>
+                                <p className="text-zinc-400 text-sm">6 haneli doğrulama kodu gönderildi</p>
+                            </div>
 
-                        {error && (
-                            <p className="text-red-400 text-[15px] font-bold animate-pulse">{error}</p>
-                        )}
+                            {/* 6 Haneli OTP Kutuları */}
+                            <div className="flex gap-2 justify-center" onPaste={handleOtpPaste}>
+                                {otp.map((digit, i) => (
+                                    <input
+                                        key={i}
+                                        ref={(el) => (otpRefs.current[i] = el)}
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength={1}
+                                        value={digit}
+                                        onChange={(e) => handleOtpChange(i, e.target.value)}
+                                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                                        className={`w-12 h-14 text-center text-2xl font-bold rounded-xl border transition-all duration-200 bg-black/50 text-white focus:outline-none
+                                            ${digit ? 'border-shaco-red shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'border-zinc-800'}
+                                            focus:border-shaco-red focus:shadow-[0_0_15px_rgba(239,68,68,0.3)]`}
+                                    />
+                                ))}
+                            </div>
 
-                        <motion.button
-                            whileHover={!isLoading ? { scale: 1.02 } : {}}
-                            whileTap={!isLoading ? { scale: 0.98 } : {}}
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={isLoading}
-                            className={`w-full text-white font-bold py-3 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base ${isLoading ? 'bg-red-500/50 cursor-not-allowed cursor-wait' : 'bg-shaco-red hover:bg-red-500'}`}
-                        >
-                            {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
-                        </motion.button>
+                            {/* Geri Sayım */}
+                            {countdown > 0 && (
+                                <p className="text-zinc-600 text-sm font-mono">
+                                    Kod geçerlilik: <span className="text-zinc-400">{Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}</span>
+                                </p>
+                            )}
 
-                        <button
-                            type="button"
-                            onClick={() => navigate('/register')}
-                            className="w-full text-zinc-500 text-base font-bold hover:text-shaco-red transition py-2"
-                        >
-                            Hesabın yok mu? <span className="text-shaco-red underline">Kayıt Ol</span>
-                        </button>
-                    </form>
+                            {/* Tekrar Gönder */}
+                            {countdown === 0 && (
+                                <button
+                                    onClick={() => { setStep('phone'); setOtp(['', '', '', '', '', '']); setError(''); }}
+                                    className="text-shaco-red text-sm font-bold hover:underline"
+                                >
+                                    Tekrar Kod Gönder
+                                </button>
+                            )}
+
+                            {error && (
+                                <p className="text-red-400 text-[15px] font-bold animate-pulse">{error}</p>
+                            )}
+
+                            <motion.button
+                                whileHover={!isLoading ? { scale: 1.02 } : {}}
+                                whileTap={!isLoading ? { scale: 0.98 } : {}}
+                                onClick={handleVerifyOTP}
+                                disabled={isLoading || otp.join('').length < 6}
+                                className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base flex items-center justify-center gap-2 ${isLoading || otp.join('').length < 6 ? 'bg-red-500/50 cursor-not-allowed' : 'bg-shaco-red hover:bg-red-500'}`}
+                            >
+                                {isLoading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    'Doğrula ve Giriş Yap'
+                                )}
+                            </motion.button>
+                        </motion.div>
+                    )}
 
                     {/* No staff hints for security */}
                 </div>
