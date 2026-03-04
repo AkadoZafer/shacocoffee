@@ -18,28 +18,38 @@ export default function Register() {
 
     const update = (key, val) => setForm({ ...form, [key]: val });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleRegister = async () => {
+        console.log('--- Register Butonuna Basıldı ---');
         setError('');
 
-        if (!form.firstName.trim()) { setError('Ad gerekli'); return; }
-        if (!form.lastName.trim()) { setError('Soyad gerekli'); return; }
+        if (!form.firstName.trim()) {
+            console.log('Hata: Ad boş');
+            setError('Ad gerekli');
+            return;
+        }
+        if (!form.lastName.trim()) {
+            console.log('Hata: Soyad boş');
+            setError('Soyad gerekli');
+            return;
+        }
 
         try {
             setIsLoading(true);
-            console.log('Kayıt başlatılıyor...', form);
+            console.log('Kayıt işlemi başlatılıyor...', form);
             const result = await completeRegistration(form);
-            console.log('Kayıt sonucu:', result);
+            console.log('Kayıt işlemi sonucu:', result);
             setIsLoading(false);
 
             if (result.success) {
+                console.log('Kayıt başarılı, yönlendiriliyor...');
                 setSuccess(true);
                 setTimeout(() => navigate('/'), 1500);
             } else {
+                console.error('Kayıt başarısız:', result.error);
                 setError(result.error || 'Beklenmedik bir hata oluştu');
             }
         } catch (err) {
-            console.error('Kayıt sırasında teknik hata:', err);
+            console.error('Kayıt sırasında teknik hata fırlatıldı:', err);
             setError('Sistem hatası: ' + err.message);
             setIsLoading(false);
         }
@@ -85,7 +95,7 @@ export default function Register() {
                         <p className="text-center text-sm text-shaco-red font-bold font-mono mb-4">{user.phone}</p>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="space-y-3">
                         {/* Ad */}
                         <div className="relative">
                             <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
@@ -117,7 +127,8 @@ export default function Register() {
                         <motion.button
                             whileHover={!isLoading ? { scale: 1.02 } : {}}
                             whileTap={!isLoading ? { scale: 0.98 } : {}}
-                            type="submit"
+                            type="button"
+                            onClick={handleRegister}
                             disabled={isLoading}
                             className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base mt-2 flex items-center justify-center gap-2 ${isLoading ? 'bg-red-500/50 cursor-not-allowed' : 'bg-shaco-red hover:bg-red-500'}`}
                         >
@@ -127,7 +138,7 @@ export default function Register() {
                                 'Hesap Oluştur'
                             )}
                         </motion.button>
-                    </form>
+                    </div>
                 </div>
             </motion.div>
         </div>
