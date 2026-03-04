@@ -18,22 +18,38 @@ export default function Login() {
     const navigate = useNavigate();
     const otpRefs = useRef([]);
 
-    // reCAPTCHA'yı component mount'ta BİR KEZ initialize et
+    // reCAPTCHA'yı sadece telefon adımında initialize et
     useEffect(() => {
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                size: 'invisible',
-                callback: () => { },
-                'expired-callback': () => {
-                    if (window.recaptchaVerifier) {
-                        try { window.recaptchaVerifier.clear(); } catch (e) { }
-                        window.recaptchaVerifier = null;
+        if (step === 'phone' && !window.recaptchaVerifier) {
+            console.log('reCAPTCHA başlatılıyor...');
+            try {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    size: 'invisible',
+                    callback: () => { },
+                    'expired-callback': () => {
+                        console.log('reCAPTCHA süresi doldu');
+                        if (window.recaptchaVerifier) {
+                            try { window.recaptchaVerifier.clear(); } catch (e) { }
+                            window.recaptchaVerifier = null;
+                        }
                     }
-                }
-            });
+                });
+            } catch (err) {
+                console.error('reCAPTCHA init hatası:', err);
+            }
         }
+
+        return () => {
+            // Sadece Login sayfasından tamamen çıkıldığında veya unmount'ta temizle
+            // Step değişiminde (phone -> otp) temizlemiyoruz ki nesne hayatta kalsın
+        };
+    }, [step]);
+
+    // Sayfadan ayrılırken tam temizlik
+    useEffect(() => {
         return () => {
             if (window.recaptchaVerifier) {
+                console.log('reCAPTCHA temizleniyor (Unmount)');
                 try { window.recaptchaVerifier.clear(); } catch (e) { }
                 window.recaptchaVerifier = null;
             }

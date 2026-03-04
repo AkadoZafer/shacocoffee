@@ -118,57 +118,71 @@ export function AuthProvider({ children }) {
 
     // Yeni kullanıcı profilini Firestore'a kaydet
     const completeRegistration = async ({ firstName, lastName }) => {
+        console.log('--- completeRegistration Başladı ---');
         try {
             const firebaseUser = auth.currentUser;
-            if (!firebaseUser) return { success: false, error: 'Oturum bulunamadı.' };
+            if (!firebaseUser) {
+                console.error('completeRegistration: Oturum bulunamadı!');
+                return { success: false, error: 'Oturum bulunamadı. Lütfen tekrar giriş yapın.' };
+            }
 
+            console.log('Kullanıcı UID:', firebaseUser.uid);
             const userRef = doc(db, 'users', firebaseUser.uid);
-            const existingDoc = await getDoc(userRef);
 
-            if (existingDoc.exists()) {
-                // Döküman zaten var (önceki deneme/listener), sadece güvenli alanları güncelle
-                await updateDoc(userRef, {
-                    firstName,
-                    lastName,
-                    name: `${firstName} ${lastName}`,
-                    phone: firebaseUser.phoneNumber,
-                    avatar: null,
-                    joined: new Date().toISOString(),
-                });
+            // Yazma öncesi döküman kontrolü
+            let existingDoc = null;
+            try {
+                existingDoc = await getDoc(userRef);
+            } catch (e) {
+                console.warn('Mevcut döküman kontrol edilemedi, devam ediliyor...', e);
+            }
+
+            const profileData = {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                name: `${firstName.trim()} ${lastName.trim()}`,
+                phone: firebaseUser.phoneNumber,
+                role: 'member',
+                avatar: null,
+                joined: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (existingDoc && existingDoc.exists()) {
+                console.log('Döküman mevcut, güncelleniyor (updateDoc)...');
+                await updateDoc(userRef, profileData);
             } else {
-                // Yeni döküman oluştur (balance/stars/tier dahil)
+                console.log('Yeni döküman oluşturuluyor (setDoc)...');
                 await setDoc(userRef, {
-                    firstName,
-                    lastName,
-                    name: `${firstName} ${lastName}`,
-                    phone: firebaseUser.phoneNumber,
-                    role: 'member',
+                    ...profileData,
                     balance: 0,
                     stars: 0,
                     tier: 'bronze',
-                    avatar: null,
-                    joined: new Date().toISOString(),
                     createdAt: new Date().toISOString()
                 });
             }
 
-            const userData = {
+            console.log('Firestore yazma başarılı.');
+
+            // Local state'i zorla güncelle
+            setUser(prev => ({
+                ...prev,
+                ...profileData,
                 uid: firebaseUser.uid,
-                firstName,
-                lastName,
-                name: `${firstName} ${lastName}`,
-                phone: firebaseUser.phoneNumber,
-                role: 'member',
-                balance: 0,
-                stars: 0,
-                tier: 'bronze',
-                avatar: null,
-            };
-            setUser(userData);
+                balance: prev?.balance || 0,
+                stars: prev?.stars || 0,
+                tier: prev?.tier || 'bronze',
+                needsRegistration: false
+            }));
+
             return { success: true };
         } catch (error) {
-            console.error('Kayıt hatası:', error);
-            return { success: false, error: 'Profil kaydedilemedi: ' + error.message };
+            console.error('completeRegistration Kritik Hata:', error);
+            let errorMsg = 'Profil kaydedilemedi.';
+            if (error.code === 'permission-denied') {
+                errorMsg = 'Yetki hatası: Firestore kurallarını kontrol edin.';
+            }
+            return { success: false, error: errorMsg + ' (' + error.message + ')' };
         }
     };
 
