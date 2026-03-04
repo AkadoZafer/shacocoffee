@@ -240,7 +240,7 @@ export function AuthProvider({ children }) {
     return (
         <AuthContext.Provider value={{
             user, logout, sendOTP, verifyOTP, completeRegistration, updateProfile, updateAvatar, updateRole, loading,
-            isGuest, isCustomer, isMember, isBarista, isStaff, needsRegistration
+            isGuest, isCustomer, isMember, isBarista, isStaff, needsRegistration, setNeedsRegistration
         }}>
             {children}
         </AuthContext.Provider>

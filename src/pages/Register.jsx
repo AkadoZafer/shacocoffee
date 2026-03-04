@@ -19,7 +19,7 @@ export default function Register() {
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
-    const { user } = useAuth();
+    const { user, setNeedsRegistration } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,8 +37,8 @@ export default function Register() {
 
     const handleRegister = async () => {
         console.log('currentUser state:', currentUser?.uid);
-        if (!currentUser) {
-            console.log('KULLANICI YOK!');
+        if (isLoading || !currentUser) {
+            console.log('KULLANICI YOK VEYA YUKLENIYOR!');
             return;
         }
 
@@ -62,6 +62,9 @@ export default function Register() {
                 phone: currentUser.phoneNumber,
                 createdAt: new Date()
             });
+
+            // GÜNCELLEME: AuthContext state'ini güncelle ki yönlendirme döngüsünden çıkalım
+            setNeedsRegistration(false);
 
             setIsLoading(false);
             setSuccess(true);
