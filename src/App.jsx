@@ -27,10 +27,15 @@ import { ToastProvider } from './context/ToastContext';
 import { FavoritesProvider } from './context/FavoritesContext';
 
 function AppRoutes() {
-  const { user, loading: authLoading, isGuest, isStaff, isBarista } = useAuth();
+  const { user, loading: authLoading, isGuest, isStaff, isBarista, needsRegistration } = useAuth();
   const location = useLocation();
 
   if (authLoading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-shaco-red tracking-widest font-bold">YÜKLENİYOR...</div>;
+
+  // Global Yönlendirme Koruması (Profile Tamamlama Zorunluluğu)
+  if (needsRegistration && location.pathname !== '/register') {
+    return <Navigate to="/register" replace />;
+  }
 
   return (
     <AnimatePresence mode="wait">
