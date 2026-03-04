@@ -23,8 +23,19 @@ export function AuthProvider({ children }) {
                     const docSnap = await getDoc(docRef);
 
                     if (docSnap.exists()) {
-                        console.log("Kullanıcı Firestore'da bulundu.");
-                        setUser({ uid: firebaseUser.uid, ...docSnap.data() });
+                        console.log("Kullanıcı Firestore'da bulundu, eksik alanlar tamamlanıyor...");
+                        const userData = docSnap.data();
+
+                        // Eski kullanıcılar için eksik alanları doldur (Geriye dönük uyumluluk)
+                        await setDoc(docRef, {
+                            role: userData.role || 'member',
+                            balance: userData.balance ?? 0,
+                            stars: userData.stars ?? 0,
+                            tier: userData.tier || 'bronze',
+                            name: userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim()
+                        }, { merge: true });
+
+                        setUser({ uid: firebaseUser.uid, ...userData });
                         setNeedsRegistration(false);
                     } else {
                         console.log("Kullanıcı Firestore'da YOK -> Kayıt gerekli.");
