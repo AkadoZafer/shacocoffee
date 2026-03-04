@@ -6,7 +6,8 @@ import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock } f
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
@@ -54,15 +55,36 @@ export default function Pay() {
         };
     }, [activeTab]);
 
-    const [payHistory] = useState([
-        { id: 1, type: 'payment', label: 'Caffe Latte', amount: -85, date: 'Bugün, 14:30', stars: 5 },
-        { id: 2, type: 'topup', label: 'Bakiye Yükleme', amount: 200, date: 'Bugün, 10:15', stars: 0 },
-        { id: 3, type: 'payment', label: "Jester's Delight", amount: -55, date: 'Dün, 16:45', stars: 3 },
-        { id: 4, type: 'topup', label: 'Bakiye Yükleme', amount: 100, date: '16 Şubat, 09:00', stars: 0 },
-        { id: 5, type: 'payment', label: 'Americano', amount: -38, date: '15 Şubat, 11:30', stars: 2 },
-        { id: 6, type: 'payment', label: 'Toxic Slush', amount: -35, date: '14 Şubat, 15:20', stars: 2 },
-        { id: 7, type: 'topup', label: 'Bakiye Yükleme', amount: 500, date: '13 Şubat, 08:00', stars: 0 },
-    ]);
+    const [payHistory, setPayHistory] = useState([]);
+
+    useEffect(() => {
+        if (!auth.currentUser) return;
+
+        const q = query(
+            collection(db, 'transactions'),
+            where('uid', '==', auth.currentUser.uid),
+            orderBy('createdAt', 'desc'),
+            limit(20)
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const txs = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                txs.push({
+                    id: doc.id,
+                    type: data.type,
+                    label: data.description || (data.type === 'topup' ? 'Bakiye Yükleme' : 'Ödeme'),
+                    amount: data.amount,
+                    date: data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : 'Şimdi',
+                    stars: data.stars || 0
+                });
+            });
+            setPayHistory(txs);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const handleTopUp = (amount) => {
         const val = amount || Number(topUpAmount);
