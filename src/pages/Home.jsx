@@ -13,6 +13,8 @@ import { useSocialMedia } from '../context/SocialMediaContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { collection, onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../firebase';
+import BranchStatusCard from '../components/BranchStatusCard';
+import '../components/BranchStatusCard.css';
 
 export default function Home() {
     const { stars, balance, favoriteProduct } = useRewards();
@@ -43,7 +45,7 @@ export default function Home() {
                 const available = data.filter(p => p.isAvailable).slice(0, 5);
                 setPopularProducts(available);
             } catch (err) {
-                console.error("Menü yüklenemedi", err);
+                console.warn("Menü yüklenemedi", err);
             } finally {
                 setIsLoadingProducts(false);
             }
@@ -92,9 +94,9 @@ export default function Home() {
             if (activeStoryIndex < stories.length - 1) {
                 setActiveStoryIndex(prev => prev + 1);
             } else {
-                setActiveStoryIndex(null); // Close on last story
+                setActiveStoryIndex(null);
             }
-        }, 5000); // 5 seconds per story
+        }, 5000);
         return () => clearTimeout(timer);
     }, [activeStoryIndex, stories.length]);
 
@@ -145,7 +147,6 @@ export default function Home() {
                                     {user?.firstName ? user.firstName.charAt(0).toUpperCase() : <UserPlus size={18} />}
                                 </span>
                             )}
-                            {/* Notification Dot */}
                             {user && <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-shaco-red border border-white" />}
                         </motion.button>
                     </motion.div>
@@ -260,10 +261,14 @@ export default function Home() {
                     </motion.div>
                 )}
 
+                {/* ✅ Şube Durumu Kartı */}
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} className="mb-6 -mx-6">
+                    <BranchStatusCard />
+                </motion.div>
+
                 {/* Quick Actions */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2.5 mb-7 overflow-x-auto no-scrollbar pb-2">
                     <QuickPill icon={<QrCode size={15} />} label="QR Öde" onClick={() => navigate('/pay')} isDark={isDark} accent />
-                    {/* Only members can top up balance */}
                     {!isGuest && <QuickPill icon={<Wallet size={15} />} label="Bakiye Yükle" onClick={() => navigate('/wallet')} isDark={isDark} />}
                     <QuickPill icon={<Store size={15} />} label="Mağazalar" onClick={() => navigate('/stores')} isDark={isDark} />
                 </motion.div>
@@ -336,7 +341,7 @@ export default function Home() {
                 {/* Social Media */}
                 <SocialMediaSection isDark={isDark} />
 
-                {/* Günün Önerisi - Phase 10 */}
+                {/* Günün Önerisi */}
                 {productOfTheDay && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="mb-7">
                         <SectionHeader title="Günün Önerisi" action="İncele" onAction={() => navigate(`/product/${productOfTheDay.id}`)} isDark={isDark} />
@@ -399,7 +404,6 @@ export default function Home() {
                                                 <Coffee size={28} strokeWidth={1} className={isDark ? 'text-zinc-600' : 'text-zinc-300'} />
                                             </div>
                                         )}
-                                        {/* Favori ikonu sadece üyelerde */}
                                         {!isGuest && (
                                             <button
                                                 onClick={(e) => {
@@ -412,7 +416,6 @@ export default function Home() {
                                             </button>
                                         )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
-                                        {/* Fiyat etiketi resmin üstüne Liquid Glass olarak */}
                                         <div className="absolute bottom-2 left-2 right-2 glass-liquid rounded-lg py-1 px-2 flex justify-between items-center bg-black/30">
                                             <span className="text-white text-[13px] font-black tracking-wider">₺{product.price}</span>
                                         </div>
@@ -508,7 +511,6 @@ export default function Home() {
                         className="fixed inset-0 z-[70] bg-black sm:bg-black/90 sm:p-4 flex items-center justify-center pointer-events-auto"
                     >
                         <div className="w-full h-full sm:max-w-md sm:h-[85vh] sm:rounded-3xl overflow-hidden relative bg-zinc-900 shadow-2xl flex flex-col justify-end pb-8">
-                            {/* Progress Bars */}
                             <div className="absolute top-4 left-4 right-4 z-20 flex gap-1.5">
                                 {stories.map((_, i) => (
                                     <div key={i} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
@@ -522,7 +524,6 @@ export default function Home() {
                                 ))}
                             </div>
 
-                            {/* Close & Header */}
                             <div className="absolute top-8 left-4 right-4 z-20 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md p-1">
@@ -535,10 +536,8 @@ export default function Home() {
                                 </button>
                             </div>
 
-                            {/* Background Image */}
                             <img src={stories[activeStoryIndex].image} alt="Story" className="absolute inset-0 w-full h-full object-cover z-0" />
 
-                            {/* Bottom Gradient & Text */}
                             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent pt-32 pb-8 px-6 z-10 pointer-events-none">
                                 <h3 className="text-white text-2xl font-bold mb-2">{stories[activeStoryIndex].title}</h3>
                                 {stories[activeStoryIndex].text && (
@@ -546,7 +545,6 @@ export default function Home() {
                                 )}
                             </div>
 
-                            {/* Touch Areas to go Prev/Next */}
                             <div className="absolute inset-y-0 left-0 w-1/3 z-20 cursor-pointer" onClick={(e) => {
                                 e.stopPropagation();
                                 if (activeStoryIndex > 0) setActiveStoryIndex(prev => prev - 1);

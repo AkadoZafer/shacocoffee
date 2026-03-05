@@ -1,0 +1,160 @@
+/* src/components/BranchStatusCard.css
+   Projenin global CSS dosyasına ya da ayrı import ile kullan.
+   Tailwind kullanıyorsan aşağıdaki className'leri Tailwind classlarıyla
+   değiştirebilirsin — saf CSS alternatifi olarak da çalışır. */
+
+.branch-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin: 0 16px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.branch-card--open {
+  background: linear-gradient(135deg, rgba(20, 30, 20, 0.85) 0%, rgba(15, 25, 15, 0.9) 100%);
+  border-color: rgba(74, 222, 128, 0.18);
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.08), 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.branch-card--closed {
+  background: linear-gradient(135deg, rgba(25, 18, 18, 0.85) 0%, rgba(20, 15, 15, 0.9) 100%);
+  border-color: rgba(248, 113, 113, 0.15);
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.06), 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.branch-card--skeleton {
+  background: rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  min-height: 64px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.branch-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.05) 25%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Sol taraf */
+.branch-card__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.branch-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.branch-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.branch-card__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.branch-card__address {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sağ taraf */
+.branch-card__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.branch-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.branch-badge--open {
+  background: rgba(74, 222, 128, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.branch-badge--closed {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.18);
+}
+
+.branch-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.branch-badge--open .branch-badge__dot {
+  background: #4ade80;
+  box-shadow: 0 0 6px #4ade80;
+  animation: pulse-green 2s infinite;
+}
+
+.branch-badge--closed .branch-badge__dot {
+  background: #f87171;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.8); }
+}
+
+.branch-card__hours {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.01em;
+}
