@@ -14,31 +14,12 @@ export default function Navbar() {
 
     const isDark = theme === 'dark';
 
-    const toggleLanguage = async () => {
-        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
-        i18n.changeLanguage(i18n.language === 'tr' ? 'en' : 'tr');
-    };
 
-    const LangButton = () => (
-        <button
-            onClick={toggleLanguage}
-            className={`fixed top-4 right-4 z-50 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all active:scale-90 shadow-lg border ${
-                isDark
-                    ? 'bg-zinc-900/90 backdrop-blur-md border-white/10 text-zinc-300 hover:border-shaco-red/50'
-                    : 'bg-white/90 backdrop-blur-md border-zinc-200 text-zinc-700 hover:border-shaco-red/50 shadow-sm'
-            }`}
-        >
-            <span className="text-base leading-none">{i18n.language === 'tr' ? '🇹🇷' : '🇬🇧'}</span>
-            <span>{i18n.language === 'tr' ? 'TR' : 'EN'}</span>
-        </button>
-    );
 
     // Staff navbar: Ana Sayfa, Yönetici Panel, Profil
     if (isStaff) {
         return (
-            <>
-                <LangButton />
-                <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+            <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
                     <div className="flex items-end justify-center gap-6 pointer-events-auto w-full max-w-sm px-6">
 
                         <Link to="/" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
@@ -62,16 +43,13 @@ export default function Navbar() {
                         </Link>
 
                     </div>
-                </div>
-            </>
+            </div>
         );
     }
 
     // Customer / Guest navbar
     return (
-        <>
-            <LangButton />
-            <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
                 <div className="flex items-end justify-center gap-6 pointer-events-auto w-full max-w-sm px-6">
 
                     <Link to="/" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
@@ -95,8 +73,7 @@ export default function Navbar() {
                     </Link>
 
                 </div>
-            </div>
-        </>
+        </div>
     );
 }
 

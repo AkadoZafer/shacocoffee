@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { useTranslation } from 'react-i18next';
+import i18n from '../i18n';
 
 export default function Settings() {
     const { user, logout, updateAvatar, updateProfile, isGuest, isStaff } = useAuth();
@@ -301,6 +302,24 @@ export default function Settings() {
                                 <div className={`bg-white rounded-full absolute top-[3px] transition-all duration-300 shadow-sm ${isDark ? 'left-[22px]' : 'left-[3px]'}`} style={{ width: 18, height: 18 }} />
                             </button>
                         </div>
+
+                        {/* Dil Seçimi */}
+                        <div className={`p-4 flex items-center justify-between border-b ${isDark ? 'border-zinc-800/80 hover:bg-zinc-800/30' : 'border-zinc-100/80 hover:bg-zinc-50'}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-base ${isDark ? 'bg-zinc-700/60' : 'bg-zinc-100'}`}>
+                                    🌐
+                                </div>
+                                <span className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{t('settings.language')}</span>
+                            </div>
+                            <button
+                                onClick={() => i18n.changeLanguage(i18n.language === 'tr' ? 'en' : 'tr')}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all active:scale-90 border ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200 hover:border-shaco-red/50' : 'bg-zinc-100 border-zinc-200 text-zinc-700 hover:border-shaco-red/50'}`}
+                            >
+                                <span className="text-base leading-none">{i18n.language === 'tr' ? '🇹🇷' : '🇬🇧'}</span>
+                                <span>{i18n.language === 'tr' ? 'TR' : 'EN'}</span>
+                            </button>
+                        </div>
+
                         <ProfileRow
                             icon={<HelpCircle size={17} />}
                             iconBg="bg-violet-500/10 text-violet-400"
