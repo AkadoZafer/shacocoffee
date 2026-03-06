@@ -40,7 +40,10 @@
     "milk_badge": "MILK",
     "no_popular": "No popular products found.",
     "history_title": "Order History",
-    "history_desc": "View your recent purchases"
+    "history_desc": "View your recent purchases",
+    "campaigns_title": "Campaigns",
+    "loyalty_card": "Loyalty Card",
+    "follow_us": "Follow Us"
   },
   "login": {
     "title": "Welcome",
@@ -131,7 +134,9 @@
     "title": "Load Balance",
     "current_balance": "Current Balance",
     "amount_label": "Amount to Load",
-    "quick_amounts": "Quick Select",
+    "quick_amounts": "Quick Load",
+    "quick_amounts_label": "Quick Select",
+    "my_cards": "My Cards",
     "custom_amount": "Custom Amount",
     "confirm": "Confirm Load",
     "processing": "Processing...",
@@ -140,6 +145,7 @@
   },
   "orders": {
     "title": "My Orders",
+    "history": "Order History",
     "empty": "You haven't placed any orders yet.",
     "go_menu": "Go to Menu",
     "status_waiting": "Waiting",
@@ -175,6 +181,7 @@
     "comment_label": "Your Comment",
     "comment_placeholder": "How was your visit?",
     "anonymous": "Send anonymously",
+    "anonymous_label": "Send anonymously",
     "submit": "Submit",
     "submitting": "Submitting...",
     "success": "Thank you for your feedback!",

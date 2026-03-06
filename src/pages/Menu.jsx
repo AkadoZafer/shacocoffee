@@ -34,7 +34,15 @@ export default function Menu() {
             try {
                 const cats = await fetchMenuCategories();
                 if (cats && cats.length > 0) {
-                    setCategories([{ id: 'all', name: 'Tümü' }, ...cats]);
+                    // Duplicate ID veya isime göre tekrar edenleri temizle
+                    const seen = new Set();
+                    const uniqueCats = cats.filter(cat => {
+                        const key = (cat.id || cat.name || '').toLowerCase();
+                        if (seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                    });
+                    setCategories([{ id: 'all', name: t('menu.all') }, ...uniqueCats]);
                 } else {
                     throw new Error('Boş kategori listesi');
                 }
