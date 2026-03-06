@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase';
+import { useTranslation } from 'react-i18next';
 
 export default function Settings() {
     const { user, logout, updateAvatar, updateProfile, isGuest, isStaff } = useAuth();
@@ -15,6 +16,7 @@ export default function Settings() {
     const { stars, balance, orders } = useRewards();
     const { getTierForStars } = useMembership();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const fileInputRef = useRef(null);
@@ -94,10 +96,10 @@ export default function Settings() {
             setFeedbackRating(0);
             setFeedbackComment('');
             setFeedbackAnonymous(false);
-            alert('Geri bildiriminiz için teşekkürler!');
+            alert(t('feedback.success'));
         } catch (error) {
             console.error('Feedback error:', error);
-            alert('Gönderilirken bir hata oluştu.');
+            alert(t('feedback.error'));
         } finally {
             setIsSubmittingFeedback(false);
         }
@@ -110,8 +112,8 @@ export default function Settings() {
             <div className="relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-shaco-red/8 to-transparent h-48 pointer-events-none" />
                 <div className="p-6 pt-10 relative z-10">
-                    <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-display font-bold mb-0.5">Profil</motion.h1>
-                    <p className={`text-base tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Hesap & Ayarlar</p>
+                    <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-display font-bold mb-0.5">{t('settings.title').split(' & ')[0]}</motion.h1>
+                    <p className={`text-base tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.title').split(' & ')[1] || t('nav.settings')}</p>
                 </div>
             </div>
 
@@ -201,12 +203,12 @@ export default function Settings() {
                     {!isGuest && (
                         <div className={`flex gap-4 mt-4 pt-4 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
                             <div className="flex-1 text-center">
-                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>BAKİYE</p>
+                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{t('settings.balance').toUpperCase()}</p>
                                 <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{balance.toFixed(0)}</p>
                             </div>
                             <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
                             <div className="flex-1 text-center">
-                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SİPARİŞ</p>
+                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{t('orders.title').toUpperCase()}</p>
                                 <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{orders.length}</p>
                             </div>
                             <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
@@ -277,8 +279,8 @@ export default function Settings() {
                                 </AnimatePresence>
 
                                 {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
-                                <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label="Sipariş Geçmişi" isDark={isDark} onClick={() => navigate('/orders')} isLast={false} />
-                                <ProfileRow icon={<MessageSquare size={17} />} iconBg="bg-yellow-500/10 text-yellow-500" label="Öneri & Geri Bildirim" isDark={isDark} onClick={() => setShowFeedback(true)} isLast={true} />
+                                <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label={t('settings.order_history')} isDark={isDark} onClick={() => navigate('/orders')} isLast={false} />
+                                <ProfileRow icon={<MessageSquare size={17} />} iconBg="bg-yellow-500/10 text-yellow-500" label={t('settings.feedback')} isDark={isDark} onClick={() => setShowFeedback(true)} isLast={true} />
                             </div>
                         </motion.div>
                     </>
@@ -293,7 +295,7 @@ export default function Settings() {
                                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-indigo-500/10 text-indigo-500'}`}>
                                     {isDark ? <Sun size={17} /> : <Moon size={17} />}
                                 </div>
-                                <span className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>Tema</span>
+                                <span className={`text-[15px] font-semibold ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{t('settings.dark_mode')}</span>
                             </div>
                             <button onClick={toggleTheme} className={`w-11 h-6 rounded-full transition-all duration-300 relative ${isDark ? 'bg-shaco-red' : 'bg-zinc-300'}`}>
                                 <div className={`bg-white rounded-full absolute top-[3px] transition-all duration-300 shadow-sm ${isDark ? 'left-[22px]' : 'left-[3px]'}`} style={{ width: 18, height: 18 }} />
@@ -342,7 +344,7 @@ export default function Settings() {
                             onClick={() => navigate('/login')}
                             className={`w-full p-3.5 rounded-2xl font-semibold text-base flex items-center justify-center gap-2.5 transition active:scale-[0.98] bg-shaco-red text-white shadow-lg shadow-red-500/15`}
                         >
-                            <LogOut size={16} /> Giriş Yap
+                            <LogOut size={16} /> {t('login.login') || 'Giriş Yap'}
                         </button>
                         <button
                             onClick={() => navigate('/register')}

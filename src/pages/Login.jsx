@@ -6,6 +6,7 @@ import { ArrowLeft, Phone, Shield } from 'lucide-react';
 import { RecaptchaVerifier, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 import logo from '../assets/logo.png';
+import { useTranslation } from 'react-i18next';
 
 export default function Login() {
     const [phone, setPhone] = useState('');
@@ -15,6 +16,7 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [countdown, setCountdown] = useState(0);
     const { sendOTP, verifyOTP } = useAuth();
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const otpRefs = useRef([]);
 
@@ -81,7 +83,7 @@ export default function Login() {
         const formatted = formatPhone(phone);
 
         if (formatted.length < 13) {
-            setError('Geçerli bir telefon numarası girin');
+            setError(t('login.invalid_phone'));
             return;
         }
 
@@ -134,7 +136,7 @@ export default function Login() {
         setError('');
         const code = otp.join('');
         if (code.length < 6) {
-            setError('6 haneli kodu eksiksiz girin');
+            setError(t('login.otp_subtitle'));
             return;
         }
 
@@ -213,7 +215,7 @@ export default function Login() {
                                 ) : (
                                     <>
                                         <Shield size={16} />
-                                        Kod Gönder
+                                        {t('login.send_otp')}
                                     </>
                                 )}
                             </motion.button>
@@ -223,7 +225,7 @@ export default function Login() {
                                 onClick={() => navigate('/')}
                                 className="w-full text-zinc-600 text-base font-bold hover:text-zinc-400 transition py-2"
                             >
-                                Giriş yapmadan devam et
+                                {t('login.guest_mode')}
                             </button>
                         </div>
                     ) : (
@@ -231,9 +233,8 @@ export default function Login() {
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                             <div className="space-y-2">
                                 <p className="text-zinc-400 text-sm font-medium">
-                                    <span className="text-white font-bold">{formatPhone(phone)}</span> numarasına
+                                    <span className="text-white font-bold">{formatPhone(phone)}</span> {t('login.otp_subtitle')}
                                 </p>
-                                <p className="text-zinc-400 text-sm">6 haneli doğrulama kodu gönderildi</p>
                             </div>
 
                             {/* 6 Haneli OTP Kutuları */}
@@ -272,7 +273,7 @@ export default function Login() {
                                         onClick={() => { setStep('phone'); setOtp(['', '', '', '', '', '']); setError(''); }}
                                         className="text-shaco-red text-sm font-bold hover:underline"
                                     >
-                                        Tekrar Kod Gönder
+                                        {t('login.resend')}
                                     </button>
                                 )}
                             </div>
@@ -291,7 +292,7 @@ export default function Login() {
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 ) : (
-                                    'Doğrula ve Giriş Yap'
+                                    t('login.verify')
                                 )}
                             </motion.button>
                         </motion.div>

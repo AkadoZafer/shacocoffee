@@ -3,6 +3,7 @@ import { MapPin, Navigation, Phone, Clock, Star, Loader, ChevronDown, ChevronUp 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { fetchBranches } from '../services/menuService';
+import { useTranslation } from 'react-i18next';
 
 // Haversine formula to calculate distance between two points
 function getDistanceKm(lat1, lon1, lat2, lon2) {
@@ -19,6 +20,7 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
 export default function Stores() {
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+    const { t } = useTranslation();
     const [userLocation, setUserLocation] = useState(null);
     const [locationError, setLocationError] = useState(null);
     const [loadingLocation, setLoadingLocation] = useState(true);
@@ -82,7 +84,7 @@ export default function Stores() {
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
         const todayHours = isWeekend ? workingHours.weekend : workingHours.weekdays;
 
-        if (!todayHours || !todayHours.open || !todayHours.close) return { isOpen: false, text: 'Kapalı' };
+        if (!todayHours || !todayHours.open || !todayHours.close) return { isOpen: false, text: t('stores.closed') };
 
         const openStr = todayHours.open;
         const closeStr = todayHours.close;
@@ -108,9 +110,9 @@ export default function Stores() {
         if (nowMinutes < openMinutes && currentHour < 5) logicNowMinutes += 24 * 60;
 
         if (logicNowMinutes >= openMinutes && logicNowMinutes < closeMinutes) {
-            return { isOpen: true, text: `Açık · Kapanış ${closeStr}` };
+            return { isOpen: true, text: `${t('stores.open')} · ${t('branch_card.closes_at').replace('{{time}}', closeStr)}` };
         } else {
-            return { isOpen: false, text: `Kapalı · Açılış ${openStr}` };
+            return { isOpen: false, text: `${t('stores.closed')} · ${t('branch_card.opens_at').replace('{{time}}', openStr)}` };
         }
     };
 
@@ -125,8 +127,8 @@ export default function Stores() {
     return (
         <div className={`min-h-screen p-6 pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
             <header className="mb-8 pt-4">
-                <h1 className="text-3xl font-display font-bold uppercase mb-2">Mağazalarımız</h1>
-                <p className={`text-base ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Size en yakın Shaco Coffee deneyimi</p>
+                <h1 className="text-3xl font-display font-bold uppercase mb-2">{t('stores.title')}</h1>
+                <p className={`text-base ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{t('stores.subtitle')}</p>
             </header>
 
             <div className="space-y-6">
@@ -153,7 +155,7 @@ export default function Stores() {
                                         </p>
                                     </div>
                                     <div className={`px-2.5 py-1 rounded-md text-xs font-bold border ${status.isOpen ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'}`}>
-                                        {status.isOpen ? 'Açık' : 'Kapalı'}
+                                        {status.isOpen ? t('stores.open') : t('stores.closed')}
                                     </div>
                                 </div>
 
@@ -183,11 +185,11 @@ export default function Stores() {
                                                 className={`px-4 pb-4 text-sm space-y-2.5 ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}
                                             >
                                                 <div className="flex justify-between items-center">
-                                                    <span className={new Date().getDay() !== 0 && new Date().getDay() !== 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}>Hafta İçi</span>
+                                                    <span className={new Date().getDay() !== 0 && new Date().getDay() !== 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}>{t('stores.weekdays')}</span>
                                                     <span className={`font-mono ${new Date().getDay() !== 0 && new Date().getDay() !== 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}`}>{store.workingHours.weekdays?.open} - {store.workingHours.weekdays?.close}</span>
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className={new Date().getDay() === 0 || new Date().getDay() === 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}>Hafta Sonu</span>
+                                                    <span className={new Date().getDay() === 0 || new Date().getDay() === 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}>{t('stores.weekend')}</span>
                                                     <span className={`font-mono ${new Date().getDay() === 0 || new Date().getDay() === 6 ? (isDark ? 'text-white font-bold' : 'text-black font-bold') : ''}`}>{store.workingHours.weekend?.open} - {store.workingHours.weekend?.close}</span>
                                                 </div>
                                             </motion.div>

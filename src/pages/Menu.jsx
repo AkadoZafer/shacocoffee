@@ -10,11 +10,13 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useTranslation } from 'react-i18next';
 
 export default function Menu() {
     const navigate = useNavigate();
     const { theme } = useTheme();
     const { isGuest } = useAuth();
+    const { t } = useTranslation();
 
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -100,7 +102,7 @@ export default function Menu() {
                         >
                             <ArrowLeft size={16} />
                         </button>
-                        <h1 className={`text-[28px] font-serif font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>Menü</h1>
+                        <h1 className={`text-[28px] font-serif font-black tracking-tight ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('menu.title')}</h1>
                     </div>
                     <button
                         onClick={() => setShowSearch(!showSearch)}
@@ -123,7 +125,7 @@ export default function Menu() {
                                 autoFocus
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Ürün ara..."
+                                placeholder={t('menu.search_placeholder')}
                                 className={`w-full p-3 rounded-xl border text-base outline-none focus:border-shaco-red/50 transition ${isDark ? 'bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600' : 'bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400'}`}
                             />
                         </motion.div>

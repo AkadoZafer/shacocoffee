@@ -7,6 +7,7 @@ import { auth, db } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import logo from '../assets/logo.png';
+import { useTranslation } from 'react-i18next';
 
 console.log('Register.jsx yüklendi');
 
@@ -21,6 +22,7 @@ export default function Register() {
     const [currentUser, setCurrentUser] = useState(null);
     const { user, setNeedsRegistration } = useAuth();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -45,11 +47,11 @@ export default function Register() {
         setError('');
 
         if (!form.firstName.trim()) {
-            setError('Ad gerekli');
+            setError(t('register.error_first'));
             return;
         }
         if (!form.lastName.trim()) {
-            setError('Soyad gerekli');
+            setError(t('register.error_last'));
             return;
         }
 
@@ -89,8 +91,8 @@ export default function Register() {
                     <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                         <Check size={36} className="text-emerald-500" />
                     </div>
-                    <h2 className="text-white text-xl font-bold font-display mb-1">Hoş Geldiniz!</h2>
-                    <p className="text-zinc-500 text-base">Hesabınız oluşturuldu</p>
+                    <h2 className="text-white text-xl font-bold font-display mb-1">{t('register.welcome')}</h2>
+                    <p className="text-zinc-500 text-base">{t('common.loading')}</p>
                 </motion.div>
             </div>
         );
@@ -116,8 +118,8 @@ export default function Register() {
                 </div>
 
                 <div className="glass-dark p-6 rounded-3xl border border-white/10">
-                    <h1 className="text-xl font-display font-bold text-white mb-0.5 text-center">Profilini Tamamla</h1>
-                    <p className="text-zinc-600 text-[15px] text-center mb-1">Shaco ailesine katılın</p>
+                    <h1 className="text-xl font-display font-bold text-white mb-0.5 text-center">{t('register.title')}</h1>
+                    <p className="text-zinc-600 text-[15px] text-center mb-1">{t('register.subtitle')}</p>
 
                     {/* Telefon numarasını göster */}
                     {user?.phone && (
@@ -132,7 +134,7 @@ export default function Register() {
                                 type="text"
                                 value={form.firstName}
                                 onChange={(e) => update('firstName', e.target.value)}
-                                placeholder="Ad"
+                                placeholder={t('register.first_name')}
                                 className="w-full bg-black/50 border border-zinc-800 text-white pl-9 pr-3 py-3.5 rounded-xl focus:outline-none focus:border-shaco-red transition text-base font-display placeholder:text-zinc-700"
                             />
                         </div>
@@ -144,7 +146,7 @@ export default function Register() {
                                 type="text"
                                 value={form.lastName}
                                 onChange={(e) => update('lastName', e.target.value)}
-                                placeholder="Soyad"
+                                placeholder={t('register.last_name')}
                                 className="w-full bg-black/50 border border-zinc-800 text-white pl-9 pr-3 py-3.5 rounded-xl focus:outline-none focus:border-shaco-red transition text-base font-display placeholder:text-zinc-700"
                             />
                         </div>
@@ -165,7 +167,7 @@ export default function Register() {
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
-                                'HESAP OLUŞTUR'
+                                t('register.submit')
                             )}
                         </button>
                     </div>

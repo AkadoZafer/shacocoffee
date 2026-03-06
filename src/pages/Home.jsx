@@ -15,12 +15,14 @@ import { collection, onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import BranchStatusCard from '../components/BranchStatusCard';
 import '../components/BranchStatusCard.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
     const { stars, balance, favoriteProduct } = useRewards();
     const { user, isGuest, isStaff } = useAuth();
     const { theme } = useTheme();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [showHistory, setShowHistory] = useState(false);
     const [activeCampaign, setActiveCampaign] = useState(0);
 
@@ -109,10 +111,10 @@ export default function Home() {
     const [greeting, setGreeting] = useState('');
     useEffect(() => {
         const hour = new Date().getHours();
-        if (hour < 12) setGreeting('Günaydın');
-        else if (hour < 18) setGreeting('Tünaydın');
-        else setGreeting('İyi Akşamlar');
-    }, []);
+        if (hour < 12) setGreeting(t('home.greeting_morning'));
+        else if (hour < 18) setGreeting(t('home.greeting_afternoon'));
+        else setGreeting(t('home.greeting_evening'));
+    }, [t]);
 
     const pFav = favoriteProduct && popularProducts.length > 0 ? popularProducts.find(p => p.name === favoriteProduct.name) : null;
 
@@ -154,10 +156,10 @@ export default function Home() {
                     {/* Greeting */}
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
                         <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                            {greeting}, {user?.firstName ? `${user.firstName} ${user.lastName}` : 'Misafir'} 👋
+                            {greeting}, {user?.firstName ? `${user.firstName} ${user.lastName}` : t('home.guest')} 👋
                         </h2>
                         <p className={`text-base mt-0.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                            {isStaff ? 'Güzel bir gün, iyi çalışmalar!' : 'Bugün ne içmek istersiniz?'}
+                            {isStaff ? t('home.staff_day') : t('home.what_to_drink')}
                         </p>
                     </motion.div>
                 </div>
@@ -199,16 +201,16 @@ export default function Home() {
                         <div className="absolute top-0 right-0 w-32 h-32 bg-warm-amber/20 rounded-full blur-3xl -translate-y-8 translate-x-8" />
                         <div className="relative z-10">
                             <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-base font-bold tracking-[0.15em] px-2 py-0.5 rounded-md ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>MİSAFİR KULLANICI</span>
+                                <span className={`text-base font-bold tracking-[0.15em] px-2 py-0.5 rounded-md ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}>{t('home.guest_badge')}</span>
                             </div>
-                            <h3 className={`text-[15px] font-bold mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Shaco Ailesine Katılın!</h3>
+                            <h3 className={`text-[15px] font-bold mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('home.guest_title')}</h3>
                             <p className={`text-base mb-4 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                Kayıt olun, yıldız kazanın ve özel fırsatlardan yararlanın.
+                                {t('home.guest_desc')}
                             </p>
                             <div className="flex gap-2">
                                 <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/register'); }}
                                     className="flex-1 py-3 rounded-xl bg-shaco-red text-white font-bold text-base flex items-center justify-center gap-2 shadow-neon-red hover:shadow-neon-red-strong active:scale-95 transition-all duration-300">
-                                    <UserPlus size={14} /> Kayıt Ol
+                                    <UserPlus size={14} /> {t('home.register')}
                                 </button>
                                 <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/login'); }}
                                     className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 active:scale-95 hover:shadow-glass ${isDark ? 'bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 hover:bg-zinc-700/80' : 'bg-white/80 border border-zinc-200/50 text-zinc-600 shadow-sm hover:bg-white'}`}>
@@ -268,9 +270,9 @@ export default function Home() {
 
                 {/* Quick Actions */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2.5 mb-7 overflow-x-auto no-scrollbar pb-2">
-                    <QuickPill icon={<QrCode size={15} />} label="QR Öde" onClick={() => navigate('/pay')} isDark={isDark} accent />
-                    {!isGuest && <QuickPill icon={<Wallet size={15} />} label="Bakiye Yükle" onClick={() => navigate('/wallet')} isDark={isDark} />}
-                    <QuickPill icon={<Store size={15} />} label="Mağazalar" onClick={() => navigate('/stores')} isDark={isDark} />
+                    <QuickPill icon={<QrCode size={15} />} label={t('home.qr_pay')} onClick={() => navigate('/pay')} isDark={isDark} accent />
+                    {!isGuest && <QuickPill icon={<Wallet size={15} />} label={t('home.load_balance')} onClick={() => navigate('/wallet')} isDark={isDark} />}
+                    <QuickPill icon={<Store size={15} />} label={t('home.stores')} onClick={() => navigate('/stores')} isDark={isDark} />
                 </motion.div>
 
                 {/* Campaigns */}
