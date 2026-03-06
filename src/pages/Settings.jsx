@@ -313,9 +313,13 @@ export default function Settings() {
                             </div>
                             <button
                                 onClick={() => i18n.changeLanguage(i18n.language === 'tr' ? 'en' : 'tr')}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all active:scale-90 border ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200 hover:border-shaco-red/50' : 'bg-zinc-100 border-zinc-200 text-zinc-700 hover:border-shaco-red/50'}`}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-black tracking-wider transition-all active:scale-90 border ${isDark ? 'bg-zinc-800 border-zinc-700 text-zinc-200 hover:border-shaco-red/50' : 'bg-zinc-100 border-zinc-200 text-zinc-700 hover:border-shaco-red/50'}`}
                             >
-                                <span className="text-base leading-none">{i18n.language === 'tr' ? '🇹🇷' : '🇬🇧'}</span>
+                                <img
+                                    src={i18n.language === 'tr' ? 'https://flagcdn.com/24x18/tr.png' : 'https://flagcdn.com/24x18/gb.png'}
+                                    alt={i18n.language === 'tr' ? 'TR' : 'EN'}
+                                    className="w-6 h-[18px] rounded-sm object-cover"
+                                />
                                 <span>{i18n.language === 'tr' ? 'TR' : 'EN'}</span>
                             </button>
                         </div>
