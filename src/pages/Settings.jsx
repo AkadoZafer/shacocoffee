@@ -69,7 +69,7 @@ export default function Settings() {
         setEditMode(false);
     };
 
-    const roleLabel = user?.role === 'admin' ? 'Yönetici' : user?.role === 'barista' ? 'Barista' : user?.role === 'guest' ? 'Misafir' : 'Müşteri';
+    const roleLabel = user?.role === 'admin' ? t('settings.account_section') : user?.role === 'barista' ? 'Barista' : user?.role === 'guest' ? t('settings.guest_role') : t('settings.customer');
 
     // Feedback State
     const [showFeedback, setShowFeedback] = useState(false);
@@ -113,8 +113,8 @@ export default function Settings() {
             <div className="relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-shaco-red/8 to-transparent h-48 pointer-events-none" />
                 <div className="p-6 pt-10 relative z-10">
-                    <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-display font-bold mb-0.5">{t('settings.title').split(' & ')[0]}</motion.h1>
-                    <p className={`text-base tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.title').split(' & ')[1] || t('nav.settings')}</p>
+                    <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-display font-bold mb-0.5">{t('settings.personal_info').split(' ')[0]}</motion.h1>
+                    <p className={`text-base tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.account_section')} & {t('settings.general_section')}</p>
                 </div>
             </div>
 
@@ -214,7 +214,7 @@ export default function Settings() {
                             </div>
                             <div className={`w-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
                             <div className="flex-1 text-center">
-                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>KUPON</p>
+                                <p className={`text-base tracking-wider font-bold ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{t('settings.coupon').toUpperCase()}</p>
                                 <p className={`text-lg font-bold text-shaco-red`}>0</p>
                             </div>
                         </div>
@@ -224,14 +224,14 @@ export default function Settings() {
                 {/* HESAP */}
                 {!isGuest && (
                     <>
-                        <SectionLabel label="HESAP" isDark={isDark} delay={0.15} />
+                        <SectionLabel label={t('settings.account_section')} isDark={isDark} delay={0.15} />
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-7">
                             <div className={`rounded-3xl overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
                                 {/* Personal Info Edit Section */}
                                 <ProfileRow
                                     icon={<User size={17} />}
                                     iconBg="bg-red-500/10 text-red-400"
-                                    label="Kişisel Bilgiler"
+                                    label={t('settings.personal_info')}
                                     isDark={isDark}
                                     onClick={() => setEditMode(!editMode)}
                                     rightIcon={editMode ? <X size={16} /> : <ChevronRight size={15} />}
@@ -242,7 +242,7 @@ export default function Settings() {
                                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4">
                                             <div className="space-y-4 pt-2">
                                                 <div className="space-y-1">
-                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Ad Soyad</label>
+                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.full_name')}</label>
                                                     <input
                                                         type="text"
                                                         value={formData.name}
@@ -251,7 +251,7 @@ export default function Settings() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Telefon</label>
+                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.phone')}</label>
                                                     <input
                                                         type="tel"
                                                         value={formData.phone}
@@ -260,7 +260,7 @@ export default function Settings() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Doğum Tarihi</label>
+                                                    <label className={`text-base uppercase font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.birth_date')}</label>
                                                     <input
                                                         type="date"
                                                         value={formData.birthDate}
@@ -272,14 +272,14 @@ export default function Settings() {
                                                     onClick={handleSaveProfile}
                                                     className="w-full py-3 bg-shaco-red text-white text-base font-bold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition"
                                                 >
-                                                    <Save size={16} /> Kaydet
+                                                    <Save size={16} /> {t('settings.save')}
                                                 </button>
                                             </div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
 
-                                {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label="Ödeme Yöntemleri" isDark={isDark} onClick={() => navigate('/wallet')} />}
+                                {!isStaff && <ProfileRow icon={<CreditCard size={17} />} iconBg="bg-sky-500/10 text-sky-400" label={t('settings.payment_methods')} isDark={isDark} onClick={() => navigate('/wallet')} />}
                                 <ProfileRow icon={<History size={17} />} iconBg="bg-emerald-500/10 text-emerald-400" label={t('settings.order_history')} isDark={isDark} onClick={() => navigate('/orders')} isLast={false} />
                                 <ProfileRow icon={<MessageSquare size={17} />} iconBg="bg-yellow-500/10 text-yellow-500" label={t('settings.feedback')} isDark={isDark} onClick={() => setShowFeedback(true)} isLast={true} />
                             </div>
@@ -288,7 +288,7 @@ export default function Settings() {
                 )}
 
                 {/* GENEL */}
-                <SectionLabel label="GENEL" isDark={isDark} delay={0.25} />
+                <SectionLabel label={t('settings.general_section')} isDark={isDark} delay={0.25} />
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-7">
                     <div className={`rounded-3xl overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}>
                         <div className={`p-4 flex items-center justify-between border-b ${isDark ? 'border-zinc-800/80 hover:bg-zinc-800/30' : 'border-zinc-100/80 hover:bg-zinc-50'}`}>
@@ -323,8 +323,8 @@ export default function Settings() {
                         <ProfileRow
                             icon={<HelpCircle size={17} />}
                             iconBg="bg-violet-500/10 text-violet-400"
-                            label="Yardım & Destek"
-                            subtitle="Bize Ulaşın"
+                            label={t('settings.help_support')}
+                            subtitle={t('settings.contact_us')}
                             isDark={isDark}
                             onClick={() => setShowSupport(!showSupport)}
                             rightIcon={showSupport ? <X size={16} /> : <ChevronRight size={15} />}
@@ -334,18 +334,18 @@ export default function Settings() {
                             {showSupport && (
                                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="px-4 pb-4 bg-black/5 dark:bg-white/5 border-t border-zinc-100 dark:border-zinc-800">
                                     <div className="pt-4 space-y-2">
-                                        <p className={`text-xs uppercase font-bold tracking-wider mb-2 ml-1 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>İletişim Kanalları</p>
+                                        <p className={`text-xs uppercase font-bold tracking-wider mb-2 ml-1 ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{t('settings.contact_channels')}</p>
                                         <a href={`tel:${supportPhone || '+905536970907'}`} className={`w-full p-3 rounded-xl flex items-center gap-3 transition active:scale-[0.98] ${isDark ? 'bg-zinc-800 hover:bg-zinc-700' : 'bg-white hover:bg-zinc-50 shadow-sm'}`}>
                                             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">📞</div>
                                             <div className="flex-1 text-left">
-                                                <p className={`text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Bize Ulaşın</p>
+                                                <p className={`text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('settings.contact_us')}</p>
                                                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{supportPhone || '+90 (553) 697 09 07'}</p>
                                             </div>
                                         </a>
                                         <a href={`mailto:${supportEmail || 'iletisim@shacocoffee.com'}`} className={`w-full p-3 rounded-xl flex items-center gap-3 transition active:scale-[0.98] ${isDark ? 'bg-zinc-800 hover:bg-zinc-700' : 'bg-white hover:bg-zinc-50 shadow-sm'}`}>
                                             <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">✉️</div>
                                             <div className="flex-1 text-left">
-                                                <p className={`text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>E-Posta</p>
+                                                <p className={`text-[15px] font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('settings.email')}</p>
                                                 <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{supportEmail || 'iletisim@shacocoffee.com'}</p>
                                             </div>
                                         </a>
