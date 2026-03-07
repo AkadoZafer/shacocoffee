@@ -182,7 +182,7 @@ export default function Settings() {
                                     </div>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className={`text-[15px] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                            <Star size={10} className="inline text-yellow-500 fill-yellow-500 -mt-0.5" /> {stars} yıldız
+                                            <Star size={10} className="inline text-yellow-500 fill-yellow-500 -mt-0.5" /> {stars} {t('home.stars').toLowerCase()}
                                         </span>
                                         <span className={`text-base px-1.5 py-0.5 rounded ${isDark ? 'bg-zinc-800 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>
                                             {roleLabel}
