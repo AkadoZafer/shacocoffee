@@ -36,15 +36,13 @@ export default function Login() {
                         }
                     }
                 );
-                // KRİTİK: render() çağrılması şart!
                 window.recaptchaVerifier.render()
                     .then((widgetId) => {
                         window.recaptchaWidgetId = widgetId;
                         console.log('reCAPTCHA hazır:', widgetId);
                     })
                     .catch((err) => {
-                        console.error('reCAPTCHA render hatası:', err);
-                        window.recaptchaVerifier = null;
+                        console.error('reCAPTCHA render gecikmesi cihaz kaynaklı olabilir, istek anında tekrar denenecek:', err);
                     });
             } catch (err) {
                 console.error('reCAPTCHA init hatası:', err);

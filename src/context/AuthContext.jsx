@@ -73,6 +73,14 @@ export function AuthProvider({ children }) {
             if (!window.recaptchaVerifier) {
                 return { success: false, error: 'reCAPTCHA yüklenemedi, sayfayı yenileyin.' };
             }
+
+            // Mobil tarayıcılar için reCAPTCHA'nın render edilmesini garantiye al
+            try {
+                await window.recaptchaVerifier.render();
+            } catch (err) {
+                console.warn('reCAPTCHA önceden render edilmiş veya gecikmiş olabilir:', err);
+            }
+
             const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
             window.confirmationResult = confirmationResult;
             return { success: true };
