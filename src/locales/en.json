@@ -20,7 +20,7 @@
     "stars": "STARS",
     "balance": "BALANCE",
     "reward_earned": "Reward earned! 🎉",
-    "reward_left": "{{count}} stars to reward",
+    "reward_left": "{{count}} stars until reward",
     "qr_pay": "QR Pay",
     "load_balance": "Load Balance",
     "stores": "Stores",

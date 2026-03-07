@@ -2,7 +2,7 @@ import { useRewards } from '../context/RewardsContext';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Star, History, Coffee, X, QrCode, Gift, Store, Wallet, ChevronRight, ArrowRight, UserPlus, LogIn, Heart } from 'lucide-react';
+import { Star, Coffee, QrCode, Gift, Store, Wallet, ChevronRight, ArrowRight, UserPlus, LogIn, Heart } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { fetchProducts } from '../services/menuService';
@@ -23,7 +23,6 @@ export default function Home() {
     const { theme } = useTheme();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const [showHistory, setShowHistory] = useState(false);
     const [activeCampaign, setActiveCampaign] = useState(0);
 
     const isDark = theme === 'dark';
@@ -440,68 +439,7 @@ export default function Home() {
                     )}
                 </motion.div>
 
-                {/* History shortcut */}
-                {!isGuest && (
-                    <motion.button
-                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} whileTap={{ scale: 0.95 }}
-                        onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } setShowHistory(true); }}
-                        className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all duration-300 glass-panel relative overflow-hidden ${isDark ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]' : 'bg-white/80 border-zinc-200/50 shadow-sm hover:shadow-md'}`}
-                    >
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-shaco-red to-shaco-dark-red" />
-                        <div className="flex items-center gap-4 pl-2">
-                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-inner ${isDark ? 'bg-black/50 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
-                                <History size={18} />
-                            </div>
-                            <div className="text-left">
-                                <p className={`text-[16px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-800'}`}>{t('home.history_title')}</p>
-                                <p className={`text-[13px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{t('home.history_subtitle')}</p>
-                            </div>
-                        </div>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
-                            <ChevronRight size={16} />
-                        </div>
-                    </motion.button>
-                )}
             </div>
-
-            {/* History Modal */}
-            <AnimatePresence>
-                {showHistory && (
-                    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowHistory(false)}>
-                        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-                            className={`w-full max-w-md rounded-t-3xl p-6 border-t max-h-[70vh] overflow-hidden flex flex-col ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-zinc-200'}`}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="w-10 h-1 rounded-full mx-auto mb-4 bg-zinc-700" />
-                            <div className="flex justify-between items-center mb-5">
-                                <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('home.history_modal_title')}</h2>
-                                <button onClick={() => setShowHistory(false)} className={`p-1.5 rounded-lg ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}><X size={16} /></button>
-                            </div>
-                            <div className="overflow-y-auto space-y-2">
-                                {[
-                                    { name: 'Caffe Latte', time: 'Bugün, 14:30', price: '85.00', stars: 5 },
-                                    { name: "Jester's Delight", time: 'Dün, 11:20', price: '55.00', stars: 3 },
-                                    { name: 'Americano', time: '15 Şubat, 09:15', price: '38.00', stars: 2 },
-                                ].map((order, i) => (
-                                    <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${isDark ? 'bg-zinc-800/50' : 'bg-zinc-50'}`}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="bg-shaco-red/10 p-2 rounded-lg text-shaco-red"><Coffee size={14} /></div>
-                                            <div>
-                                                <p className={`text-[15px] font-semibold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{order.name}</p>
-                                                <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{order.time}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>-₺{order.price}</p>
-                                            <p className="text-base text-yellow-500 font-bold">+{order.stars} ⭐</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
 
             {/* Story Viewer Modal */}
             <AnimatePresence>
