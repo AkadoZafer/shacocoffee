@@ -367,13 +367,13 @@ export default function Settings() {
                             onClick={() => navigate('/login')}
                             className={`w-full p-3.5 rounded-2xl font-semibold text-base flex items-center justify-center gap-2.5 transition active:scale-[0.98] bg-shaco-red text-white shadow-lg shadow-red-500/15`}
                         >
-                            <LogOut size={16} /> {t('login.login') || 'Giriş Yap'}
+                            <LogOut size={16} /> {t('home.login')}
                         </button>
                         <button
                             onClick={() => navigate('/register')}
                             className={`w-full p-3.5 rounded-2xl font-semibold text-base flex items-center justify-center gap-2.5 transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800 text-zinc-300' : 'bg-white border border-zinc-200 text-zinc-700 shadow-sm'}`}
                         >
-                            <LogOut size={16} /> Kayıt Ol
+                            <LogOut size={16} /> {t('home.register')}
                         </button>
                     </motion.div>
                 ) : (
