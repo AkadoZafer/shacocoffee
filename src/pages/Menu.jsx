@@ -49,7 +49,7 @@ export default function Menu() {
             } catch (err) {
                 console.error("Kategori yükleme hatası, hardcoded kullanılıyor", err);
                 setCategories([
-                    { id: 'all', name: 'Tümü' },
+                    { id: 'all', name: t('menu.all') },
                     { id: 'espresso-based', name: 'Espresso Based' },
                     { id: 'tea-based', name: 'Tea Based' },
                     { id: 'special-lattes', name: 'Special Lattes' },
@@ -240,10 +240,10 @@ export default function Menu() {
                             <Coffee size={32} className={isDark ? 'text-zinc-600' : 'text-zinc-400'} />
                         </div>
                         <p className={`text-lg font-bold font-serif ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                            {searchQuery ? 'Sonuç bulunamadı' : 'Menü boş'}
+                            {searchQuery ? t('menu.no_results') : t('menu.empty')}
                         </p>
                         <p className={`text-[15px] mt-1.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                            {searchQuery ? 'Farklı bir arama yapmayı deneyebilirsiniz.' : 'Bu kategoriye çok yakında yeni tatlar eklenecektir.'}
+                            {searchQuery ? t('menu.no_results_desc') : t('menu.empty_desc')}
                         </p>
                     </motion.div>
                 )}
@@ -251,7 +251,7 @@ export default function Menu() {
                 {/* Results count */}
                 {!isLoading && filteredProducts.length > 0 && (
                     <p className={`text-center text-[12px] font-bold tracking-[0.2em] mt-8 uppercase ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                        {filteredProducts.length} SONUÇ LİSTELENDİ
+                        {t('menu.results_count', { count: filteredProducts.length })}
                     </p>
                 )}
             </div>
