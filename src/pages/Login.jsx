@@ -14,6 +14,7 @@ export default function Login() {
     const [step, setStep] = useState('phone'); // 'phone' | 'otp'
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [captchaResolved, setCaptchaResolved] = useState(false);
     const [countdown, setCountdown] = useState(0);
     const { sendOTP, verifyOTP } = useAuth();
     const { t } = useTranslation();
@@ -30,8 +31,12 @@ export default function Login() {
                     {
                         size: 'normal',
                         theme: isDark ? 'dark' : 'light',
-                        callback: () => { console.log('reCAPTCHA verified') },
+                        callback: () => { 
+                            console.log('reCAPTCHA verified');
+                            setCaptchaResolved(true);
+                        },
                         'expired-callback': () => {
+                            setCaptchaResolved(false);
                             if (window.recaptchaVerifier) window.recaptchaVerifier.reset();
                         }
                     }
@@ -79,6 +84,12 @@ export default function Login() {
     // SMS Gönder
     const handleSendOTP = async () => {
         setError('');
+        
+        if (!captchaResolved) {
+            setError(t('login.verification_required') || 'Lütfen robot olmadığınızı doğrulayın.');
+            return;
+        }
+
         const formatted = formatPhone(phone);
 
         if (formatted.length < 13) {
@@ -207,11 +218,11 @@ export default function Login() {
 
                             <motion.button
                                 id="send-otp-btn"
-                                whileHover={!isLoading ? { scale: 1.02 } : {}}
-                                whileTap={!isLoading ? { scale: 0.98 } : {}}
+                                whileHover={!isLoading && captchaResolved ? { scale: 1.02 } : {}}
+                                whileTap={!isLoading && captchaResolved ? { scale: 0.98 } : {}}
                                 onClick={handleSendOTP}
-                                disabled={isLoading}
-                                className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base flex items-center justify-center gap-2 ${isLoading ? 'bg-red-500/50 cursor-not-allowed' : 'bg-shaco-red hover:bg-red-500'}`}
+                                disabled={isLoading || !captchaResolved}
+                                className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base flex items-center justify-center gap-2 ${isLoading || !captchaResolved ? 'bg-zinc-600/50 cursor-not-allowed shadow-none' : 'bg-shaco-red hover:bg-red-500'}`}
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -74,13 +74,8 @@ export function AuthProvider({ children }) {
                 return { success: false, error: 'reCAPTCHA yüklenemedi, sayfayı yenileyin.' };
             }
 
-            // Mobil tarayıcılar için reCAPTCHA'nın render edilmesini garantiye al
-            try {
-                await window.recaptchaVerifier.render();
-            } catch (err) {
-                console.warn('reCAPTCHA önceden render edilmiş veya gecikmiş olabilir:', err);
-            }
-
+            // Render işlemi Login.jsx tarafında (sayfa yüklendiğinde) yapılıyor.
+            // Kullanıcı kutucuğu işaretledikten sonra bu fonksiyon tetiklenecek.
             const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
             window.confirmationResult = confirmationResult;
             return { success: true };
