@@ -2,6 +2,8 @@ import { StrictMode, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { App as CapacitorApp } from '@capacitor/app';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -35,10 +37,28 @@ function ProtectedRoute({ children }) {
 }
 
 function AppRoutes() {
-  const { user, loading: authLoading, isGuest, isStaff, isBarista, needsRegistration } = useAuth();
+  const { user, loading: authLoading, isGuest, needsRegistration } = useAuth();
   const location = useLocation();
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'settings', 'general'), (snap) => {
+      if (snap.exists()) {
+        setMaintenanceMode(snap.data().maintenanceMode === true);
+      }
+    });
+    return () => unsub();
+  }, []);
 
   if (authLoading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-shaco-red tracking-widest font-bold">YÜKLENİYOR...</div>;
+
+  if (maintenanceMode) return (
+    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white p-8 text-center">
+      <div className="text-6xl mb-6">🔧</div>
+      <h1 className="text-3xl font-bold text-shaco-red mb-3 uppercase tracking-widest">Bakım Modu</h1>
+      <p className="text-zinc-400 text-lg">Uygulama şu an bakımda. Kısa süre içinde geri döneceğiz.</p>
+    </div>
+  );
 
   // Global Yönlendirme Koruması (Profile Tamamlama Zorunluluğu)
   if (needsRegistration && location.pathname !== '/register') {
