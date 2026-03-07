@@ -28,10 +28,11 @@ export default function Login() {
                     auth,
                     'recaptcha-container',
                     {
-                        size: 'invisible',
-                        callback: () => { },
+                        size: 'normal',
+                        theme: isDark ? 'dark' : 'light',
+                        callback: () => { console.log('reCAPTCHA verified') },
                         'expired-callback': () => {
-                            window.recaptchaVerifier = null;
+                            if (window.recaptchaVerifier) window.recaptchaVerifier.reset();
                         }
                     }
                 );
@@ -202,6 +203,10 @@ export default function Login() {
                                 <p className="text-red-400 text-[15px] font-bold animate-pulse">{error}</p>
                             )}
 
+                            <div className="flex justify-center w-full transform scale-90 sm:scale-100 origin-center">
+                                <div id="recaptcha-container" className="my-2 object-center overflow-hidden rounded-xl border border-zinc-700/50"></div>
+                            </div>
+
                             <motion.button
                                 id="send-otp-btn"
                                 whileHover={!isLoading ? { scale: 1.02 } : {}}
@@ -303,8 +308,7 @@ export default function Login() {
 
                 <p className="text-zinc-600 text-base text-center mt-6 font-mono">EST. 2024</p>
             </motion.div>
-            {/* Invisible reCAPTCHA Container */}
-            <div id="recaptcha-container"></div>
+            {/* Visible reCAPTCHA moved to form */}
         </div>
     );
 }
