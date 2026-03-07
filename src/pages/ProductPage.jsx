@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { fetchProducts } from '../services/menuService';
 import { useFavorites } from '../context/FavoritesContext';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -15,6 +16,7 @@ export default function ProductPage() {
     const isDark = theme === 'dark';
     const { isFavorite, toggleFavorite } = useFavorites();
     const { isGuest } = useAuth();
+    const { t } = useTranslation();
 
     const [product, setProduct] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -47,10 +49,10 @@ export default function ProductPage() {
             <div className={`w-24 h-24 mb-6 rounded-full flex items-center justify-center glass-liquid`}>
                 <Coffee size={36} className={isDark ? 'text-zinc-600' : 'text-zinc-400'} />
             </div>
-            <p className="font-serif font-bold text-2xl mb-2">Ürün bulunamadı</p>
-            <p className={isDark ? 'text-zinc-500' : 'text-zinc-400'}>Aradığınız lezzet menüden kaldırılmış olabilir.</p>
+            <p className="font-serif font-bold text-2xl mb-2">{t('product.not_found')}</p>
+            <p className={isDark ? 'text-zinc-500' : 'text-zinc-400'}>{t('product.not_found_desc')}</p>
             <button onClick={() => navigate('/menu')} className="mt-8 px-6 py-3 rounded-xl bg-warm-amber text-espresso-dark font-bold active:scale-95 transition-all">
-                Menüye Dön
+                {t('product.back_to_menu')}
             </button>
         </div>
     );
@@ -102,7 +104,7 @@ export default function ProductPage() {
                 <div className="flex justify-between items-start mb-6 w-full">
                     <div className="flex-1 w-full relative">
                         <span className="text-warm-amber text-[10px] font-black tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(200,151,58,0.5)]">
-                            {product.category === 'signature' ? 'İMZA' : product.category === 'cat_hot' ? 'SICAK' : product.category === 'cat_cold' ? 'SOĞUK' : 'TAZE YAPIM'}
+                            {product.category === 'signature' ? t('product.signature') : product.category === 'cat_hot' ? t('product.hot') : product.category === 'cat_cold' ? t('product.cold') : t('product.fresh')}
                         </span>
 
                         <div className="flex justify-between w-full items-end gap-4 mt-2 mb-1">
@@ -129,7 +131,7 @@ export default function ProductPage() {
                 {/* Nutrition Card - Phase 10 */}
                 {product.nutrition && (
                     <div className="mb-6">
-                        <SectionLabel label="BESİN DEĞERLERİ" isDark={isDark} />
+                        <SectionLabel label={t('product.nutrition_title')} isDark={isDark} />
                         <div className="grid grid-cols-2 gap-3 mt-3">
                             {product.nutrition.calories !== undefined && (
                                 <div className={`flex items-center gap-3 p-3 rounded-2xl glass-liquid ${isDark ? 'bg-white/5 border border-white/10' : 'bg-white/60 border border-zinc-200/50'}`}>
@@ -137,7 +139,7 @@ export default function ProductPage() {
                                         <Flame size={18} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-orange-500' : 'text-orange-600'}`}>Kalori</p>
+                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-orange-500' : 'text-orange-600'}`}>{t('product.calories')}</p>
                                         <p className={`text-sm font-black ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{product.nutrition.calories} kcal</p>
                                     </div>
                                 </div>
@@ -148,7 +150,7 @@ export default function ProductPage() {
                                         <Zap size={18} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-yellow-500' : 'text-yellow-600'}`}>Kafein</p>
+                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-yellow-500' : 'text-yellow-600'}`}>{t('product.caffeine')}</p>
                                         <p className={`text-sm font-black ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{product.nutrition.caffeine} mg</p>
                                     </div>
                                 </div>
@@ -159,7 +161,7 @@ export default function ProductPage() {
                                         <Dumbbell size={18} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-blue-500' : 'text-blue-600'}`}>Protein</p>
+                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-blue-500' : 'text-blue-600'}`}>{t('product.protein')}</p>
                                         <p className={`text-sm font-black ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{product.nutrition.protein} g</p>
                                     </div>
                                 </div>
@@ -170,7 +172,7 @@ export default function ProductPage() {
                                         <Droplets size={18} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-stone-400' : 'text-stone-600'}`}>Yağ</p>
+                                        <p className={`text-xs font-bold leading-tight ${isDark ? 'text-stone-400' : 'text-stone-600'}`}>{t('product.fat')}</p>
                                         <p className={`text-sm font-black ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{product.nutrition.fat} g</p>
                                     </div>
                                 </div>
@@ -184,7 +186,7 @@ export default function ProductPage() {
 
                     {product.extras && product.extras.length > 0 && (
                         <div>
-                            <SectionLabel label="İÇİNDEKİLER & EKSTRALAR" isDark={isDark} />
+                            <SectionLabel label={t('product.ingredients_title')} isDark={isDark} />
                             <div className="flex flex-wrap gap-2 mt-3">
                                 {(Array.isArray(product.extras) ? product.extras : product.extras.split(',')).map((extra, i) => (
                                     <span key={i} className={`px-4 py-2 rounded-xl text-[13px] font-bold tracking-wide ${isDark ? 'glass-liquid text-zinc-200' : 'bg-white text-zinc-700 border border-zinc-200 shadow-sm'}`}>
@@ -202,9 +204,9 @@ export default function ProductPage() {
                                 <Wheat size={24} className="text-amber-500" />
                             </div>
                             <div>
-                                <p className={`text-[15px] font-black tracking-wide mb-1.5 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>Alerjen Bilgisi</p>
+                                <p className={`text-[15px] font-black tracking-wide mb-1.5 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{t('product.allergen_title')}</p>
                                 <p className={`text-[13px] leading-relaxed ${isDark ? 'text-zinc-400' : 'text-amber-800/80'}`}>
-                                    Bu ürün <strong>{Array.isArray(product.allergens) ? product.allergens.join(', ') : product.allergens}</strong> içermektedir. Lütfen sipariş verirken baristamızı bilgilendiriniz.
+                                    {t('product.allergen_desc', { list: Array.isArray(product.allergens) ? product.allergens.join(', ') : product.allergens })}
                                 </p>
                             </div>
                         </div>

@@ -3,12 +3,14 @@ import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Coffee, Clock, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export default function Orders() {
     const { orders } = useRewards();
     const { theme } = useTheme();
     const navigate = useNavigate();
     const isDark = theme === 'dark';
+    const { t } = useTranslation();
 
     return (
         <div className={`min-h-screen p-6 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
@@ -16,13 +18,13 @@ export default function Orders() {
                 <button onClick={() => navigate(-1)} className={`p-2 rounded-xl transition active:scale-90 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
                     <ArrowLeft size={18} />
                 </button>
-                <h1 className="text-xl font-display font-bold">Sipariş Geçmişi</h1>
+                <h1 className="text-xl font-display font-bold">{t('orders.page_title')}</h1>
             </header>
 
             {orders.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 opacity-50">
                     <Coffee size={48} className="mb-4" />
-                    <p>Henüz siparişiniz yok.</p>
+                    <p>{t('orders.empty')}</p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -52,7 +54,7 @@ export default function Orders() {
                                     <div key={idx} className="flex justify-between text-base">
                                         <span>{item.name} <span className="text-zinc-500 text-base">x{item.quantity}</span></span>
                                         <span className={isDark ? 'text-zinc-400' : 'text-zinc-500'}>
-                                            {item.customizations?.length > 0 ? item.customizations.join(', ') : 'Standart'}
+                                                {item.customizations?.length > 0 ? item.customizations.join(', ') : t('orders.standard')}
                                         </span>
                                     </div>
                                 ))}

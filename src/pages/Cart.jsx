@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trash2, ArrowLeft, ShoppingBag, CreditCard, Check, Wallet, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import ActiveOrders from '../components/ActiveOrders';
+import { useTranslation } from 'react-i18next';
 
 export default function Cart() {
     const { cart, removeFromCart, clearCart, checkoutCart, balance } = useRewards();
@@ -14,6 +15,7 @@ export default function Cart() {
     const navigate = useNavigate();
     const [checkoutSuccess, setCheckoutSuccess] = useState(false);
     const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+    const { t } = useTranslation();
 
     const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
     const isDark = theme === 'dark';
@@ -40,11 +42,11 @@ export default function Cart() {
                 </motion.div>
                 <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                     className={`text-xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                    Siparişiniz Alındı!
+                    {t('cart.order_placed')}
                 </motion.p>
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
                     className={`text-base mt-2 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                    QR kodunuzu baristaya gösterin...
+                    {t('cart.show_qr')}
                 </motion.p>
             </div>
         );
@@ -56,10 +58,10 @@ export default function Cart() {
                 <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${isDark ? 'bg-zinc-900' : 'bg-zinc-200'}`}>
                     <ShoppingBag size={32} className="opacity-40" />
                 </div>
-                <h2 className="text-2xl font-bold font-display uppercase mb-2">Sepetin Boş</h2>
-                <p className="text-zinc-500 text-center mb-8">Henüz harika kahvelerimizden birini seçmedin.</p>
+                <h2 className="text-2xl font-bold font-display uppercase mb-2">{t('cart.empty')}</h2>
+                <p className="text-zinc-500 text-center mb-8">{t('cart.empty_desc')}</p>
                 <button onClick={() => navigate('/menu')} className="bg-shaco-red text-white px-8 py-3 rounded-full font-bold uppercase tracking-wider hover:bg-red-600 transition">
-                    Menüye Git
+                    {t('cart.go_menu')}
                 </button>
             </div>
         );
@@ -72,8 +74,8 @@ export default function Cart() {
                 <button onClick={() => navigate(-1)} className={`p-2 rounded-xl transition active:scale-90 ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
                     <ArrowLeft size={18} />
                 </button>
-                <h1 className="text-xl font-display font-bold">Sepet</h1>
-                <span className={`text-[15px] font-bold px-2 py-0.5 rounded-lg ml-auto ${isDark ? 'bg-zinc-900 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>{cart.length} ürün</span>
+                <h1 className="text-xl font-display font-bold">{t('cart.title')}</h1>
+                <span className={`text-[15px] font-bold px-2 py-0.5 rounded-lg ml-auto ${isDark ? 'bg-zinc-900 text-zinc-500' : 'bg-zinc-100 text-zinc-400'}`}>{cart.length} {t('cart.items')}</span>
             </header>
 
             <div className="space-y-3">
@@ -89,7 +91,7 @@ export default function Cart() {
                         <div className="flex-1 min-w-0">
                             <h3 className="font-bold font-display text-[14px] truncate">{item.product.name}</h3>
                             <p className={`text-[15px] truncate ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                                {item.customizations.length > 0 ? item.customizations.join(', ') : 'Standart'}
+                                {item.customizations.length > 0 ? item.customizations.join(', ') : t('cart.standard')}
                             </p>
                             <span className="font-bold text-shaco-red text-[15px]">₺{item.totalPrice}</span>
                         </div>
@@ -122,8 +124,8 @@ export default function Cart() {
                     {balance < total && (
                         <div className={`flex items-center gap-2 p-2.5 rounded-xl mb-3 ${isDark ? 'bg-red-500/10 border border-red-500/20' : 'bg-red-50 border border-red-100'}`}>
                             <AlertCircle size={14} className="text-red-500 flex-shrink-0" />
-                            <p className="text-red-500 text-[15px] font-semibold">Yetersiz bakiye.</p>
-                            <button onClick={() => navigate('/wallet')} className="ml-auto text-base font-bold text-red-500 underline flex-shrink-0">Yükle</button>
+                            <p className="text-red-500 text-[15px] font-semibold">{t('cart.insufficient_balance')}</p>
+                            <button onClick={() => navigate('/wallet')} className="ml-auto text-base font-bold text-red-500 underline flex-shrink-0">{t('cart.load')}</button>
                         </div>
                     )}
 
@@ -140,7 +142,7 @@ export default function Cart() {
                                 }`}
                         >
                             <CreditCard size={16} />
-                            {isGuest ? 'Sipariş Ver' : balance < total ? 'Yetersiz Bakiye' : 'Ödemeyi Gerçekleştir'}
+                            {isGuest ? t('cart.place_order') : balance < total ? t('cart.insufficient_balance_short') : t('cart.complete_payment')}
                         </button>
                     </div>
                 </div>
@@ -158,16 +160,16 @@ export default function Cart() {
                             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-shaco-red/10 flex items-center justify-center text-shaco-red">
                                 <CreditCard size={24} />
                             </div>
-                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Giriş Gerekli</h3>
-                            <p className={`text-base mb-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Sipariş vermek için giriş yapmanız veya kayıt olmanız gerekiyor.</p>
+                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('cart.login_required')}</h3>
+                            <p className={`text-base mb-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('cart.login_required_desc')}</p>
                             <div className="flex gap-2.5">
                                 <button onClick={() => navigate('/login')}
                                     className={`flex-1 py-3 rounded-xl font-bold text-base transition ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>
-                                    Giriş Yap
+                                    {t('home.login')}
                                 </button>
                                 <button onClick={() => navigate('/register')}
                                     className="flex-1 py-3 rounded-xl font-bold text-base bg-shaco-red text-white">
-                                    Kayıt Ol
+                                    {t('settings.register')}
                                 </button>
                             </div>
                         </motion.div>

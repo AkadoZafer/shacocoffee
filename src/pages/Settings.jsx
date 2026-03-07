@@ -382,7 +382,7 @@ export default function Settings() {
                         onClick={() => setShowLogoutConfirm(true)}
                         className={`w-full p-3.5 rounded-2xl font-semibold text-base flex items-center justify-center gap-2.5 transition active:scale-[0.98] ${isDark ? 'bg-zinc-900 border border-zinc-800 text-red-400 hover:bg-red-500/5' : 'bg-white border border-zinc-200 text-red-500 hover:bg-red-50 shadow-sm'}`}
                     >
-                        <LogOut size={16} /> Çıkış Yap
+                        <LogOut size={16} /> {t('settings.logout')}
                     </motion.button>
                 )}
             </div>
@@ -397,11 +397,11 @@ export default function Settings() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500"><LogOut size={24} /></div>
-                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Çıkış Yap</h3>
-                            <p className={`text-base mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Hesabından çıkmak istediğine emin misin?</p>
+                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('settings.logout_modal_title')}</h3>
+                            <p className={`text-base mb-6 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('settings.logout_modal_desc')}</p>
                             <div className="flex gap-3">
-                                <button onClick={() => setShowLogoutConfirm(false)} className={`flex-1 py-3 rounded-xl font-bold text-base ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>Vazgeç</button>
-                                <button onClick={() => { setShowLogoutConfirm(false); logout(); }} className="flex-1 py-3 rounded-xl font-bold text-base bg-red-500 text-white">Çıkış</button>
+                                <button onClick={() => setShowLogoutConfirm(false)} className={`flex-1 py-3 rounded-xl font-bold text-base ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>{t('settings.back')}</button>
+                                <button onClick={() => { setShowLogoutConfirm(false); logout(); }} className="flex-1 py-3 rounded-xl font-bold text-base bg-red-500 text-white">{t('settings.logout')}</button>
                             </div>
                         </motion.div>
                     </div>
@@ -418,7 +418,7 @@ export default function Settings() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-center mb-5">
-                                <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-zinc-900'}`}>Deneyimini Paylaş</h3>
+                                <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('settings.feedback_title')}</h3>
                                 <button onClick={() => setShowFeedback(false)} className={`p-1.5 rounded-lg ${isDark ? 'bg-zinc-800 text-zinc-400 hover:text-white' : 'bg-zinc-100 text-zinc-500 hover:text-zinc-900'}`}>
                                     <X size={18} />
                                 </button>
@@ -443,7 +443,7 @@ export default function Settings() {
                                     value={feedbackComment}
                                     onChange={(e) => setFeedbackComment(e.target.value)}
                                     maxLength={300}
-                                    placeholder="Görüşlerinizi bizimle paylaşın..."
+                                    placeholder={t('settings.feedback_placeholder')}
                                     className={`w-full p-3 rounded-xl border h-28 resize-none text-[15px] outline-none transition-colors ${isDark ? 'bg-zinc-800/50 border-zinc-700/50 text-white focus:border-shaco-red focus:bg-zinc-800' : 'bg-zinc-50 border-zinc-200 text-zinc-900 focus:border-shaco-red focus:bg-white'}`}
                                 />
                                 <div className={`text-right text-[11px] mt-1 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>
@@ -457,7 +457,7 @@ export default function Settings() {
                                     {feedbackAnonymous && <Check size={14} className="text-white" />}
                                 </div>
                                 <input type="checkbox" checked={feedbackAnonymous} onChange={(e) => setFeedbackAnonymous(e.target.checked)} className="hidden" />
-                                <span className={`text-[15px] font-medium select-none ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>Anonim gönder</span>
+                                <span className={`text-[15px] font-medium select-none ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>{t('settings.feedback_anonymous')}</span>
                             </label>
 
                             {/* Submit Button */}
@@ -466,7 +466,7 @@ export default function Settings() {
                                 disabled={isSubmittingFeedback || feedbackRating < 1}
                                 className={`w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center transition-all ${isSubmittingFeedback || feedbackRating < 1 ? (isDark ? 'bg-zinc-800 text-zinc-600' : 'bg-zinc-200 text-zinc-400') : 'bg-shaco-red text-white hover:bg-red-600 shadow-lg shadow-red-500/20 active:scale-[0.98]'}`}
                             >
-                                {isSubmittingFeedback ? 'Gönderiliyor...' : 'Gönder'}
+                                {isSubmittingFeedback ? t('settings.feedback_submitting') : t('settings.feedback_submit')}
                             </button>
                         </motion.div>
                     </div>

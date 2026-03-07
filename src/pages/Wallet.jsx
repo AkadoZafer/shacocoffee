@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { useTranslation } from 'react-i18next';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
@@ -20,6 +21,7 @@ export default function Wallet() {
     const [showAuthPrompt, setShowAuthPrompt] = useState(false);
     const { addToast } = useToast();
     const isDark = theme === 'dark';
+    const { t } = useTranslation();
 
     const handleTopUp = () => {
         if (isGuest) {
@@ -30,7 +32,7 @@ export default function Wallet() {
         if (!amount || amount <= 0) return;
 
         topUpBalance(amount);
-        addToast(`+₺${amount} başarıyla yüklendi!`, 'success');
+        addToast(t('wallet.topup_success', { amount }), 'success');
         setSelectedAmount(null);
         setCustomAmount('');
     };
@@ -50,7 +52,7 @@ export default function Wallet() {
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                     </button>
-                    <h1 className="text-xl font-display font-bold">Cüzdan</h1>
+                    <h1 className="text-xl font-display font-bold">{t('wallet.title')}</h1>
                 </div>
             </div>
 
@@ -66,7 +68,7 @@ export default function Wallet() {
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-3">
                         <WalletIcon size={14} className="text-zinc-500" />
-                        <p className="text-zinc-500 text-base font-bold tracking-[0.2em]">TOPLAM BAKİYE</p>
+                        <p className="text-zinc-500 text-base font-bold tracking-[0.2em]">{t('wallet.total_balance')}</p>
                     </div>
                     <div className="flex items-baseline gap-1.5">
                         <span className="text-2xl text-shaco-red font-bold">₺</span>
@@ -86,7 +88,7 @@ export default function Wallet() {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <div className="flex items-center gap-2 mb-3">
                     <Zap size={13} className="text-amber-500" />
-                    <p className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>HIZLI YÜKLE</p>
+                    <p className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('wallet.quick_label')}</p>
                 </div>
 
                 <div className="grid grid-cols-5 gap-2 mb-4">
@@ -116,7 +118,7 @@ export default function Wallet() {
                         type="number"
                         value={customAmount}
                         onChange={(e) => { setCustomAmount(e.target.value); setSelectedAmount(null); }}
-                        placeholder="Özel tutar girin"
+                        placeholder={t('wallet.custom_placeholder')}
                         className={`flex-1 bg-transparent outline-none text-base font-display ${isDark ? 'text-white placeholder:text-zinc-700' : 'text-zinc-900 placeholder:text-zinc-400'}`}
                     />
                 </div>
@@ -134,7 +136,7 @@ export default function Wallet() {
                         }`}
                 >
                     <ArrowUpRight size={16} />
-                    {activeAmount > 0 ? `₺${activeAmount} Yükle` : 'Tutar Seçin'}
+                    {activeAmount > 0 ? t('wallet.load_button', { amount: activeAmount }) : t('wallet.select_amount')}
                 </button>
             </motion.div>
 
@@ -143,7 +145,7 @@ export default function Wallet() {
                 <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-2">
                         <CreditCard size={13} className={isDark ? 'text-zinc-600' : 'text-zinc-400'} />
-                        <h3 className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>KARTLARIM</h3>
+                        <h3 className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('wallet.my_cards')}</h3>
                     </div>
                     <button className="text-shaco-red hover:text-red-400 transition p-1">
                         <Plus size={18} />
@@ -190,16 +192,16 @@ export default function Wallet() {
                             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
                                 <WalletIcon size={24} />
                             </div>
-                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Üyelik Gerekli</h3>
-                            <p className={`text-base mb-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Bakiye yüklemek için giriş yapmanız veya kayıt olmanız gerekiyor.</p>
+                            <h3 className={`font-bold text-lg mb-1 ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('wallet.auth_required')}</h3>
+                            <p className={`text-base mb-5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('wallet.auth_required_desc')}</p>
                             <div className="flex gap-2.5">
                                 <button onClick={() => navigate('/login')}
                                     className={`flex-1 py-3 rounded-xl font-bold text-base transition ${isDark ? 'bg-zinc-800 text-zinc-300' : 'bg-zinc-100 text-zinc-600'}`}>
-                                    Giriş Yap
+                                    {t('home.login')}
                                 </button>
                                 <button onClick={() => navigate('/register')}
                                     className="flex-1 py-3 rounded-xl font-bold text-base bg-shaco-red text-white">
-                                    Kayıt Ol
+                                    {t('settings.register')}
                                 </button>
                             </div>
                         </motion.div>

@@ -8,6 +8,7 @@ import { useToast } from '../context/ToastContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { auth, db } from '../firebase';
 import { collection, query, where, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { useTranslation } from 'react-i18next';
 
 const quickAmounts = [25, 50, 100, 200, 500];
 
@@ -18,6 +19,7 @@ export default function Pay() {
     const { theme } = useTheme();
     const { addToast } = useToast();
     const isDark = theme === 'dark';
+    const { t } = useTranslation();
 
     const [qrToken, setQrToken] = useState(null);
     const [qrLoading, setQrLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function Pay() {
             if (data.success) {
                 setQrToken(data.token);
             } else {
-                addToast('QR kodu alınamadı', 'error');
+                addToast(t('pay.qr_error'), 'error');
             }
         } catch (err) {
             console.error(err);
@@ -74,9 +76,9 @@ export default function Pay() {
                 txs.push({
                     id: doc.id,
                     type: data.type,
-                    label: data.description || (data.type === 'topup' ? 'Bakiye Yükleme' : 'Ödeme'),
+                    label: data.description || (data.type === 'topup' ? t('pay.topup') : t('pay.purchase')),
                     amount: data.amount,
-                    date: data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : 'Şimdi',
+                    date: data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) : t('common.now') || 'Now',
                     stars: data.stars || 0
                 });
             });
@@ -91,7 +93,7 @@ export default function Pay() {
         if (val > 0 && addBalance) {
             addBalance(val);
             setTopUpAmount('');
-            addToast('+₺' + val + ' Bakiye Yüklendi!', 'success');
+            addToast(t('pay.topup_success', { amount: val }), 'success');
         }
     };
 
@@ -101,8 +103,8 @@ export default function Pay() {
 
             {/* Header */}
             <div className="p-6 pt-10 pb-4">
-                <h1 className="text-2xl font-display font-bold mb-0.5">Ödeme</h1>
-                <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>Shaco Wallet ile hızlı ödeme</p>
+                <h1 className="text-2xl font-display font-bold mb-0.5">{t('pay.title')}</h1>
+                <p className={`text-base ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{t('pay.subtitle')}</p>
             </div>
 
             {/* Balance Card */}
@@ -111,7 +113,7 @@ export default function Pay() {
                     <div className="absolute top-3 right-4">
                         <span className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SHACO</span>
                     </div>
-                    <p className={`text-base font-bold tracking-[0.2em] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>MEVCUT BAKİYE</p>
+                    <p className={`text-base font-bold tracking-[0.2em] mb-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('pay.balance')}</p>
                     <div className="flex items-baseline gap-1">
                         <span className="text-shaco-red text-xl font-bold">₺</span>
                         <span className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{balance.toFixed(0)}</span>
@@ -127,9 +129,9 @@ export default function Pay() {
             <div className="px-6 mb-5">
                 <div className={`flex p-1 rounded-xl ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-zinc-100'}`}>
                     {[
-                        { key: 'qr', label: '☰ QR Öde' },
-                        { key: 'topup', label: '₺ Yükle' },
-                        { key: 'history', label: '⏱ Geçmiş' },
+                        { key: 'qr', label: t('pay.tab_qr') },
+                        { key: 'topup', label: t('pay.tab_load') },
+                        { key: 'history', label: t('pay.tab_history') },
                     ].map(tab => (
                         <button key={tab.key} onClick={async () => {
                             try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
@@ -155,14 +157,14 @@ export default function Pay() {
                             {/* Wallet Info Header */}
                             <div className="w-full mb-4 mt-2">
                                 <div className="flex items-center justify-between mb-1">
-                                    <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Cüzdan Kodu</h3>
+                                    <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('pay.wallet_code')}</h3>
                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-base font-bold bg-emerald-500/10 text-emerald-400">
                                         <Check size={10} />
-                                        Aktif
+                                        {t('pay.active')}
                                     </div>
                                 </div>
                                 <p className={`text-base font-mono font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                    Kullanıma Hazır
+                                    {t('pay.ready')}
                                 </p>
                             </div>
 
@@ -180,12 +182,11 @@ export default function Pay() {
                                             level="M"
                                         />
                                     ) : (
-                                        <p className="text-zinc-500 font-medium">QR Yüklenemedi</p>
+                                        <p className="text-zinc-500 font-medium">{t('pay.qr_failed')}</p>
                                     )}
                                 </div>
                                 <p className={`text-center text-[15px] font-bold mt-4 ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                                    Sipariş vermek ve ödemek için<br />
-                                    <span className="text-shaco-red">kasada bu QR kodu gösterin</span>
+                                    {t('pay.qr_instruction')}
                                 </p>
                             </div>
 
@@ -195,7 +196,7 @@ export default function Pay() {
                             <div className={`w-full p-4 rounded-xl flex gap-3 mb-6 ${isDark ? 'bg-zinc-900/50 border border-zinc-800/50' : 'bg-blue-50/50 border border-blue-100'}`}>
                                 <Coffee size={18} className={isDark ? 'text-zinc-500' : 'text-blue-500'} />
                                 <p className={`text-[15px] leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                                    Bakiyenizden düşülerek temassız ödeme yapılır. Yetersiz bakiye durumunda kredi kartı veya nakit ile kasadan da ödeyebilirsiniz.
+                                    {t('pay.payment_info')}
                                 </p>
                             </div>
 
@@ -208,7 +209,7 @@ export default function Pay() {
                 {/* ============ TOP UP TAB ============ */}
                 {activeTab === 'topup' && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>HIZLI YÜKLEME</p>
+                        <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{t('pay.quick_load')}</p>
                         <div className="grid grid-cols-3 gap-2 mb-5">
                             {quickAmounts.map((amount) => (
                                 <button key={amount} onClick={async () => {
@@ -222,18 +223,18 @@ export default function Pay() {
                             <div className={`py-2 rounded-xl flex flex-col items-center justify-center ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-sm'}`}>
                                 <input type="number" value={topUpAmount} onChange={(e) => setTopUpAmount(e.target.value)} placeholder="₺"
                                     className={`w-full text-center text-lg font-bold bg-transparent outline-none ${isDark ? 'text-white placeholder:text-zinc-700' : 'text-zinc-900 placeholder:text-zinc-300'}`} />
-                                <span className={`text-[15px] ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>Özel</span>
+                                <span className={`text-[15px] ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>{t('pay.custom')}</span>
                             </div>
                         </div>
 
                         {topUpAmount && Number(topUpAmount) > 0 && (
                             <button onClick={() => handleTopUp()}
                                 className="w-full py-4 rounded-2xl bg-shaco-red text-white font-bold text-[15px] shadow-lg shadow-red-500/15 active:scale-[0.97] transition flex items-center justify-center gap-2 mb-5">
-                                <Plus size={16} /> ₺{topUpAmount} Yükle
+                                <Plus size={16} /> {t('pay.load_amount', { amount: topUpAmount })}
                             </button>
                         )}
 
-                        <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>SON YÜKLEMELER</p>
+                        <p className={`text-base font-bold tracking-[0.15em] mb-2.5 ${isDark ? 'text-zinc-600' : 'text-zinc-400'}`}>{t('pay.recent_loads')}</p>
                         <div className="space-y-1.5">
                             {payHistory.filter(h => h.type === 'topup').map((h) => (
                                 <div key={h.id} className={`p-3 rounded-xl flex items-center justify-between ${isDark ? 'bg-zinc-900/60 border border-zinc-800' : 'bg-white border border-zinc-200'}`}>
@@ -277,7 +278,7 @@ export default function Pay() {
                             ))}
                         </div>
                         <p className={`text-center text-base font-bold tracking-wider mt-5 ${isDark ? 'text-zinc-700' : 'text-zinc-300'}`}>
-                            {payHistory.length} İŞLEM
+                            {payHistory.length} {t('pay.transactions')}
                         </p>
                     </motion.div>
                 )}
