@@ -249,6 +249,14 @@
     "feedback_submit": "Submit",
     "feedback_submitting": "Submitting..."
   },
+  "loyalty": {
+    "title": "LOYALTY CARD",
+    "promo": "Buy 8 Drinks, Get 1 Small Drink Free!",
+    "gift": "GIFT",
+    "reward_title": "Congratulations! 🎉",
+    "reward_desc": "You have a free small drink reward!",
+    "redeem": "Redeem"
+  },
   "feedback": {
     "title": "Share Your Experience",
     "rating_label": "Rating",
@@ -277,6 +285,8 @@
   "branch_card": {
     "open_now": "Open now",
     "closed_now": "Currently closed",
+    "closed_today": "Closed today",
+    "no_hours": "Hours unavailable",
     "opens_at": "Opens at {{time}}",
     "closes_at": "Closes at {{time}}",
     "view_all": "All Branches"

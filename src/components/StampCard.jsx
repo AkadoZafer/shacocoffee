@@ -2,11 +2,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRewards } from '../context/RewardsContext';
 import { useTheme } from '../context/ThemeContext';
 import { Gift } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function StampCard() {
     const { stampCount, stampJustEarned, freeRewardAvailable, setFreeRewardAvailable } = useRewards();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+    const { t } = useTranslation();
 
     const totalSlots = 8;
 
@@ -25,14 +27,14 @@ export default function StampCard() {
                             <Gift size={18} />
                         </div>
                         <div className="flex-1">
-                            <p className="text-emerald-500 text-base font-bold">Tebrikler! 🎉</p>
-                            <p className={`text-base ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Küçük boy 1 içecek hediyeniz var!</p>
+                            <p className="text-emerald-500 text-base font-bold">{t('loyalty.reward_title')}</p>
+                            <p className={`text-base ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{t('loyalty.reward_desc')}</p>
                         </div>
                         <button
                             onClick={() => setFreeRewardAvailable(false)}
                             className="text-base font-bold text-emerald-500 bg-emerald-500/15 px-3 py-1.5 rounded-lg"
                         >
-                            Kullan
+                            {t('loyalty.redeem')}
                         </button>
                     </motion.div>
                 )}
@@ -48,7 +50,7 @@ export default function StampCard() {
                         </div>
                         <div>
                             <p className={`text-[15px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-900'}`}>SHACO COFFEE CO.</p>
-                            <p className={`text-[15px] tracking-widest ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>SADAKAT KARTI</p>
+                            <p className={`text-[15px] tracking-widest ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('loyalty.title')}</p>
                         </div>
                     </div>
                     <div className="text-right">
@@ -59,8 +61,7 @@ export default function StampCard() {
                 {/* Promo Text */}
                 <div className="px-5 pb-3">
                     <p className={`text-base leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                        <span className={`font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>8 İçecek</span> Alana{' '}
-                        <span className="text-shaco-red font-bold">Küçük Boy 1 İçecek Bizden Hediye!</span>
+                        {t('loyalty.promo')}
                     </p>
                 </div>
 
@@ -102,7 +103,7 @@ export default function StampCard() {
                                     ) : isLast ? (
                                         <div className="flex flex-col items-center gap-0.5">
                                             <Gift size={16} className="text-amber-500/60" />
-                                            <span className="text-[7px] text-amber-500/60 font-bold">HEDİYE</span>
+                                            <span className="text-[7px] text-amber-500/60 font-bold">{t('loyalty.gift')}</span>
                                         </div>
                                     ) : (
                                         <div className={`w-3 h-3 rounded-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />

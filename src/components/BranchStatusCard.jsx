@@ -5,7 +5,8 @@
 
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase"; // kendi firebase init yoluna göre ayarla
+import { db } from "../firebase";
+import { useTranslation } from "react-i18next";
 
 const COLLECTION_NAME = "settings";
 const DOC_ID = "branch"; // Firestore'da settings/branch dökümanı
@@ -44,6 +45,7 @@ function isCurrentlyOpen(openTime, closeTime) {
 export default function BranchStatusCard() {
   const [branch, setBranch] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchBranch = async () => {
@@ -104,14 +106,14 @@ export default function BranchStatusCard() {
       <div className="branch-card__right">
         <div className={`branch-badge ${open ? "branch-badge--open" : "branch-badge--closed"}`}>
           <span className="branch-badge__dot" />
-          <span>{open ? "Açık" : "Kapalı"}</span>
+          <span>{open ? t('branch_card.open_now') : t('branch_card.closed_now')}</span>
         </div>
         <span className="branch-card__hours">
           {isClosed
-            ? "Bugün kapalı"
+            ? t('branch_card.closed_today')
             : openTime && closeTime
             ? `${todayLabel} ${openTime} – ${closeTime}`
-            : "Saat bilgisi yok"}
+            : t('branch_card.no_hours')}
         </span>
       </div>
     </div>

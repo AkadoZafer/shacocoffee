@@ -214,7 +214,7 @@ export default function Home() {
                                 </button>
                                 <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/login'); }}
                                     className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 active:scale-95 hover:shadow-glass ${isDark ? 'bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 hover:bg-zinc-700/80' : 'bg-white/80 border border-zinc-200/50 text-zinc-600 shadow-sm hover:bg-white'}`}>
-                                    <LogIn size={14} /> Giriş Yap
+                                    <LogIn size={14} /> {t('home.login')}
                                 </button>
                             </div>
                         </div>
@@ -232,7 +232,7 @@ export default function Home() {
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Star size={13} className="text-yellow-500 fill-yellow-500" />
-                                    <span className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>YILDIZ</span>
+                                    <span className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('home.stars')}</span>
                                     <span className={`text-base font-bold ml-auto ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{stars}/15</span>
                                 </div>
                                 <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-zinc-800' : 'bg-zinc-100'}`}>
@@ -244,12 +244,12 @@ export default function Home() {
                                     />
                                 </div>
                                 <p className={`text-[15px] mt-1.5 ${isDark ? 'text-zinc-700' : 'text-zinc-400'}`}>
-                                    {stars >= 15 ? 'Ödül kazandın! 🎉' : `Ödüle ${15 - stars} yıldız kaldı`}
+                                    {stars >= 15 ? t('home.reward_earned') : t('home.reward_left', { count: 15 - stars })}
                                 </p>
                             </div>
                             <div className={`w-px h-10 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
                             <div className="text-center px-2">
-                                <p className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>BAKİYE</p>
+                                <p className={`text-base font-bold tracking-wider ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('home.balance')}</p>
                                 <p className={`text-xl font-bold mt-0.5 ${isDark ? 'text-white' : 'text-zinc-900'}`}>₺{balance.toFixed(0)}</p>
                             </div>
                         </div>
@@ -277,7 +277,7 @@ export default function Home() {
 
                 {/* Campaigns */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-7">
-                    <SectionHeader title="Kampanyalar" action="Tümü" isDark={isDark} />
+                    <SectionHeader title={t('home.campaigns')} action={t('home.all')} isDark={isDark} />
                     {campaigns.length > 0 ? (
                         <>
                             <div className="relative h-32 rounded-2xl overflow-hidden">
@@ -291,7 +291,7 @@ export default function Home() {
                                         <div>
                                             <h4 className="text-base font-bold text-white mb-0.5">{campaigns[activeCampaign]?.title}</h4>
                                             <p className="text-base text-white/60 mb-3">{campaigns[activeCampaign]?.subtitle}</p>
-                                            <button className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-3.5 py-1.5 rounded-lg">Kullan →</button>
+                                            <button className="bg-white/15 backdrop-blur text-white text-[15px] font-bold px-3.5 py-1.5 rounded-lg">{t('home.campaigns_use')} →</button>
                                         </div>
                                         <span className="text-4xl">{campaigns[activeCampaign]?.emoji}</span>
                                     </motion.div>
@@ -308,7 +308,7 @@ export default function Home() {
                     ) : (
                         <div className={`h-32 rounded-2xl flex flex-col items-center justify-center border border-dashed ${isDark ? 'bg-zinc-900/50 border-zinc-800' : 'bg-red-50/50 border-red-200'}`}>
                             <Gift size={24} className={`mb-2 ${isDark ? 'text-zinc-600' : 'text-red-300'}`} />
-                            <p className={`text-[15px] font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>Şu an aktif kampanya bulunmuyor.</p>
+                            <p className={`text-[15px] font-bold ${isDark ? 'text-zinc-500' : 'text-zinc-500'}`}>{t('home.no_campaign')}</p>
                         </div>
                     )}
                 </motion.div>
@@ -316,7 +316,7 @@ export default function Home() {
                 {/* Favorite Product (Müdavim Özelliği) */}
                 {!isGuest && pFav && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mb-7">
-                        <SectionHeader title="Sizin Klasikleriniz" action="Sipariş Ver" onAction={() => navigate(`/product/${pFav.id}`)} isDark={isDark} />
+                        <SectionHeader title={t('home.your_classic')} action={t('home.order')} onAction={() => navigate(`/product/${pFav.id}`)} isDark={isDark} />
                         <motion.div whileTap={{ scale: 0.98 }} onClick={() => navigate(`/product/${pFav.id}`)}
                             className={`flex items-center gap-4 p-3 rounded-2xl cursor-pointer relative overflow-hidden ${isDark ? 'bg-white/5 border border-white/10 shadow-[0_0_20px_rgba(234,179,8,0.1)]' : 'bg-gradient-to-r from-yellow-50 to-white border border-yellow-200/50 shadow-sm'}`}
                         >
@@ -330,7 +330,7 @@ export default function Home() {
                                     <span className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest shadow-lg shadow-yellow-500/20">MÜDAVİM</span>
                                 </div>
                                 <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                                    Toplam <strong className={isDark ? 'text-yellow-400' : 'text-yellow-600'}>{favoriteProduct.count} kez</strong> aldınız.
+                                    {t('home.ordered_times', { count: favoriteProduct.count })}
                                 </p>
                             </div>
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 relative z-10 ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
@@ -346,7 +346,7 @@ export default function Home() {
                 {/* Günün Önerisi */}
                 {productOfTheDay && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="mb-7">
-                        <SectionHeader title="Günün Önerisi" action="İncele" onAction={() => navigate(`/product/${productOfTheDay.id}`)} isDark={isDark} />
+                        <SectionHeader title={t('home.daily_special')} action={t('home.view')} onAction={() => navigate(`/product/${productOfTheDay.id}`)} isDark={isDark} />
                         <div onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate(`/product/${productOfTheDay.id}`); }}
                             className={`relative rounded-3xl overflow-hidden cursor-pointer group ${isDark ? 'glass-liquid border border-amber-500/20' : 'bg-gradient-to-br from-amber-50 to-white border border-amber-200 shadow-lg'}`}>
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl -translate-y-10 translate-x-10" />
@@ -356,7 +356,7 @@ export default function Home() {
                                         <LazyImage src={productOfTheDay.imageUrl || productOfTheDay.image} alt={productOfTheDay.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                                         <div className="absolute bottom-1.5 left-2 px-1.5 py-0.5 rounded-md bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest">
-                                            ÖZEL
+                                            {t('home.special_badge')}
                                         </div>
                                     </div>
                                 </div>
@@ -379,7 +379,7 @@ export default function Home() {
 
                 {/* Popular */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="mb-7">
-                    <SectionHeader title="Sizin İçin Seçtiklerimiz" action="Menü" onAction={() => navigate('/menu')} isDark={isDark} />
+                    <SectionHeader title={t('home.selected_for_you')} action={t('nav.menu')} onAction={() => navigate('/menu')} isDark={isDark} />
 
                     {isLoadingProducts ? (
                         <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
@@ -425,8 +425,8 @@ export default function Home() {
                                     <div className="p-3 pt-2">
                                         <h4 className={`font-serif font-semibold text-[15px] leading-tight line-clamp-2 ${isDark ? 'text-zinc-200' : 'text-zinc-800'}`}>{product.name}</h4>
                                         <div className="flex flex-wrap gap-1 mt-1.5">
-                                            {product.category === 'cat_coffee' && <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-warm-amber/10 text-warm-amber font-bold">KAHVE</span>}
-                                            {product.allergens?.includes('Milk') && <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-zinc-500/10 text-zinc-400 font-bold">SÜT</span>}
+                                            {product.category === 'cat_coffee' && <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-warm-amber/10 text-warm-amber font-bold">{t('home.coffee_badge')}</span>}
+                                            {product.allergens?.includes('Milk') && <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-zinc-500/10 text-zinc-400 font-bold">{t('home.milk_badge')}</span>}
                                         </div>
                                     </div>
                                 </motion.div>
@@ -435,7 +435,7 @@ export default function Home() {
                     ) : (
                         <div className={`p-4 rounded-3xl text-center glass-liquid ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
                             <Coffee size={24} className="mx-auto mb-2 opacity-50" />
-                            <p>Şu an popüler ürün bulunamadı.</p>
+                            <p>{t('home.no_popular')}</p>
                         </div>
                     )}
                 </motion.div>
@@ -453,8 +453,8 @@ export default function Home() {
                                 <History size={18} />
                             </div>
                             <div className="text-left">
-                                <p className={`text-[16px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-800'}`}>Sipariş Geçmişi</p>
-                                <p className={`text-[13px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>Son siparişleri gör</p>
+                                <p className={`text-[16px] font-bold tracking-wide ${isDark ? 'text-white' : 'text-zinc-800'}`}>{t('home.history_title')}</p>
+                                <p className={`text-[13px] ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>{t('home.history_subtitle')}</p>
                             </div>
                         </div>
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
@@ -474,7 +474,7 @@ export default function Home() {
                         >
                             <div className="w-10 h-1 rounded-full mx-auto mb-4 bg-zinc-700" />
                             <div className="flex justify-between items-center mb-5">
-                                <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>Geçmiş</h2>
+                                <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{t('home.history_modal_title')}</h2>
                                 <button onClick={() => setShowHistory(false)} className={`p-1.5 rounded-lg ${isDark ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-500'}`}><X size={16} /></button>
                             </div>
                             <div className="overflow-y-auto space-y-2">
@@ -626,12 +626,13 @@ const platformColors = {
 
 function SocialMediaSection({ isDark }) {
     const { accounts } = useSocialMedia();
+    const { t } = useTranslation();
 
     if (!accounts || accounts.length === 0) return null;
 
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mb-7">
-            <SectionHeader title="Bizi Takip Edin" isDark={isDark} />
+            <SectionHeader title={t('home.social_title')} isDark={isDark} />
             <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
                 {accounts.map((account) => {
                     const IconFn = platformIcons[account.platform];

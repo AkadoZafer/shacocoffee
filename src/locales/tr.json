@@ -18,15 +18,17 @@
     "register": "Kayıt Ol",
     "login": "Giriş Yap",
     "stars": "YILDIZ",
+    "stars_label": "YILDIZ",
     "balance": "BAKİYE",
+    "balance_label": "BAKİYE",
     "reward_earned": "Ödül kazandın! 🎉",
     "reward_left": "Ödüle {{count}} yıldız kaldı",
     "qr_pay": "QR Öde",
     "load_balance": "Bakiye Yükle",
     "stores": "Mağazalar",
     "campaigns": "Kampanyalar",
-    "all": "Tümü",
-    "use": "Kullan →",
+    "campaigns_all": "Tümü",
+    "campaigns_use": "Kullan →",
     "no_campaign": "Şu an aktif kampanya bulunmuyor.",
     "your_classic": "Sizin Klasikleriniz",
     "order": "Sipariş Ver",
@@ -36,11 +38,14 @@
     "view": "İncele",
     "special_badge": "ÖZEL",
     "selected_for_you": "Sizin İçin Seçtiklerimiz",
+    "menu": "Menü",
     "coffee_badge": "KAHVE",
     "milk_badge": "SÜT",
     "no_popular": "Şu an popüler ürün bulunamadı.",
     "history_title": "Sipariş Geçmişi",
-    "history_desc": "Son satın alımlarınızı görüntüleyin"
+    "history_subtitle": "Son siparışleri gör",
+    "history_modal_title": "Geçmiş",
+    "social_title": "Bizi Takip Edin"
   },
   "login": {
     "title": "Hoş Geldiniz",
@@ -237,6 +242,14 @@
     "guest_role": "Misafir",
     "register": "Kayıt Ol"
   },
+  "loyalty": {
+    "title": "SADAKAT KARTI",
+    "promo": "8 İçecek Alana Küçük Boy 1 İçecek Bizden Hediye!",
+    "gift": "HEDİYE",
+    "reward_title": "Tebrikler! 🎉",
+    "reward_desc": "Küçük boy 1 içecek hediyeniz var!",
+    "redeem": "Kullan"
+  },
   "feedback": {
     "title": "Deneyimini Paylaş",
     "rating_label": "Puanlama",
@@ -264,6 +277,8 @@
   "branch_card": {
     "open_now": "Şu an açık",
     "closed_now": "Şu an kapalı",
+    "closed_today": "Bugün kapalı",
+    "no_hours": "Saat bilgisi yok",
     "opens_at": "{{time}}'da açılır",
     "closes_at": "{{time}}'da kapanır",
     "view_all": "Tüm Şubeler"
