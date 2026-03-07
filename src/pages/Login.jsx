@@ -7,6 +7,7 @@ import { RecaptchaVerifier, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
 import logo from '../assets/logo.png';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Login() {
     const [phone, setPhone] = useState('');
@@ -20,6 +21,8 @@ export default function Login() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const otpRefs = useRef([]);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     // reCAPTCHA'yı sadece /login yolunda ve telefon adımında başlat
     useEffect(() => {
