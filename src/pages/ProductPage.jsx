@@ -58,7 +58,7 @@ export default function ProductPage() {
     );
 
     return (
-        <div className={`min-h-screen flex flex-col transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-zinc-50'}`}>
+        <div className={`h-screen overflow-y-auto flex flex-col transition-colors duration-300 ${isDark ? 'bg-black' : 'bg-zinc-50'}`}>
 
             {/* Hero Image */}
             <div className="relative h-[45vh] shrink-0 overflow-hidden">
