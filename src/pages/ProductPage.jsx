@@ -96,7 +96,7 @@ export default function ProductPage() {
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.15 }}
-                className={`relative flex-1 -mt-12 rounded-t-[2.5rem] px-7 pt-8 pb-24 z-10 ${isDark ? 'bg-[#0a0a0a]' : 'bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)]'}`}
+                className={`relative flex-1 -mt-12 rounded-t-[2.5rem] px-7 pt-8 overflow-hidden z-10 ${isDark ? 'bg-[#0a0a0a]' : 'bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)]'}`}
             >
                 <div className={`w-12 h-1.5 rounded-full mx-auto mb-6 ${isDark ? 'bg-zinc-700/50' : 'bg-zinc-300'}`} />
 
