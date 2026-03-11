@@ -15,7 +15,7 @@ export default function Layout() {
                 {/* Ambient Background Glow */}
                 <div className={`absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-shaco-red/10 to-transparent pointer-events-none transition-opacity duration-300 ${theme === 'dark' ? 'opacity-100' : 'opacity-50'}`} />
 
-                <main className="flex-1 overflow-y-auto pb-32 scrollbar-hide relative z-10">
+                <main className={location.pathname.startsWith('/product/') ? 'flex-1 overflow-hidden relative z-10' : 'flex-1 overflow-y-auto pb-32 scrollbar-hide relative z-10'}>
                     <Outlet />
                 </main>
 
