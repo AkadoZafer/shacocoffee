@@ -2,7 +2,7 @@ import QRCode from 'react-qr-code';
 import { useRewards } from '../context/RewardsContext';
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock } from 'lucide-react';
+import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock, RefreshCw } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -98,6 +98,11 @@ export default function Pay() {
         }
     };
 
+    const handleManualQrRefresh = async () => {
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        void fetchQRToken();
+    };
+
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-shaco-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
@@ -172,6 +177,22 @@ export default function Pay() {
 
                             {/* Clean QR Code without distractions or animations */}
                             <div className={`w-full rounded-3xl p-8 mb-6 relative overflow-hidden flex flex-col items-center justify-center ${isDark ? 'bg-zinc-900 border border-zinc-800' : 'bg-white border border-zinc-200 shadow-xl'}`}>
+                                <button
+                                    type="button"
+                                    onClick={handleManualQrRefresh}
+                                    disabled={qrLoading}
+                                    aria-label={t('pay.refresh_qr')}
+                                    title={t('pay.refresh_qr')}
+                                    className={`absolute top-4 right-4 z-10 p-2.5 rounded-xl border transition-all duration-300 active:scale-95 ${qrLoading
+                                        ? 'cursor-not-allowed opacity-70'
+                                        : 'hover:shadow-md'
+                                        } ${isDark
+                                            ? 'bg-zinc-800/90 border-zinc-700 text-zinc-300 hover:bg-zinc-700'
+                                            : 'bg-zinc-100/90 border-zinc-200 text-zinc-600 hover:bg-white'
+                                        }`}
+                                >
+                                    <RefreshCw size={14} className={qrLoading ? 'animate-spin' : ''} />
+                                </button>
                                 <div className="bg-white p-4 rounded-2xl shadow-sm mb-4 min-h-[250px] min-w-[250px] flex items-center justify-center">
                                     {qrLoading && !qrToken ? (
                                         <div className="animate-spin w-8 h-8 border-4 border-shaco-red border-t-transparent rounded-full"></div>

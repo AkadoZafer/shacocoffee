@@ -175,7 +175,8 @@
     "transactions": "TRANSACTIONS",
     "payment_info": "Payment is deducted from your balance. If insufficient, you can pay by credit card or cash at the register.",
     "topup_success": "+₺{{amount}} Balance loaded!",
-    "load_amount": "Load ₺{{amount}}"
+    "load_amount": "Load ₺{{amount}}",
+    "refresh_qr": "Refresh QR"
   },
   "wallet": {
     "title": "Wallet",

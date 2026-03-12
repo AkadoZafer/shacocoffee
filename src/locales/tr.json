@@ -175,7 +175,8 @@
     "transactions": "İŞLEM",
     "payment_info": "Bakiyenizden düşülerek temassız ödeme yapılır. Yetersiz bakiye durumunda kredi kartı veya nakit ile kasadan da ödeyebilirsiniz.",
     "topup_success": "+₺{{amount}} Bakiye Yüklendi!",
-    "load_amount": "₺{{amount}} Yükle"
+    "load_amount": "₺{{amount}} Yükle",
+    "refresh_qr": "QR Yenile"
   },
   "wallet": {
     "title": "Cüzdan",
