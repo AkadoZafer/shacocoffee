@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
+import { setErrorTrackingUser } from '../services/errorTrackingService';
 import {
     signInWithPhoneNumber,
     signOut,
@@ -18,6 +19,7 @@ export function AuthProvider({ children }) {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             console.log("Auth State Değişti:", firebaseUser?.uid);
             if (firebaseUser) {
+                setErrorTrackingUser(firebaseUser.uid);
                 try {
                     const docRef = doc(db, 'users', firebaseUser.uid);
                     const docSnap = await getDoc(docRef);
@@ -58,6 +60,7 @@ export function AuthProvider({ children }) {
                     setNeedsRegistration(false);
                 }
             } else {
+                setErrorTrackingUser(null);
                 console.log("Kullanıcı oturumu yok -> Guest.");
                 setUser({ name: 'Misafir', role: 'guest', avatar: null });
                 setNeedsRegistration(false);
@@ -215,6 +218,7 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         try {
             await signOut(auth);
+            setErrorTrackingUser(null);
             setNeedsRegistration(false);
             window.recaptchaVerifier = null;
             window.confirmationResult = null;
