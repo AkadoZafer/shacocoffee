@@ -331,19 +331,15 @@ export default function Wallet() {
                         <CreditCard size={13} className={isDark ? 'text-zinc-600' : 'text-zinc-400'} />
                         <h3 className={`text-base font-bold tracking-[0.15em] ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('wallet.my_cards')}</h3>
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            if (isGuest) {
-                                setShowAuthPrompt(true);
-                                return;
-                            }
-                            setShowAddCardModal(true);
-                        }}
-                        className="text-shaco-red hover:text-red-400 transition p-1 active:scale-95"
-                    >
-                        <Plus size={18} />
-                    </button>
+                    {!isGuest && (
+                        <button
+                            type="button"
+                            onClick={() => setShowAddCardModal(true)}
+                            className="text-shaco-red hover:text-red-400 transition p-1 active:scale-95"
+                        >
+                            <Plus size={18} />
+                        </button>
+                    )}
                 </div>
 
                 {isCardsLoading ? (
@@ -352,7 +348,7 @@ export default function Wallet() {
                     </div>
                 ) : cards.length === 0 ? (
                     <div className={`p-4 rounded-2xl text-center text-base ${isDark ? 'bg-zinc-900 border border-zinc-800 text-zinc-500' : 'bg-white border border-zinc-200 text-zinc-400'}`}>
-                        {t('wallet.no_cards')}
+                        {isGuest ? t('wallet.auth_required_desc') : t('wallet.no_cards')}
                     </div>
                 ) : (
                     <div className="space-y-2.5">
