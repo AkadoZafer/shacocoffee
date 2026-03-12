@@ -2,7 +2,7 @@ import { useRewards } from '../context/RewardsContext';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Star, Coffee, QrCode, Gift, Store, Wallet, ChevronRight, ArrowRight, UserPlus, LogIn, Heart } from 'lucide-react';
+import { Star, Coffee, QrCode, Gift, Store, Wallet, ChevronRight, ArrowRight, UserPlus, LogIn, Heart, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { fetchProducts } from '../services/menuService';

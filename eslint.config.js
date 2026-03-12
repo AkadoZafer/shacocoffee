@@ -8,7 +8,18 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
-  { ignores: ["dist", "node_modules"] },
+  {
+    ignores: [
+      "dist",
+      "node_modules",
+      "src/pages/_backup/**",
+      "src/components/_backup_*.jsx",
+      "src_backup_pre_v2/**",
+      "src_backup_before_polish_v2/**",
+      "src_backup_*/**",
+      "android/**",
+    ],
+  },
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {

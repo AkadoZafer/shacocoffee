@@ -4,16 +4,21 @@
 // Eğer koleksiyon adın farklıysa COLLECTION_NAME sabitini güncelle.
 
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, query } from "firebase/firestore";
 import { db } from "../firebase";
 import { useTranslation } from "react-i18next";
 
 const COLLECTION_NAME = "settings";
 const DOC_ID = "branch"; // Firestore'da settings/branch dökümanı
 
-// Türkçe gün adları → İngilizce key mapping
 const DAY_KEYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-const DAY_LABELS_TR = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+
+function pickFirst(...values) {
+  for (const value of values) {
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return null;
+}
 
 /**
  * "09:00" formatındaki string'i dakikaya çevirir
@@ -42,6 +47,40 @@ function isCurrentlyOpen(openTime, closeTime) {
   return currentMinutes >= openMin && currentMinutes < closeMin;
 }
 
+function normalizeTodayHours(branch) {
+  const todayIndex = new Date().getDay();
+  const todayKey = DAY_KEYS[todayIndex];
+  const todayHours = branch?.hours?.[todayKey] || {};
+
+  const openTime = pickFirst(
+    todayHours.open,
+    todayHours.openTime,
+    branch?.openTime,
+    branch?.hours?.open,
+    branch?.hours?.openTime
+  );
+
+  const closeTime = pickFirst(
+    todayHours.close,
+    todayHours.closeTime,
+    branch?.closeTime,
+    branch?.hours?.close,
+    branch?.hours?.closeTime
+  );
+
+  const forcedClosed = Boolean(
+    branch?.isClosed ||
+      todayHours?.closed ||
+      todayHours?.isClosed
+  );
+
+  const forcedOpen = branch?.isOpen === true || todayHours?.isOpen === true;
+
+  const open = forcedOpen || (!forcedClosed && isCurrentlyOpen(openTime, closeTime));
+
+  return { todayKey, openTime, closeTime, forcedClosed, open };
+}
+
 export default function BranchStatusCard() {
   const [branch, setBranch] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,6 +93,14 @@ export default function BranchStatusCard() {
         const snap = await getDoc(ref);
         if (snap.exists()) {
           setBranch(snap.data());
+          return;
+        }
+
+        // Fallback: legacy projelerde bilgiler branches koleksiyonunda tutulabiliyor.
+        const branchesQuery = query(collection(db, "branches"), limit(1));
+        const branchesSnap = await getDocs(branchesQuery);
+        if (!branchesSnap.empty) {
+          setBranch(branchesSnap.docs[0].data());
         }
       } catch (err) {
         console.warn("Şube bilgisi alınamadı:", err.message);
@@ -75,14 +122,7 @@ export default function BranchStatusCard() {
 
   if (!branch) return null;
 
-  const todayIndex = new Date().getDay();
-  const todayKey = DAY_KEYS[todayIndex];
-  const todayLabel = DAY_LABELS_TR[todayIndex];
-  const todayHours = branch.hours?.[todayKey];
-  const isClosed = branch.isClosed || todayHours?.closed;
-  const openTime = todayHours?.open;
-  const closeTime = todayHours?.close;
-  const open = !isClosed && isCurrentlyOpen(openTime, closeTime);
+  const { openTime, closeTime, forcedClosed, open } = normalizeTodayHours(branch);
 
   return (
     <div className={`branch-card ${open ? "branch-card--open" : "branch-card--closed"}`}>
@@ -106,14 +146,14 @@ export default function BranchStatusCard() {
       <div className="branch-card__right">
         <div className={`branch-badge ${open ? "branch-badge--open" : "branch-badge--closed"}`}>
           <span className="branch-badge__dot" />
-          <span>{open ? t('branch_card.open_now') : t('branch_card.closed_now')}</span>
+          <span>{open ? t("branch_card.open_now", { defaultValue: "Open now" }) : t("branch_card.closed_now", { defaultValue: "Closed now" })}</span>
         </div>
         <span className="branch-card__hours">
-          {isClosed
-            ? t('branch_card.closed_today')
+          {forcedClosed
+            ? t("branch_card.closed_today", { defaultValue: "Closed today" })
             : openTime && closeTime
-            ? `${todayLabel} ${openTime} – ${closeTime}`
-            : t('branch_card.no_hours')}
+            ? `${openTime} - ${closeTime}`
+            : t("branch_card.no_hours", { defaultValue: "Hours unavailable" })}
         </span>
       </div>
     </div>

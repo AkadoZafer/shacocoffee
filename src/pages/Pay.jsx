@@ -1,6 +1,6 @@
 import QRCode from 'react-qr-code';
 import { useRewards } from '../context/RewardsContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
@@ -24,7 +24,7 @@ export default function Pay() {
     const [qrToken, setQrToken] = useState(null);
     const [qrLoading, setQrLoading] = useState(false);
 
-    const fetchQRToken = async () => {
+    const fetchQRToken = useCallback(async () => {
         if (!auth.currentUser) return;
         setQrLoading(true);
         try {
@@ -42,20 +42,21 @@ export default function Pay() {
             console.error(err);
         }
         setQrLoading(false);
-    };
+    }, [addToast, t]);
 
     useEffect(() => {
-        let interval;
-        if (activeTab === 'qr') {
-            fetchQRToken();
-            interval = setInterval(fetchQRToken, 240000); // 4 dakikada bir yenile (5dk bitmeden)
-        } else {
-            setQrToken(null);
-        }
+        if (activeTab !== 'qr') return undefined;
+        const initialFetchTimeout = setTimeout(() => {
+            void fetchQRToken();
+        }, 0);
+        const interval = setInterval(() => {
+            void fetchQRToken();
+        }, 240000); // 4 dakikada bir yenile (5dk bitmeden)
         return () => {
-            if (interval) clearInterval(interval);
+            clearTimeout(initialFetchTimeout);
+            clearInterval(interval);
         };
-    }, [activeTab]);
+    }, [activeTab, fetchQRToken]);
 
     const [payHistory, setPayHistory] = useState([]);
 
@@ -135,6 +136,7 @@ export default function Pay() {
                     ].map(tab => (
                         <button key={tab.key} onClick={async () => {
                             try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                            if (tab.key !== 'qr') setQrToken(null);
                             setActiveTab(tab.key);
                         }}
                             className={`flex-1 py-2.5 rounded-lg text-[15px] font-bold tracking-wide transition-all duration-300 relative ${activeTab === tab.key
