@@ -28,7 +28,7 @@
     "all": "All",
     "use": "Redeem →",
     "no_campaign": "No active campaigns right now.",
-    "your_classic": "Your Classics",
+    "your_classic": "Your Favorite",
     "order": "Order",
     "ordered_times": "You've ordered this <b>{{count}} times</b>.",
     "regular_badge": "REGULAR",
@@ -65,7 +65,7 @@
     "invalid_phone": "Please enter a valid phone number",
     "change_number": "Change Number",
     "security_title": "Secure Login",
-    "security_desc": "Sign in with your phone number only, no password needed."
+    "security_desc": "Sign in with your phone number only - no password needed."
   },
   "register": {
     "title": "Create Profile",
@@ -83,7 +83,7 @@
   },
   "menu": {
     "title": "Menu",
-    "search_placeholder": "Search coffee, drinks...",
+    "search_placeholder": "Search coffees, drinks...",
     "all": "All",
     "other": "Other",
     "no_products": "No products found in this category.",
@@ -122,7 +122,7 @@
     "signature": "SIGNATURE",
     "hot": "HOT",
     "cold": "COLD",
-    "fresh": "FRESH MADE"
+    "fresh": "FRESHLY MADE"
   },
   "cart": {
     "title": "Cart",
@@ -141,7 +141,7 @@
     "insufficient_balance_short": "Insufficient Balance",
     "load": "Load",
     "order_placed": "Order Placed!",
-    "show_qr": "Show this QR to your barista...",
+    "show_qr": "Show this QR code to your barista...",
     "place_order": "Place Order",
     "complete_payment": "Complete Payment",
     "standard": "Standard",
@@ -150,7 +150,7 @@
   },
   "pay": {
     "title": "Payment",
-    "subtitle": "Fast payment with Shaco Wallet",
+    "subtitle": "Pay quickly with Shaco Wallet",
     "balance": "CURRENT BALANCE",
     "generating": "Generating QR...",
     "expires_in": "QR refreshes in {{time}}",
@@ -166,7 +166,7 @@
     "wallet_code": "Wallet Code",
     "ready": "Ready",
     "active": "Active",
-    "qr_failed": "QR failed to load",
+    "qr_failed": "Failed to load QR code",
     "qr_error": "Failed to get QR code",
     "qr_instruction": "To order and pay, show this QR code at the cashier",
     "quick_load": "QUICK LOAD",
@@ -191,15 +191,15 @@
     "custom_placeholder": "Enter custom amount",
     "confirm": "Confirm Load",
     "processing": "Processing...",
-    "success": "Balance loaded!",
+    "success": "Balance added successfully!",
     "min_amount": "Minimum load amount is ₺10.",
     "auth_required": "Membership Required",
-    "auth_required_desc": "You need to log in or register to load balance.",
+    "auth_required_desc": "You need to log in or sign up to add balance.",
     "load_button": "Load ₺{{amount}}",
     "select_amount": "Select Amount",
     "topup_success": "+₺{{amount}} successfully loaded!",
     "cards_loading": "Loading cards...",
-    "no_cards": "No saved cards yet. Add one with the + button.",
+    "no_cards": "You don't have any saved cards yet. Add one using the + button.",
     "add_card": "Add Card",
     "card_holder": "Card Holder Name",
     "card_number": "Card Number",
@@ -209,10 +209,10 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "remove_card": "Remove Card",
-    "invalid_card_form": "Please check card details.",
-    "card_saved_success": "Card saved.",
+    "invalid_card_form": "Please check your card details.",
+    "card_saved_success": "Card saved successfully.",
     "card_save_error": "Could not save card.",
-    "cards_load_error": "Could not load cards.",
+    "cards_load_error": "Couldn't load your cards.",
     "card_removed": "Card removed.",
     "default_card_updated": "Default card updated."
   },
@@ -298,15 +298,15 @@
     "char_limit": "{{count}}/300"
   },
   "stores": {
-    "title": "Our Branches",
-    "subtitle": "Find your nearest Shaco",
+    "title": "Our Stores",
+    "subtitle": "Find the nearest Shaco Coffee",
     "open": "Open",
     "closed": "Closed",
     "weekdays": "Weekdays",
     "weekend": "Weekend",
     "phone": "Phone",
     "address": "Address",
-    "no_stores": "No branch information available.",
+    "no_stores": "No store information is available right now.",
     "working_hours": "Working Hours"
   },
   "branch_card": {
