@@ -107,6 +107,19 @@ export function AuthProvider({ children }) {
                 errorMsg = 'SMS kotası aşıldı.';
             } else if (error.code === 'auth/captcha-check-failed') {
                 errorMsg = 'reCAPTCHA doğrulaması başarısız oldu.';
+            } else if (error.code === 'auth/operation-not-allowed') {
+                errorMsg = 'Telefon ile giriş devre dışı görünüyor. Yöneticiye haber verin.';
+            } else if (error.code === 'auth/app-not-authorized') {
+                errorMsg = 'Bu uygulama doğrulanamadı. Uygulama ayarları kontrol edilmeli.';
+            } else if (error.code === 'auth/network-request-failed') {
+                errorMsg = 'Ağ bağlantısı hatası. İnternetinizi kontrol edip tekrar deneyin.';
+            } else if (error.code === 'auth/internal-error') {
+                errorMsg = 'Bu numaraya SMS gönderilemiyor. Lütfen biraz sonra tekrar deneyin.';
+            }
+
+            const codeSuffix = error?.code ? ` [${error.code}]` : '';
+            if (!errorMsg.includes('[') && codeSuffix) {
+                errorMsg += codeSuffix;
             }
             return { success: false, error: errorMsg };
         }
@@ -139,8 +152,13 @@ export function AuthProvider({ children }) {
                 errorMsg = 'Girdiğiniz kod hatalı. Lütfen tekrar deneyin.';
             } else if (error.code === 'auth/code-expired') {
                 errorMsg = 'Kodun süresi doldu. Yeni kod gönderin.';
+            } else if (error.code === 'auth/session-expired') {
+                errorMsg = 'Doğrulama oturumu zaman aşımına uğradı. Yeni kod gönderin.';
+            } else if (error.code === 'auth/network-request-failed') {
+                errorMsg = 'Ağ bağlantısı hatası. İnternetinizi kontrol edin.';
             }
-            return { success: false, error: errorMsg };
+            const codeSuffix = error?.code ? ` [${error.code}]` : '';
+            return { success: false, error: `${errorMsg}${codeSuffix}` };
         }
     };
 

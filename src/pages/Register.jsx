@@ -3,13 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Check } from 'lucide-react';
-import { auth, db } from '../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import logo from '../assets/logo.png';
 import { useTranslation } from 'react-i18next';
-
-console.log('Register.jsx yüklendi');
 
 export default function Register() {
     const [form, setForm] = useState({
@@ -19,28 +14,20 @@ export default function Register() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [currentUser, setCurrentUser] = useState(null);
-    const { user, setNeedsRegistration } = useAuth();
+    const { user, completeRegistration } = useAuth();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            if (firebaseUser) {
-                setCurrentUser(firebaseUser);
-            } else {
-                navigate('/login');
-            }
-        });
-        return () => unsubscribe();
-    }, [navigate]);
+        if (!user?.uid || user?.role === 'guest') {
+            navigate('/login');
+        }
+    }, [user, navigate]);
 
     const update = (key, val) => setForm({ ...form, [key]: val });
 
     const handleRegister = async () => {
-        console.log('currentUser state:', currentUser?.uid);
-        if (isLoading || !currentUser) {
-            console.log('KULLANICI YOK VEYA YUKLENIYOR!');
+        if (isLoading || !user?.uid) {
             return;
         }
 
@@ -57,21 +44,16 @@ export default function Register() {
 
         try {
             setIsLoading(true);
-
-            await setDoc(doc(db, 'users', currentUser.uid), {
-                firstName: form.firstName,
-                lastName: form.lastName,
-                name: `${form.firstName} ${form.lastName}`,
-                phone: currentUser.phoneNumber,
-                role: 'member',
-                balance: 0,
-                stars: 0,
-                tier: 'bronze',
-                createdAt: new Date()
+            const result = await completeRegistration({
+                firstName: form.firstName.trim(),
+                lastName: form.lastName.trim()
             });
 
-            // GÜNCELLEME: AuthContext state'ini güncelle ki yönlendirme döngüsünden çıkalım
-            setNeedsRegistration(false);
+            if (!result.success) {
+                setError(result.error || 'Kayıt tamamlanamadı.');
+                setIsLoading(false);
+                return;
+            }
 
             setIsLoading(false);
             setSuccess(true);
@@ -79,7 +61,7 @@ export default function Register() {
 
         } catch (err) {
             console.error('Kayıt sırasında teknik hata fırlatıldı:', err);
-            setError('Sistem hatası: ' + err.message);
+            setError('Sistem hatası: ' + (err?.message || 'Bilinmeyen hata'));
             setIsLoading(false);
         }
     };
@@ -157,10 +139,7 @@ export default function Register() {
 
                         <button
                             type="button"
-                            onClick={() => {
-                                console.log('BUTONA BASILDI');
-                                handleRegister();
-                            }}
+                            onClick={handleRegister}
                             disabled={isLoading}
                             className={`w-full text-white font-bold py-3.5 rounded-xl uppercase tracking-widest shadow-[0_0_20px_rgba(239,68,68,0.4)] transition text-base mt-2 flex items-center justify-center gap-2 ${isLoading ? 'bg-red-500/50 cursor-not-allowed' : 'bg-shaco-red hover:bg-red-500'}`}
                         >

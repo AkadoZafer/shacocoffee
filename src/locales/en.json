@@ -63,6 +63,7 @@
     "resend_wait": "seconds remaining",
     "guest_mode": "Continue as Guest",
     "invalid_phone": "Please enter a valid phone number",
+    "verification_required": "Please complete the robot verification.",
     "change_number": "Change Number",
     "security_title": "Secure Login",
     "security_desc": "Sign in with your phone number only - no password required."

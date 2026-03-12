@@ -255,7 +255,10 @@
     "sign_out": "Çıkış Yap",
     "logout": "Çıkış Yap",
     "logout_confirm": "Çıkış yapmak istediğinize emin misiniz?",
+    "logout_modal_title": "Çıkış Yap",
+    "logout_modal_desc": "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
     "yes": "Evet",
+    "back": "Geri",
     "cancel": "İptal",
     "tier_bronze": "Bronz Üye",
     "tier_silver": "Gümüş Üye",
@@ -265,7 +268,13 @@
     "coupon": "Kupon",
     "customer": "Müşteri",
     "guest_role": "Misafir",
-    "register": "Kayıt Ol"
+    "register": "Kayıt Ol",
+    "feedback_title": "Deneyimini Paylaş",
+    "feedback_placeholder": "Düşüncelerini bizimle paylaş...",
+    "feedback_anonymous": "Anonim gönder",
+    "feedback_submit": "Gönder",
+    "feedback_submitting": "Gönderiliyor...",
+    "verification_required": "Lütfen robot olmadığınızı doğrulayın."
   },
   "loyalty": {
     "title": "SADAKAT KARTI",
