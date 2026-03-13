@@ -28,6 +28,19 @@
   box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.06), 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* Theme variants */
+.branch-card--light.branch-card--open {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.10) 0%, rgba(236, 253, 245, 0.95) 100%);
+  border-color: rgba(16, 185, 129, 0.18);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.08), 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+
+.branch-card--light.branch-card--closed {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.10) 0%, rgba(254, 242, 242, 0.95) 100%);
+  border-color: rgba(239, 68, 68, 0.16);
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.06), 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+
 .branch-card--skeleton {
   background: rgba(255, 255, 255, 0.04);
   pointer-events: none;
@@ -157,4 +170,21 @@
   font-size: 10px;
   color: rgba(255, 255, 255, 0.3);
   letter-spacing: 0.01em;
+}
+
+.branch-card--light .branch-card__icon {
+  background: rgba(15, 23, 42, 0.06);
+  color: rgba(15, 23, 42, 0.55);
+}
+
+.branch-card--light .branch-card__name {
+  color: rgba(15, 23, 42, 0.9);
+}
+
+.branch-card--light .branch-card__address {
+  color: rgba(15, 23, 42, 0.5);
+}
+
+.branch-card--light .branch-card__hours {
+  color: rgba(15, 23, 42, 0.45);
 }

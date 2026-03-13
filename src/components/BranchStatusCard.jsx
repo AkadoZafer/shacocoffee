@@ -81,7 +81,20 @@ function normalizeTodayHours(branch) {
   return { todayKey, openTime, closeTime, forcedClosed, open };
 }
 
-export default function BranchStatusCard() {
+function normalizeAddressText(address, t) {
+  if (!address) return "";
+  const value = String(address).trim();
+  if (!value) return "";
+
+  // Legacy placeholder values should be localized for active language.
+  if (/^(şubenin adresi|subenin adresi|şube adresi|sube adresi)$/i.test(value)) {
+    return t("stores.address", { defaultValue: "Address" });
+  }
+
+  return value;
+}
+
+export default function BranchStatusCard({ isDark = true }) {
   const [branch, setBranch] = useState(null);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
@@ -123,9 +136,10 @@ export default function BranchStatusCard() {
   if (!branch) return null;
 
   const { openTime, closeTime, forcedClosed, open } = normalizeTodayHours(branch);
+  const addressText = normalizeAddressText(branch.address, t);
 
   return (
-    <div className={`branch-card ${open ? "branch-card--open" : "branch-card--closed"}`}>
+    <div className={`branch-card ${isDark ? "branch-card--dark" : "branch-card--light"} ${open ? "branch-card--open" : "branch-card--closed"}`}>
       {/* Sol: İkon + Şube Adı */}
       <div className="branch-card__left">
         <div className="branch-card__icon">
@@ -136,8 +150,8 @@ export default function BranchStatusCard() {
         </div>
         <div className="branch-card__info">
           <span className="branch-card__name">{branch.name || "Shaco Coffee"}</span>
-          {branch.address && (
-            <span className="branch-card__address">{branch.address}</span>
+          {addressText && (
+            <span className="branch-card__address">{addressText}</span>
           )}
         </div>
       </div>
