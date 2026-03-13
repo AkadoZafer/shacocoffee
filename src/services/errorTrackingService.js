@@ -3,9 +3,11 @@ import { db } from '../firebase';
 
 const ERROR_COLLECTION = 'error_logs';
 const SOURCE = 'app';
+const DEDUP_WINDOW_MS = 120000;
 
 let currentUserId = null;
 let isWritingLog = false;
+const recentErrorMap = new Map();
 
 const toSafeString = (value) => {
     if (value === null || value === undefined) return '';
@@ -20,6 +22,31 @@ const toSafeString = (value) => {
 
 const normalizeSeverity = (severity) => (severity === 'warning' ? 'warning' : 'error');
 
+const makeErrorSignature = ({ severity, message, stack, route }) => {
+    const normalizedMessage = toSafeString(message).slice(0, 240);
+    const normalizedStack = toSafeString(stack).slice(0, 400);
+    const normalizedRoute = toSafeString(route).slice(0, 120);
+    return `${normalizeSeverity(severity)}|${normalizedMessage}|${normalizedStack}|${normalizedRoute}`;
+};
+
+const shouldSkipByDedup = (signature) => {
+    const now = Date.now();
+    const lastSeen = recentErrorMap.get(signature);
+    if (lastSeen && now - lastSeen < DEDUP_WINDOW_MS) {
+        return true;
+    }
+
+    recentErrorMap.set(signature, now);
+    if (recentErrorMap.size > 400) {
+        for (const [key, ts] of recentErrorMap.entries()) {
+            if (now - ts > DEDUP_WINDOW_MS) {
+                recentErrorMap.delete(key);
+            }
+        }
+    }
+    return false;
+};
+
 export const setErrorTrackingUser = (userId) => {
     currentUserId = userId || null;
 };
@@ -31,6 +58,8 @@ export const logClientError = async ({
     route
 }) => {
     if (isWritingLog) return;
+    const signature = makeErrorSignature({ severity, message, stack, route });
+    if (shouldSkipByDedup(signature)) return;
 
     const payload = {
         source: SOURCE,
