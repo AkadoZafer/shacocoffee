@@ -1,22 +1,9 @@
-import { StrictMode, useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useState, useEffect, Suspense, lazy } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { App as CapacitorApp } from '@capacitor/app';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from './firebase';
-
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Home from './pages/Home';
-import Menu from './pages/Menu';
-import Pay from './pages/Pay';
-import Wallet from './pages/Wallet';
-import ProductPage from './pages/ProductPage';
-import Settings from './pages/Settings';
-import Stores from './pages/Stores';
-import Orders from './pages/Orders';
-import Layout from './components/Layout';
-import Intro from './components/Intro';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { RewardsProvider } from './context/RewardsContext';
@@ -27,6 +14,25 @@ import { MembershipProvider } from './context/MembershipContext';
 import { SocialMediaProvider } from './context/SocialMediaContext';
 import { ToastProvider } from './context/ToastContext';
 import { FavoritesProvider } from './context/FavoritesContext';
+
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Home = lazy(() => import('./pages/Home'));
+const Menu = lazy(() => import('./pages/Menu'));
+const Pay = lazy(() => import('./pages/Pay'));
+const Wallet = lazy(() => import('./pages/Wallet'));
+const ProductPage = lazy(() => import('./pages/ProductPage'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Stores = lazy(() => import('./pages/Stores'));
+const Orders = lazy(() => import('./pages/Orders'));
+const Layout = lazy(() => import('./components/Layout'));
+const Intro = lazy(() => import('./components/Intro'));
+
+const AppLoadingFallback = () => (
+  <div className="min-h-screen bg-[#050505] flex items-center justify-center text-shaco-red tracking-widest font-bold">
+    YUKLENIYOR...
+  </div>
+);
 
 function ProtectedRoute({ children }) {
   const { isGuest } = useAuth();
@@ -50,7 +56,7 @@ function AppRoutes() {
     return () => unsub();
   }, []);
 
-  if (authLoading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-shaco-red tracking-widest font-bold">YÜKLENİYOR...</div>;
+  if (authLoading) return <AppLoadingFallback />;
 
   if (maintenanceMode) return (
     <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white p-8 text-center">
@@ -67,22 +73,24 @@ function AppRoutes() {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* MOBIL UYGULAMA (PWA) ROUTES */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+      <Suspense fallback={<AppLoadingFallback />}>
+        <Routes location={location} key={location.pathname}>
+          {/* MOBIL UYGULAMA (PWA) ROUTES */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="menu" element={<Menu />} />
-          <Route path="pay" element={<ProtectedRoute><Pay /></ProtectedRoute>} />
-          <Route path="wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="stores" element={<Stores />} />
-          <Route path="orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-          <Route path="product/:id" element={<ProductPage />} />
-        </Route>
-      </Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="menu" element={<Menu />} />
+            <Route path="pay" element={<ProtectedRoute><Pay /></ProtectedRoute>} />
+            <Route path="wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="stores" element={<Stores />} />
+            <Route path="orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+            <Route path="product/:id" element={<ProductPage />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 }
@@ -144,7 +152,9 @@ export default function App() {
                     <FavoritesProvider>
                       <AnimatePresence mode="wait">
                         {showIntro ? (
-                          <Intro key="intro" onComplete={() => setShowIntro(false)} />
+                          <Suspense fallback={<AppLoadingFallback />}>
+                            <Intro key="intro" onComplete={() => setShowIntro(false)} />
+                          </Suspense>
                         ) : (
                           <BrowserRouter>
                             <AppRoutes />
