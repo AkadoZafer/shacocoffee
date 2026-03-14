@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Star, Coffee, QrCode, Gift, Store, Wallet, ChevronRight, ArrowRight, UserPlus, LogIn, Heart, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { memo, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { fetchProducts } from '../services/menuService';
 import { useFavorites } from '../context/FavoritesContext';
@@ -38,6 +38,14 @@ export default function Home() {
     const [stories, setStories] = useState([]);
     const [activeStoryIndex, setActiveStoryIndex] = useState(null);
 
+    const triggerLightHaptic = useCallback(async () => {
+        try {
+            await Haptics.impact({ style: ImpactStyle.Light });
+        } catch (_error) {
+            // Ignore haptic errors on unsupported devices.
+        }
+    }, []);
+
     useEffect(() => {
         const loadMenu = async () => {
             try {
@@ -52,6 +60,24 @@ export default function Home() {
             }
         };
         loadMenu();
+    }, []);
+
+    useEffect(() => {
+        const prefetchRoutes = () => {
+            // Warm up critical route chunks for faster first navigation.
+            void import('./Menu');
+            void import('./Pay');
+            void import('./Wallet');
+            void import('./ProductPage');
+        };
+
+        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(prefetchRoutes, { timeout: 1800 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeoutId = window.setTimeout(prefetchRoutes, 1000);
+        return () => window.clearTimeout(timeoutId);
     }, []);
 
     useEffect(() => {
@@ -115,7 +141,37 @@ export default function Home() {
         else setGreeting(t('home.greeting_evening'));
     }, [t]);
 
-    const pFav = favoriteProduct && popularProducts.length > 0 ? popularProducts.find(p => p.name === favoriteProduct.name) : null;
+    const pFav = useMemo(() => {
+        if (!favoriteProduct || popularProducts.length === 0) return null;
+        return popularProducts.find((p) => p.name === favoriteProduct.name) || null;
+    }, [favoriteProduct, popularProducts]);
+
+    const goSettings = useCallback(async () => {
+        await triggerLightHaptic();
+        navigate('/settings');
+    }, [navigate, triggerLightHaptic]);
+
+    const goRegister = useCallback(async () => {
+        await triggerLightHaptic();
+        navigate('/register');
+    }, [navigate, triggerLightHaptic]);
+
+    const goLogin = useCallback(async () => {
+        await triggerLightHaptic();
+        navigate('/login');
+    }, [navigate, triggerLightHaptic]);
+
+    const goPay = useCallback(() => {
+        navigate('/pay');
+    }, [navigate]);
+
+    const goWallet = useCallback(() => {
+        navigate('/wallet');
+    }, [navigate]);
+
+    const goStores = useCallback(() => {
+        navigate('/stores');
+    }, [navigate]);
 
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
@@ -132,17 +188,20 @@ export default function Home() {
                                 <p className="text-warm-amber font-sans text-xs tracking-[0.4em] font-bold uppercase mt-1">COFFEE CO.</p>
                             </div>
                             <div className={`p-2 rounded-2xl shadow-sm flex items-center justify-center ${isDark ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700/50' : 'bg-gradient-to-br from-white to-red-50 border border-red-100'}`}>
-                                <img src="/images.png" alt="Shaco Logo" className="w-8 h-8 object-contain drop-shadow-md" />
+                                <img
+                                    src="/images.png"
+                                    alt="Shaco Logo"
+                                    className="w-8 h-8 object-contain drop-shadow-md"
+                                    decoding="async"
+                                    fetchPriority="high"
+                                />
                             </div>
                         </div>
 
                         {/* User Avatar Button */}
-                        <motion.button whileTap={{ scale: 0.9 }} onClick={async () => {
-                            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
-                            navigate('/settings');
-                        }} className={`relative w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-800/80 border-zinc-700/50' : 'bg-white border-zinc-200/50'}`}>
+                        <motion.button whileTap={{ scale: 0.9 }} onClick={goSettings} className={`relative w-11 h-11 rounded-2xl flex items-center justify-center overflow-hidden shadow-sm border ${isDark ? 'bg-zinc-800/80 border-zinc-700/50' : 'bg-white border-zinc-200/50'}`}>
                             {user?.avatar ? (
-                                <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
+                                <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                             ) : (
                                 <span className={`text-lg font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>
                                     {user?.firstName ? user.firstName.charAt(0).toUpperCase() : <UserPlus size={18} />}
@@ -180,7 +239,7 @@ export default function Home() {
                             >
                                 <div className={`w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500`}>
                                     <div className={`w-full h-full rounded-full border-2 ${isDark ? 'border-black' : 'border-zinc-50'} overflow-hidden relative`}>
-                                        <img src={story.image} alt="Story" className="w-full h-full object-cover" />
+                                        <img src={story.image} alt="Story" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                                     </div>
                                 </div>
                                 <span className={`text-[10px] font-bold max-w-[64px] truncate ${isDark ? 'text-zinc-300' : 'text-zinc-700'}`}>
@@ -207,11 +266,11 @@ export default function Home() {
                                 {t('home.guest_desc')}
                             </p>
                             <div className="flex gap-2">
-                                <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/register'); }}
+                                <button onClick={goRegister}
                                     className="flex-1 py-3 rounded-xl bg-shaco-red text-white font-bold text-base flex items-center justify-center gap-2 shadow-neon-red hover:shadow-neon-red-strong active:scale-95 transition-all duration-300">
                                     <UserPlus size={14} /> {t('home.register')}
                                 </button>
-                                <button onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate('/login'); }}
+                                <button onClick={goLogin}
                                     className={`flex-1 py-3 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all duration-300 active:scale-95 hover:shadow-glass ${isDark ? 'bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 hover:bg-zinc-700/80' : 'bg-white/80 border border-zinc-200/50 text-zinc-600 shadow-sm hover:bg-white'}`}>
                                     <LogIn size={14} /> {t('home.login')}
                                 </button>
@@ -269,9 +328,9 @@ export default function Home() {
 
                 {/* Quick Actions */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="flex gap-2.5 mb-7 overflow-x-auto no-scrollbar pb-2">
-                    <QuickPill icon={<QrCode size={15} />} label={t('home.qr_pay')} onClick={() => navigate('/pay')} isDark={isDark} accent />
-                    {!isGuest && <QuickPill icon={<Wallet size={15} />} label={t('home.load_balance')} onClick={() => navigate('/wallet')} isDark={isDark} />}
-                    <QuickPill icon={<Store size={15} />} label={t('home.stores')} onClick={() => navigate('/stores')} isDark={isDark} />
+                    <QuickPill icon={<QrCode size={15} />} label={t('home.qr_pay')} onClick={goPay} isDark={isDark} accent />
+                    {!isGuest && <QuickPill icon={<Wallet size={15} />} label={t('home.load_balance')} onClick={goWallet} isDark={isDark} />}
+                    <QuickPill icon={<Store size={15} />} label={t('home.stores')} onClick={goStores} isDark={isDark} />
                 </motion.div>
 
                 {/* Campaigns */}
@@ -467,7 +526,7 @@ export default function Home() {
                             <div className="absolute top-8 left-4 right-4 z-20 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md p-1">
-                                        <img src="/images.png" alt="Shaco" className="w-full h-full object-contain" />
+                                        <img src="/images.png" alt="Shaco" className="w-full h-full object-contain" decoding="async" />
                                     </div>
                                     <span className="text-white text-sm font-bold tracking-wide drop-shadow-md">Shaco Coffee</span>
                                 </div>
@@ -476,7 +535,14 @@ export default function Home() {
                                 </button>
                             </div>
 
-                            <img src={stories[activeStoryIndex].image} alt="Story" className="absolute inset-0 w-full h-full object-cover z-0" />
+                            <img
+                                src={stories[activeStoryIndex].image}
+                                alt="Story"
+                                className="absolute inset-0 w-full h-full object-cover z-0"
+                                loading="eager"
+                                decoding="async"
+                                fetchPriority="high"
+                            />
 
                             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent pt-32 pb-8 px-6 z-10 pointer-events-none">
                                 <h3 className="text-white text-2xl font-bold mb-2">{stories[activeStoryIndex].title}</h3>
@@ -502,7 +568,7 @@ export default function Home() {
     );
 }
 
-function QuickPill({ icon, label, onClick, isDark, accent }) {
+const QuickPill = memo(function QuickPill({ icon, label, onClick, isDark, accent }) {
     const handleClick = async (e) => {
         try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { }
         if (onClick) onClick(e);
@@ -515,16 +581,16 @@ function QuickPill({ icon, label, onClick, isDark, accent }) {
                 }`}
         > {icon} {label} </button>
     );
-}
+});
 
-function SectionHeader({ title, action, onAction, isDark }) {
+const SectionHeader = memo(function SectionHeader({ title, action, onAction, isDark }) {
     return (
         <div className="flex justify-between items-center mb-3">
             <h3 className={`text-[15px] font-bold ${isDark ? 'text-zinc-300' : 'text-zinc-800'}`}>{title}</h3>
             <button onClick={onAction} className="text-shaco-red text-[15px] font-bold flex items-center gap-1">{action} <ArrowRight size={11} /></button>
         </div>
     );
-}
+});
 
 const platformIcons = {
     instagram: (size = 18) => (
@@ -562,7 +628,7 @@ const platformColors = {
     x: '#9CA3AF',
 };
 
-function SocialMediaSection({ isDark }) {
+const SocialMediaSection = memo(function SocialMediaSection({ isDark }) {
     const { accounts } = useSocialMedia();
     const { t } = useTranslation();
 
@@ -601,4 +667,4 @@ function SocialMediaSection({ isDark }) {
             </div>
         </motion.div>
     );
-}
+});
