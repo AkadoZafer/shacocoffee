@@ -187,7 +187,7 @@ export default function Home() {
     const headerOpacity = 1 - (headerProgress * 0.14);
     const brandSubtitleOpacity = 1 - (headerProgress * 0.75);
     return (
-        <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
+        <div className={`min-h-screen pb-20 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
             <div className="relative">
                 <div className={`absolute inset-0 pointer-events-none ${isDark ? 'bg-gradient-to-b from-shaco-red/5 via-transparent to-transparent' : 'bg-gradient-to-b from-red-50/50 to-transparent'}`} style={{ height: '220px' }} />
