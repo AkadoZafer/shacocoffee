@@ -19,7 +19,7 @@ export default function Navbar() {
     // Staff navbar: Ana Sayfa, Yönetici Panel, Profil
     if (isStaff) {
         return (
-            <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+            <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-4 pt-6 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
                     <div className="flex items-end justify-center gap-6 pointer-events-auto w-full max-w-sm px-6">
 
                         <Link to="/" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
@@ -49,7 +49,7 @@ export default function Navbar() {
 
     // Customer / Guest navbar
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-8 pt-12 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
+        <div className="fixed bottom-0 left-0 right-0 z-50 w-full flex justify-center pointer-events-none pb-4 pt-6 bg-gradient-to-t from-shaco-black via-shaco-black/80 to-transparent">
                 <div className="flex items-end justify-center gap-6 pointer-events-auto w-full max-w-sm px-6">
 
                     <Link to="/" onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { } }}
