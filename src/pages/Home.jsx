@@ -182,19 +182,10 @@ export default function Home() {
     }, [navigate]);
 
     const headerProgress = Math.min(scrollY / 180, 1);
-    const headerTranslateY = Math.round(headerProgress * 18);
-    const headerScale = 1 - (headerProgress * 0.08);
-    const headerOpacity = 1 - (headerProgress * 0.28);
+    const headerTranslateY = Math.round(headerProgress * 10);
+    const headerScale = 1 - (headerProgress * 0.04);
+    const headerOpacity = 1 - (headerProgress * 0.14);
     const brandSubtitleOpacity = 1 - (headerProgress * 0.75);
-    const watermarkOpacity = 0.08 + (headerProgress * 0.08);
-    const watermarkScale = 1 - (headerProgress * 0.08);
-    const headerBg = isDark
-        ? `rgba(9, 9, 11, ${0.45 + (headerProgress * 0.4)})`
-        : `rgba(255, 255, 255, ${0.6 + (headerProgress * 0.3)})`;
-    const headerBorder = isDark
-        ? `rgba(63, 63, 70, ${0.45 + (headerProgress * 0.3)})`
-        : `rgba(255, 255, 255, ${0.7 + (headerProgress * 0.2)})`;
-
     return (
         <div className={`min-h-screen pb-32 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
@@ -209,27 +200,11 @@ export default function Home() {
                         style={{
                             transform: `translateY(${headerTranslateY}px) scale(${headerScale})`,
                             opacity: headerOpacity,
-                            backgroundColor: headerBg,
-                            borderColor: headerBorder,
-                            backdropFilter: `blur(${12 + Math.round(headerProgress * 8)}px)`
+                            backdropFilter: `blur(${1 + Math.round(headerProgress * 3)}px)`
                         }}
-                        className="sticky top-3 z-20 flex justify-between items-start mb-6 rounded-3xl px-4 py-3 transition-all duration-200 border shadow-[0_8px_30px_rgba(0,0,0,0.22)]"
+                        className="flex justify-between items-start mb-8 transition-all duration-200"
                     >
                         <div className="flex flex-1 items-center gap-4">
-                            <div className="absolute right-16 top-1/2 -translate-y-1/2 pointer-events-none">
-                                <img
-                                    src="/images.png"
-                                    alt=""
-                                    aria-hidden="true"
-                                    style={{
-                                        opacity: watermarkOpacity,
-                                        transform: `scale(${watermarkScale})`
-                                    }}
-                                    className="w-16 h-16 object-contain transition-all duration-200"
-                                    decoding="async"
-                                    fetchPriority="high"
-                                />
-                            </div>
                             <div>
                                 <h1 className={`text-[34px] font-serif font-black tracking-tight leading-none drop-shadow-sm ${isDark ? 'text-white' : 'text-zinc-900'}`}>Shaco</h1>
                                 <p
