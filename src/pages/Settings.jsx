@@ -107,7 +107,7 @@ export default function Settings() {
     };
 
     return (
-        <div className={`min-h-screen pb-4 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
+        <div className={`min-h-screen pb-2 transition-colors duration-300 ${isDark ? 'bg-black text-white' : 'bg-zinc-50 text-zinc-900'}`}>
 
             {/* Top gradient area */}
             <div className="relative overflow-hidden">
