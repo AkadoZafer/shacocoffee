@@ -3,7 +3,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
 import { db, auth } from '../firebase';
-import { doc, onSnapshot, updateDoc, collection, addDoc, query, where, orderBy, serverTimestamp, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc, collection, query, where, orderBy, getDoc } from 'firebase/firestore';
 
 const RewardsContext = createContext();
 
@@ -31,7 +31,7 @@ export function RewardsProvider({ children }) {
         try {
             const saved = localStorage.getItem('shaco_cart');
             return saved ? JSON.parse(saved) : [];
-        } catch (e) { return []; }
+        } catch { return []; }
     });
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export function RewardsProvider({ children }) {
     useEffect(() => {
         if (!user || user.role === 'guest' || !user.uid) {
             // Sadece misafirken 150'ye ayarla
-            if (balance === 0) setBalance(150);
+            setBalance((prev) => (prev === 0 ? 150 : prev));
             return;
         }
 
@@ -191,7 +191,7 @@ export function RewardsProvider({ children }) {
 
             // Başarılı olursa Haptic geri bildirim ver, 
             // state güncellemeleri zaten yukarıdaki `onSnapshot` dinleyicisi ile anında yansıtılacak.
-            try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch (e) { /* ignore */ }
+            try { await Haptics.impact({ style: ImpactStyle.Medium }); } catch { /* ignore */ }
 
         } catch (error) {
             console.error('Güvenli bakiye yükleme başarısız oldu:', error);
@@ -202,20 +202,20 @@ export function RewardsProvider({ children }) {
     const addToCart = async (product, customizations, totalPrice) => {
         const newItem = { id: Date.now() + Math.random(), product, customizations, totalPrice };
         setCart(prev => [...prev, newItem]);
-        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { /* ignore */ }
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { /* ignore */ }
         return true;
     };
 
     const removeFromCart = async (itemId) => {
         setCart(prev => prev.filter(item => item.id !== itemId));
-        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { /* ignore */ }
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { /* ignore */ }
     };
 
     const clearCart = () => setCart([]);
 
     const checkoutCart = async (directItems = null) => {
         if (!user || user.role === 'guest' || !user.uid) {
-            try { await Haptics.notification({ type: 'ERROR' }); } catch (e) { /* ignore */ }
+            try { await Haptics.notification({ type: 'ERROR' }); } catch { /* ignore */ }
             return null;
         }
 
@@ -261,7 +261,7 @@ export function RewardsProvider({ children }) {
                 }
 
                 if (!directItems) clearCart();
-                try { await Haptics.notification({ type: 'SUCCESS' }); } catch (e) { /* ignore */ }
+                try { await Haptics.notification({ type: 'SUCCESS' }); } catch { /* ignore */ }
 
                 return data.order;
             } catch (error) {
@@ -270,12 +270,12 @@ export function RewardsProvider({ children }) {
                 addToast(error.message || 'Siparişiniz işlenirken bir sorun oluştu.', 'error');
 
                 // Bakiye yetersiz vb. kritik hatalarda uyarı titremesi
-                try { await Haptics.notification({ type: 'ERROR' }); } catch (ignore) { }
+                try { await Haptics.notification({ type: 'ERROR' }); } catch { }
                 return null;
             }
         }
 
-        try { await Haptics.notification({ type: 'ERROR' }); } catch (e) { /* ignore */ }
+        try { await Haptics.notification({ type: 'ERROR' }); } catch { /* ignore */ }
         return null;
     };
 
@@ -287,7 +287,7 @@ export function RewardsProvider({ children }) {
             try {
                 const orderRef = doc(db, 'orders', order.id);
                 await updateDoc(orderRef, { status: 'Onaylandı' });
-            } catch (e) { console.error('Error confirming order:', e); }
+            } catch (error) { console.error('Error confirming order:', error); }
         }
     };
 

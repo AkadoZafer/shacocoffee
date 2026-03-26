@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-            console.log("Auth State Değişti:", firebaseUser?.uid);
+            console.warn("Auth State Değişti:", firebaseUser?.uid);
             if (firebaseUser) {
                 setErrorTrackingUser(firebaseUser.uid);
                 try {
@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
                     const docSnap = await getDoc(docRef);
 
                     if (docSnap.exists()) {
-                        console.log("Kullanıcı Firestore'da bulundu, eksik alanlar tamamlanıyor...");
+                        console.warn("Kullanıcı Firestore'da bulundu, eksik alanlar tamamlanıyor...");
 
                         const userData = docSnap.data();
 
@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
                         setUser({ uid: firebaseUser.uid, ...mergedData });
                         setNeedsRegistration(false);
                     } else {
-                        console.log("Kullanıcı Firestore'da YOK -> Kayıt gerekli.");
+                        console.warn("Kullanıcı Firestore'da YOK -> Kayıt gerekli.");
                         setNeedsRegistration(true);
                         setUser({
                             uid: firebaseUser.uid,
@@ -61,7 +61,7 @@ export function AuthProvider({ children }) {
                 }
             } else {
                 setErrorTrackingUser(null);
-                console.log("Kullanıcı oturumu yok -> Guest.");
+                console.warn("Kullanıcı oturumu yok -> Guest.");
                 setUser({ name: 'Misafir', role: 'guest', avatar: null });
                 setNeedsRegistration(false);
             }
@@ -164,7 +164,7 @@ export function AuthProvider({ children }) {
 
     // Yeni kullanıcı profilini Firestore'a kaydet
     const completeRegistration = async ({ firstName, lastName }) => {
-        console.log('--- completeRegistration Başladı ---');
+        console.warn('--- completeRegistration Başladı ---');
         try {
             const firebaseUser = auth.currentUser;
             if (!firebaseUser) {
@@ -172,7 +172,7 @@ export function AuthProvider({ children }) {
                 return { success: false, error: 'Oturum bulunamadı. Lütfen tekrar giriş yapın.' };
             }
 
-            console.log('Kullanıcı UID:', firebaseUser.uid);
+            console.warn('Kullanıcı UID:', firebaseUser.uid);
             const userRef = doc(db, 'users', firebaseUser.uid);
 
             // Yazma öncesi döküman kontrolü
@@ -195,10 +195,10 @@ export function AuthProvider({ children }) {
             };
 
             if (existingDoc && existingDoc.exists()) {
-                console.log('Döküman mevcut, güncelleniyor (updateDoc)...');
+                console.warn('Döküman mevcut, güncelleniyor (updateDoc)...');
                 await updateDoc(userRef, profileData);
             } else {
-                console.log('Yeni döküman oluşturuluyor (setDoc)...');
+                console.warn('Yeni döküman oluşturuluyor (setDoc)...');
                 await setDoc(userRef, {
                     ...profileData,
                     balance: 0,
@@ -208,7 +208,7 @@ export function AuthProvider({ children }) {
                 });
             }
 
-            console.log('Firestore yazma başarılı.');
+            console.warn('Firestore yazma başarılı.');
 
             setNeedsRegistration(false);
 
