@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, doc, getDocs, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, updateDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 // Zod Data Validation (Phase 8 Hazırlığı)
 // export const BranchSchema = z.object({ ... })

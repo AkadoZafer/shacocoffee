@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useRewards } from '../context/RewardsContext';
 import { useMembership } from '../context/MembershipContext';
-import { User, CreditCard, History, HelpCircle, Shield, ChevronRight, LogOut, Moon, Sun, Star, Camera, ImageIcon, Save, X, MessageSquare, Check } from 'lucide-react';
+import { User, CreditCard, History, HelpCircle, ChevronRight, LogOut, Moon, Sun, Star, ImageIcon, Save, X, MessageSquare, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection, addDoc, serverTimestamp } from 'firebase/firestore';
@@ -235,7 +235,6 @@ export default function Settings() {
                                     isDark={isDark}
                                     onClick={() => setEditMode(!editMode)}
                                     rightIcon={editMode ? <X size={16} /> : <ChevronRight size={15} />}
-                                    isFirst={true}
                                 />
                                 <AnimatePresence>
                                     {editMode && (
@@ -484,7 +483,7 @@ function SectionLabel({ label, isDark, delay }) {
     );
 }
 
-function ProfileRow({ icon, iconBg, label, subtitle, isDark, onClick, rightIcon, isFirst, isLast }) {
+function ProfileRow({ icon, iconBg, label, subtitle, isDark, onClick, rightIcon, isLast }) {
     return (
         <button onClick={onClick}
             className={`w-full p-4 flex items-center justify-between transition active:bg-black/5 ${isDark ? 'hover:bg-zinc-800/30' : 'hover:bg-zinc-50/50'} ${!isLast ? (isDark ? 'border-b border-zinc-800/80' : 'border-b border-zinc-100/80') : ''}`}

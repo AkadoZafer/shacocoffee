@@ -43,7 +43,7 @@ function ProtectedRoute({ children }) {
 }
 
 function AppRoutes() {
-  const { user, loading: authLoading, isGuest, needsRegistration } = useAuth();
+  const { loading: authLoading, needsRegistration } = useAuth();
   const location = useLocation();
   const [maintenanceMode, setMaintenanceMode] = useState(false);
 

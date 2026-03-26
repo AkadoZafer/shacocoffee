@@ -1,5 +1,5 @@
 import { useTheme } from '../context/ThemeContext';
-import { MapPin, Navigation, Phone, Clock, Star, Loader, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Navigation, Phone, Clock, Loader, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { fetchBranches } from '../services/menuService';
@@ -53,7 +53,7 @@ export default function Stores() {
                 setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
                 setLoadingLocation(false);
             },
-            (error) => {
+            () => {
                 setLocationError('Konum izni reddedildi');
                 setLoadingLocation(false);
             },
