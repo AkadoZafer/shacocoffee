@@ -57,4 +57,10 @@ export default [
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
+  {
+    files: ["src/context/**/*.jsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ];

@@ -35,7 +35,7 @@ export default function Login() {
                         size: 'normal',
                         theme: isDark ? 'dark' : 'light',
                         callback: () => { 
-                            console.log('reCAPTCHA verified');
+                            console.warn('reCAPTCHA verified');
                             setCaptchaResolved(true);
                         },
                         'expired-callback': () => {
@@ -47,7 +47,7 @@ export default function Login() {
                 window.recaptchaVerifier.render()
                     .then((widgetId) => {
                         window.recaptchaWidgetId = widgetId;
-                        console.log('reCAPTCHA hazır:', widgetId);
+                        console.warn('reCAPTCHA hazır:', widgetId);
                     })
                     .catch((err) => {
                         console.error('reCAPTCHA render gecikmesi cihaz kaynaklı olabilir, istek anında tekrar denenecek:', err);
@@ -61,7 +61,7 @@ export default function Login() {
         // Sayfadan ayrılırken temizlik
         return () => {
             if (window.recaptchaVerifier) {
-                console.log('reCAPTCHA temizleniyor (Unmount)');
+                console.warn('reCAPTCHA temizleniyor (Unmount)');
                 try { window.recaptchaVerifier.clear(); } catch { }
                 window.recaptchaVerifier = null;
             }
