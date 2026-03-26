@@ -1,7 +1,7 @@
 import { useRewards } from '../context/RewardsContext';
 import { useTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Coffee, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 

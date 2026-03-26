@@ -62,11 +62,11 @@ export default function Login() {
         return () => {
             if (window.recaptchaVerifier) {
                 console.log('reCAPTCHA temizleniyor (Unmount)');
-                try { window.recaptchaVerifier.clear(); } catch (e) { }
+                try { window.recaptchaVerifier.clear(); } catch { }
                 window.recaptchaVerifier = null;
             }
         };
-    }, []);
+    }, [isDark]);
 
     // Geri sayım
     useEffect(() => {

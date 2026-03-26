@@ -2,8 +2,8 @@
 // Vercel build'de "Treat warnings as errors" açıksa bu config kritik.
 // no-unused-vars gibi kurallar "warn" olarak bırakılır, build patlamaz.
 
-import js from "@eslint/js";
 import globals from "globals";
+import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
@@ -32,6 +32,7 @@ export default [
       },
     },
     plugins: {
+      react,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
     },
@@ -44,6 +45,7 @@ export default [
         argsIgnorePattern: "^_",
         caughtErrorsIgnorePattern: "^_",
       }],
+      "react/jsx-uses-vars": "warn",
 
       // React Refresh — sadece uyar, hata verme
       "react-refresh/only-export-components": [

@@ -1,8 +1,8 @@
 import QRCode from 'react-qr-code';
 import { useRewards } from '../context/RewardsContext';
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, History, Check, ArrowDownLeft, ArrowUpRight, X, Coffee, Clock, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, Check, ArrowDownLeft, ArrowUpRight, Coffee, RefreshCw } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 const quickAmounts = [25, 50, 100, 200, 500];
 
 export default function Pay() {
-    const { balance, addBalance, orders, addToCart, checkoutCart } = useRewards();
+    const { balance, addBalance } = useRewards();
     const [activeTab, setActiveTab] = useState('qr');
     const [topUpAmount, setTopUpAmount] = useState('');
     const { theme } = useTheme();
@@ -87,7 +87,7 @@ export default function Pay() {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [t]);
 
     const handleTopUp = (amount) => {
         const val = amount || Number(topUpAmount);
@@ -99,7 +99,7 @@ export default function Pay() {
     };
 
     const handleManualQrRefresh = async () => {
-        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
         void fetchQRToken();
     };
 
@@ -140,7 +140,7 @@ export default function Pay() {
                         { key: 'history', label: t('pay.tab_history') },
                     ].map(tab => (
                         <button key={tab.key} onClick={async () => {
-                            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                            try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
                             if (tab.key !== 'qr') setQrToken(null);
                             setActiveTab(tab.key);
                         }}
@@ -236,7 +236,7 @@ export default function Pay() {
                         <div className="grid grid-cols-3 gap-2 mb-5">
                             {quickAmounts.map((amount) => (
                                 <button key={amount} onClick={async () => {
-                                    try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                                    try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
                                     handleTopUp(amount);
                                 }}
                                     className={`py-4 rounded-xl text-center transition-all duration-300 active:scale-95 ${isDark ? 'bg-zinc-900/60 border border-white/5 hover:border-shaco-red/30 hover:shadow-glass hover:bg-zinc-800/80' : 'bg-white border border-zinc-200 mb-1 shadow-sm hover:border-shaco-red/30 hover:shadow-md'}`}>

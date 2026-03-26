@@ -1,8 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
-import ActiveOrders from './ActiveOrders';
 import { useTheme } from '../context/ThemeContext';
-import { Coffee } from 'lucide-react';
 
 export default function Layout() {
     const { theme } = useTheme();

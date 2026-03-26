@@ -1,4 +1,4 @@
-import { CreditCard, Plus, ArrowUpRight, Zap, Check, Wallet as WalletIcon } from 'lucide-react';
+import { CreditCard, Plus, ArrowUpRight, Zap, Wallet as WalletIcon } from 'lucide-react';
 import { useRewards } from '../context/RewardsContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
@@ -78,7 +78,7 @@ export default function Wallet() {
                 updatedAt: new Date().toISOString()
             });
             return true;
-        } catch (error) {
+        } catch {
             try {
                 await setDoc(userRef, {
                     savedCards: nextCards,
@@ -280,7 +280,7 @@ export default function Wallet() {
                         <button
                             key={amount}
                             onClick={async () => {
-                                try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                                try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
                                 setSelectedAmount(amount); setCustomAmount('');
                             }}
                             className={`py-3 rounded-xl text-center transition-all duration-300 active:scale-95 ${selectedAmount === amount
@@ -310,7 +310,7 @@ export default function Wallet() {
                 {/* Load Button */}
                 <button
                     onClick={async () => {
-                        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
                         handleTopUp();
                     }}
                     disabled={activeAmount <= 0}

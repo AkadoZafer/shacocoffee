@@ -426,7 +426,7 @@ export default function Home() {
                 {productOfTheDay && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }} className="mb-7">
                         <SectionHeader title={t('home.daily_special')} action={t('home.view')} onAction={() => navigate(`/product/${productOfTheDay.id}`)} isDark={isDark} />
-                        <div onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { } navigate(`/product/${productOfTheDay.id}`); }}
+                        <div onClick={async () => { try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { } navigate(`/product/${productOfTheDay.id}`); }}
                             className={`relative rounded-3xl overflow-hidden cursor-pointer group ${isDark ? 'glass-liquid border border-amber-500/20' : 'bg-gradient-to-br from-amber-50 to-white border border-amber-200 shadow-lg'}`}>
                             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl -translate-y-10 translate-x-10" />
                             <div className="flex h-36">
@@ -471,7 +471,7 @@ export default function Home() {
                             {popularProducts.map((product, i) => (
                                 <motion.div key={product.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 + i * 0.05 }}
                                     onClick={async () => {
-                                        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (e) { }
+                                        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
                                         navigate(`/product/${product.id}`);
                                     }}
                                     className={`flex-shrink-0 w-36 rounded-3xl overflow-hidden cursor-pointer group transition-all duration-400 active:scale-95 ${isDark ? 'bg-gradient-to-b from-espresso-medium to-espresso-dark border border-white/5 shadow-lg shadow-black/50' : 'bg-white border border-zinc-100 shadow-[0_8px_30px_rgba(0,0,0,0.06)]'}`}
@@ -591,7 +591,7 @@ export default function Home() {
 
 const QuickPill = memo(function QuickPill({ icon, label, onClick, isDark, accent }) {
     const handleClick = async (e) => {
-        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch (err) { }
+        try { await Haptics.impact({ style: ImpactStyle.Light }); } catch { }
         if (onClick) onClick(e);
     };
     return (

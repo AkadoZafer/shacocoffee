@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Coffee, Search, UtensilsCrossed, Heart } from 'lucide-react';
+import { ArrowLeft, Coffee, Search, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useMemo, useEffect } from 'react';
 import LazyImage from '../components/LazyImage';
@@ -27,7 +27,7 @@ export default function Menu() {
     const [showSearch, setShowSearch] = useState(false);
 
     const isDark = theme === 'dark';
-    const { favorites, toggleFavorite, isFavorite } = useFavorites();
+    const { toggleFavorite, isFavorite } = useFavorites();
 
     useEffect(() => {
         const loadCategories = async () => {
@@ -59,7 +59,7 @@ export default function Menu() {
             }
         };
         loadCategories();
-    }, []);
+    }, [t]);
 
     useEffect(() => {
         const loadProducts = async () => {
