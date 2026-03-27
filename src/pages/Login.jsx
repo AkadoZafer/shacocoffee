@@ -75,13 +75,14 @@ export default function Login() {
         return () => clearTimeout(timer);
     }, [countdown]);
 
-    // Telefon numarasını formatla
-    const formatPhone = (val) => {
+    // TR numarasını E.164 (+905XXXXXXXXX) formatına normalize et.
+    const normalizeTrPhone = (val) => {
         const digits = val.replace(/\D/g, '');
-        if (digits.startsWith('90')) return '+' + digits;
-        if (digits.startsWith('0')) return '+9' + digits;
-        if (digits.startsWith('5')) return '+90' + digits;
-        return '+90' + digits;
+        let local = digits;
+        if (local.startsWith('90')) local = local.slice(2);
+        if (local.startsWith('0')) local = local.slice(1);
+        if (!/^5\d{9}$/.test(local)) return null;
+        return `+90${local}`;
     };
 
     // SMS Gönder
@@ -93,9 +94,8 @@ export default function Login() {
             return;
         }
 
-        const formatted = formatPhone(phone);
-
-        if (formatted.length < 13) {
+        const formatted = normalizeTrPhone(phone);
+        if (!formatted) {
             setError(t('login.invalid_phone'));
             return;
         }
@@ -250,7 +250,7 @@ export default function Login() {
                         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                             <div className="space-y-2">
                                 <p className="text-zinc-400 text-sm font-medium">
-                                    <span className="text-white font-bold">{formatPhone(phone)}</span> {t('login.otp_subtitle')}
+                                    <span className="text-white font-bold">{normalizeTrPhone(phone) || phone}</span> {t('login.otp_subtitle')}
                                 </p>
                             </div>
 
