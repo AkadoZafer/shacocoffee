@@ -16,6 +16,7 @@ export default function Login() {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [captchaResolved, setCaptchaResolved] = useState(false);
+    const [captchaReloadKey, setCaptchaReloadKey] = useState(0);
     const [countdown, setCountdown] = useState(0);
     const { sendOTP, verifyOTP } = useAuth();
     const { t } = useTranslation();
@@ -66,7 +67,7 @@ export default function Login() {
                 window.recaptchaVerifier = null;
             }
         };
-    }, [isDark]);
+    }, [isDark, captchaReloadKey]);
 
     // Geri sayım
     useEffect(() => {
@@ -110,6 +111,10 @@ export default function Login() {
             setTimeout(() => otpRefs.current[0]?.focus(), 300);
         } else {
             setError(result.error);
+            if (result.forceCaptchaReload) {
+                setCaptchaResolved(false);
+                setCaptchaReloadKey((prev) => prev + 1);
+            }
         }
     };
 
