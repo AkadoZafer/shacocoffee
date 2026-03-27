@@ -93,9 +93,11 @@ export function AuthProvider({ children }) {
                 error?.code === 'auth/error-code-39';
             if (isCaptchaRelated && window.recaptchaVerifier) {
                 try {
-                    if (typeof window.recaptchaVerifier.reset === 'function') {
-                        window.recaptchaVerifier.reset();
+                    if (typeof window.recaptchaVerifier.clear === 'function') {
+                        window.recaptchaVerifier.clear();
                     }
+                    // Login sayfası bunu görüp verifier'ı yeniden oluşturacak.
+                    window.recaptchaVerifier = null;
                 } catch (cleanupError) {
                     console.warn('reCAPTCHA reset hatası:', cleanupError);
                 }
@@ -137,7 +139,11 @@ export function AuthProvider({ children }) {
             if (error?.code && !knownCodes.has(error.code)) {
                 errorMsg += ` [${error.code}]`;
             }
-            return { success: false, error: errorMsg };
+            return {
+                success: false,
+                error: errorMsg,
+                forceCaptchaReload: isCaptchaRelated,
+            };
         }
     };
 
