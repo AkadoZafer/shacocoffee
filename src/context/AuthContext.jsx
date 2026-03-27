@@ -85,17 +85,20 @@ export function AuthProvider({ children }) {
         } catch (error) {
             console.error('SMS gönderme hatası:', error);
 
-            // reCAPTCHA'yı resetle (tekrar oluşturulsun diye)
-            if (window.recaptchaVerifier) {
+            // CAPTCHA kaynaklı hatalarda verifier'ı resetleyip yeniden denemeyi kolaylaştır.
+            const isCaptchaRelated =
+                error?.code === 'auth/captcha-check-failed' ||
+                error?.code === 'auth/too-many-requests' ||
+                error?.code === 'auth/internal-error' ||
+                error?.code === 'auth/error-code-39';
+            if (isCaptchaRelated && window.recaptchaVerifier) {
                 try {
-                    // reCAPTCHA'yı güvenli bir şekilde temizle
-                    if (typeof window.recaptchaVerifier.clear === 'function') {
-                        window.recaptchaVerifier.clear();
+                    if (typeof window.recaptchaVerifier.reset === 'function') {
+                        window.recaptchaVerifier.reset();
                     }
-                } catch (e) {
-                    console.warn('reCAPTCHA temizleme hatası:', e);
+                } catch (cleanupError) {
+                    console.warn('reCAPTCHA reset hatası:', cleanupError);
                 }
-                window.recaptchaVerifier = null;
             }
 
             let errorMsg = 'SMS gönderilemedi.';
@@ -114,12 +117,25 @@ export function AuthProvider({ children }) {
             } else if (error.code === 'auth/network-request-failed') {
                 errorMsg = 'Ağ bağlantısı hatası. İnternetinizi kontrol edip tekrar deneyin.';
             } else if (error.code === 'auth/internal-error') {
-                errorMsg = 'Bu numaraya SMS gönderilemiyor. Lütfen biraz sonra tekrar deneyin.';
+                errorMsg = 'Numaraya SMS gönderimi şu an sağlanamıyor. Birkaç dakika sonra tekrar deneyin.';
+            } else if (error.code === 'auth/error-code-39') {
+                errorMsg = 'Bu numaraya doğrulama SMS’i şu an gönderilemiyor (operatör/bölge kısıtı olabilir). Bir süre sonra tekrar deneyin veya farklı bir numara deneyin.';
             }
 
-            const codeSuffix = error?.code ? ` [${error.code}]` : '';
-            if (!errorMsg.includes('[') && codeSuffix) {
-                errorMsg += codeSuffix;
+            // Bilinen kullanıcı-hatalarında ham kodu göstermeyelim; bilinmeyenlerde destek için ekleyelim.
+            const knownCodes = new Set([
+                'auth/invalid-phone-number',
+                'auth/too-many-requests',
+                'auth/quota-exceeded',
+                'auth/captcha-check-failed',
+                'auth/operation-not-allowed',
+                'auth/app-not-authorized',
+                'auth/network-request-failed',
+                'auth/internal-error',
+                'auth/error-code-39',
+            ]);
+            if (error?.code && !knownCodes.has(error.code)) {
+                errorMsg += ` [${error.code}]`;
             }
             return { success: false, error: errorMsg };
         }
